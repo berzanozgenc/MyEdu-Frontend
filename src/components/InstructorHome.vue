@@ -1,6 +1,20 @@
 <template>
   <nav class="navbar navbar-expand-lg navbar-light bg-light">
-    <a style="margin-left: 10px" class="navbar-brand" href="#">MyEdu</a>
+    <a
+      @click="refreshPage"
+      style="margin-left: 10px"
+      class="navbar-brand"
+      href="#"
+      >myEdu</a
+    >
+    <a
+      @click="refreshPage"
+      style="margin-left: 10px"
+      class="navbar-brand"
+      href="#"
+      >Kişiselleştirilmiş Akademik Gelişim ve <br />
+      Değerlendirme Sistemi</a
+    >
 
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
       <ul class="navbar-nav mr-auto">
@@ -48,7 +62,7 @@
     </div>
     <ul style="max-width: 73rem" class="list-group list-group-flush"></ul>
     <div class="card-body">
-      <select v-model="selectedItem">
+      <select style="border-radius: 8px" v-model="selectedItem">
         <option>Ders 1</option>
         <option>Ders 2</option>
         <option>Ders 3</option>
@@ -72,6 +86,11 @@ import "jquery";
 
 export default {
   name: "InstructorHome",
+  methods: {
+    refreshPage() {
+      window.location.reload();
+    },
+  },
 };
 </script>
 
@@ -93,5 +112,13 @@ export default {
 
 .icon {
   width: 60px;
+}
+
+.list-group a {
+  text-decoration: none;
+  color: black;
+  font-family: "Calibri", sans-serif;
+  font-size: 17px;
+  font-weight: bold;
 }
 </style>
