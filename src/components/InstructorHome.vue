@@ -1,47 +1,97 @@
 <template>
+  <nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <a style="margin-left: 10px" class="navbar-brand" href="#">MyEdu</a>
 
-<div class="col-xl-6 col-sm-8">
-    
-    <img class="icon" src="../assets/Profile_Icon.png">
-    <h2>Mustafa Sert</h2>
-    <br>
-    <div>
-        <select v-model="selectedItem">
-        <option> Ders 1</option>
-        <option> Ders 2</option>
-        <option> Ders 3</option>
-  </select>
-
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav mr-auto">
+        <!-- li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          Dropdown
+        </a>
+        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+          <a class="dropdown-item" href="#">Action</a>
+          <a class="dropdown-item" href="#">Another action</a>
+          <div class="dropdown-divider"></div>
+          <a class="dropdown-item" href="#">Something else here</a>
+        </div>
+      </li !-->
+      </ul>
+      <span class="logout">
+        <button class="btn btn-outline-danger my-2 my-sm-0" type="submit">
+          Çıkış Yap
+        </button>
+      </span>
     </div>
-  
+  </nav>
 
-</div>
-
-
-
-
+  <div
+    class="card"
+    style="width: 75rem; height: 40rem; overflow-y: auto; overflow-x: hidden"
+  >
+    <div class="container">
+      <img class="icon" src="../assets/Profile_Icon.png" />
+      <h2 style="margin-top: 12px; margin-left: 5px">Mustafa Sert</h2>
+    </div>
+    <div class="card-body">
+      <h5 class="card-title">Derslerim</h5>
+      <ul style="max-width: 73rem" class="list-group">
+        <li class="list-group-item">
+          <a href="#">Bil429 - Bilgisayar Ağları</a>
+        </li>
+        <li class="list-group-item">
+          <a href="#">Bil477 - Veri Madenciliği</a>
+        </li>
+        <li class="list-group-item"><a href="#">Morbi leo risus</a></li>
+        <li class="list-group-item"><a href="#">Porta ac consectetur ac</a></li>
+        <li class="list-group-item"><a href="#">Vestibulum at eros</a></li>
+      </ul>
+    </div>
+    <ul style="max-width: 73rem" class="list-group list-group-flush"></ul>
+    <div class="card-body">
+      <select v-model="selectedItem">
+        <option>Ders 1</option>
+        <option>Ders 2</option>
+        <option>Ders 3</option>
+        <option>DenemeDenemeDeneme</option>
+      </select>
+      <button
+        class="btn btn-outline-primary my-2 my-sm-0"
+        style="width: 100px; height: 35px; margin-left: 15px"
+        type="submit"
+      >
+        Ders Ekle
+      </button>
+    </div>
+  </div>
 </template>
-    
+
 <script>
+import "bootstrap/dist/css/bootstrap.min.css";
+import "bootstrap/dist/js/bootstrap.bundle.min.js";
+import "jquery";
+
 export default {
-    name: 'InstructorHome'
-}
+  name: "InstructorHome",
+};
 </script>
 
 <style>
-
-row {
-    justify-content: center;
-    display: flex;
-    flex-wrap: wrap;
-    margin-right: -15px;
-    margin-left: -15px;
-    flex-direction: row;
+.container {
+  display: flex;
 }
 
+.logout {
+  margin-left: auto;
+  margin-right: 20px;
+}
 
-.icon{
+.card {
+  margin-top: 3%;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.icon {
   width: 60px;
 }
-
 </style>
