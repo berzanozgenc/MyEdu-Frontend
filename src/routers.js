@@ -1,6 +1,9 @@
 import Login from "./components/Login.vue";
 import InstructorHome from "./components/InstructorHome.vue";
 import Course from "./components/Course.vue";
+import LearningOutcome from "./components/LearningOutcomes.vue";
+import StudentInfo from "./components/StudentInfo.vue";
+
 import { createRouter, createWebHistory } from "vue-router";
 
 const routes = [{
@@ -18,8 +21,19 @@ const routes = [{
         name: "Course",
         component: Course,
         path: "/course"
+    },
+    {
+        name: "LearningOutcome",
+        component: LearningOutcome,
+        path: "/learning-outcome"
+    },
+    {
+        name: "StudentInfo",
+        component: StudentInfo,
+        path: "/student-info"
     }
 
+   
 
 ];
 
