@@ -1,23 +1,21 @@
 <template>
-<img class="logo" src="../assets/Baskent_University_Logo.png">    
-<h1 class="title">MyEdu</h1>
-<div class="login">
-    <input type="email" placeholder="Email"/>
-    <input type="password" placeholder="Şifre"/>
-    <button>Giriş Yap</button>
-    
-</div>
-
+    <img class="logo" src="../assets/Baskent_University_Logo.png">
+    <h1 class="title">myEdu</h1>
+    <div class="login">
+        <input type="email" placeholder="Email" />
+        <input type="password" placeholder="Şifre" />
+        <button type="button" class="btn btn-danger">Giriş Yap</button>
+    </div>
 </template>
 
 <script>
 export default {
-    name:'Login'
+    name: 'Login'
 }
 </script>
 
 <style>
-.logo{
+.logo {
     width: 200px;
     display: block;
     margin-top: 100px;
@@ -25,7 +23,8 @@ export default {
     margin-right: auto;
     margin-left: auto;
 }
-.login input{
+
+.login input {
     width: 300px;
     height: 40px;
     padding-left: 20px;
@@ -44,8 +43,6 @@ export default {
     margin-right: auto;
     width: 180px;
     height: 40px;
-    border: 1px solid red;
-    background-color: aliceblue;
 }
 
 .title {
@@ -55,6 +52,4 @@ export default {
     width: 120px;
     font-family: Arial;
 }
-
-
 </style>

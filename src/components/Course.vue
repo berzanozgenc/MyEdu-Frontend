@@ -29,14 +29,16 @@
   </nav>
 
   <div class="card" style="width: 75rem; height: 40rem; overflow-y: auto; overflow-x: hidden">
-    <div>
-      <h2 style="margin-top: 12px;">BIL477</h2>
+    <div style="display: flex; margin-left: 14px;">
+      <img class="icon" src="../assets/Books_Icon.png" />
+      <h2 style="margin-top: 12px; margin-left: 6px;">BIL477</h2>
+    </div>
       <div class="buttons-container">
         <button style="margin-left: 16px;" class="btn btn-outline-primary" @click="handleButton1">Öğrenme çıktıları</button>
         <button class="btn btn-outline-success" @click="handleButton2">Öğrenci
           bilgileri</button>
       </div>
-    </div>
+    
 
     <div class="card-body">
 
