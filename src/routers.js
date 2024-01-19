@@ -5,6 +5,7 @@ import LearningOutcome from "./components/LearningOutcomes.vue";
 import StudentInfo from "./components/StudentInfo.vue";
 import AdminPageVue from "./components/AdminPage.vue";
 import InstructorLearningOutcome from "./components/InstructorLearningOutcome.vue";
+import MatchMatrix from "./components/MatchMatrix.vue";
 import { createRouter, createWebHistory } from "vue-router";
 
 
@@ -23,6 +24,11 @@ const routes = [{
         name: "InstructorLearningOutcome",
         component: InstructorLearningOutcome,
         path: "/instructor-learning-outcome"
+    },
+    {
+        name: "MatchMatrix",
+        component: MatchMatrix,
+        path: "/instructor-match-matrix"
     },
     {
         name: "Course",

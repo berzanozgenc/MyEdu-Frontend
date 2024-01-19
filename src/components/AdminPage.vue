@@ -39,8 +39,6 @@
     </div>
   </div>
   
-
-
     <div
       class="card"
       style="width: 75rem; height: 40rem; overflow-y: auto; overflow-x: hidden"
@@ -90,7 +88,7 @@
   import "jquery";
   
   export default {
-    name: "InstructorHome",
+    name: "AdminPage",
     methods: {
       refreshPage() {
         window.location.reload();

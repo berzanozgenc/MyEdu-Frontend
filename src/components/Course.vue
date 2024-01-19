@@ -181,7 +181,6 @@ export default {
   
 }
 
-
 .list-group-item {
   display: flex;
   align-items: center;
