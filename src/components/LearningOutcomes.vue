@@ -59,15 +59,12 @@
             <tr>
               <th scope="row">Puan</th>
               <td contenteditable="true">-</td>
-              <td contenteditable="true">-</td>
-              <td contenteditable="true">-</td>
+
               <!-- Dinamik olarak eklenen hücreler -->
               <td v-for="i in quizColumns" :key="i" contenteditable="true">-</td>
             </tr>
             <tr>
               <th scope="row">ÖÇ 1</th>
-              <td contenteditable="true">-</td>
-              <td contenteditable="true">-</td>
               <td contenteditable="true">-</td>
               <!-- Dinamik olarak eklenen hücreler -->
               <td v-for="i in quizColumns" :key="i" contenteditable="true">-</td>
@@ -75,22 +72,17 @@
             <tr>
               <th scope="row">ÖÇ 2</th>
               <td contenteditable="true">-</td>
-              <td contenteditable="true">-</td>
-              <td contenteditable="true">-</td>
               <!-- Dinamik olarak eklenen hücreler -->
               <td v-for="i in quizColumns" :key="i" contenteditable="true">-</td>
             </tr>
             <tr>
               <th scope="row">ÖÇ 3</th>
               <td contenteditable="true">-</td>
-              <td contenteditable="true">-</td>
-              <td contenteditable="true">-</td>
               <!-- Dinamik olarak eklenen hücreler -->
               <td v-for="i in quizColumns" :key="i" contenteditable="true">-</td>
             </tr>
             <tr>
               <th scope="row">Toplam (∑)</th>
-              <td colspan="3"></td>
               <!-- Dinamik olarak eklenen hücreler -->
               <td v-for="i in quizColumns" :key="i" contenteditable="true"></td>
               <td></td>
