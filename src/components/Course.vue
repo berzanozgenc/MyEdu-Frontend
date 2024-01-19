@@ -27,7 +27,18 @@
       </span>
     </div>
   </nav>
-
+  <div class="flex-container">
+  <div class="card" style="width: 13rem;margin-left: 10px;">
+  <div class="card-body">
+    <h5 class="card-title">menu</h5>
+    <h6 class="card-subtitle mb-2 text-body-secondary">Card subtitle</h6>
+    <p class="card-text">Navigasyon menüsü</p>
+    <a href="#" class="card-link">Derslerim   </a><br />
+    <a href="#" class="card-link">Öğrenci bilgileri</a><br />
+    <a href="#" class="card-link">Ders bilgileri</a><br />
+    <a href="#" class="card-link">Öğrenme çıktıları</a>
+  </div>
+</div>
   <div class="card" style="width: 75rem; height: 40rem; overflow-y: auto; overflow-x: hidden">
     <div style="display: flex; margin-left: 14px;">
       <img class="icon" src="../assets/Books_Icon.png" />
@@ -86,6 +97,7 @@
       </button>
     </div>
   </div>
+</div>
 </template>
   
 <script>
@@ -125,6 +137,9 @@ export default {
   display: flex;
   margin-left: 20px;
 }
+.flex-container {
+  display: flex;
+}
 
 .logout {
   margin-left: auto;
@@ -132,9 +147,9 @@ export default {
 }
 
 .card {
-  margin-top: 3%;
-  margin-left: auto;
-  margin-right: auto;
+  
+  margin-left: 20px;
+  
 }
 
 .icon {
@@ -160,6 +175,12 @@ export default {
   margin-right: 25px;
 
 }
+.container {
+  display: flex;
+  align-items: center;
+  
+}
+
 
 .list-group-item {
   display: flex;
@@ -169,6 +190,11 @@ export default {
 
 .list-group-item input {
   margin-left: 10px;
+}
+.menu{
+  width: 13rem;
+  margin-left: 10px;
+
 }
 </style>
   

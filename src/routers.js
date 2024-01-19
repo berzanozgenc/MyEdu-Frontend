@@ -5,6 +5,7 @@ import LearningOutcome from "./components/LearningOutcomes.vue";
 import StudentInfo from "./components/StudentInfo.vue";
 
 import { createRouter, createWebHistory } from "vue-router";
+import AdminPageVue from "./components/AdminPage.vue";
 
 const routes = [{
         name: "Login",
@@ -31,6 +32,11 @@ const routes = [{
         name: "StudentInfo",
         component: StudentInfo,
         path: "/student-info"
+    },
+    {
+        name: "AdminPage",
+        component: AdminPageVue,
+        path: "/admin-page"
     }
 
    

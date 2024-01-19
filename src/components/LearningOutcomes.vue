@@ -37,6 +37,21 @@
         </span>
       </div>
     </nav>
+    <div class="flex-container">
+  <div class="card" style="width: 13rem;margin-left: 10px;">
+  <div class="card-body">
+    <h5 class="card-title">menu</h5>
+    <h6 class="card-subtitle mb-2 text-body-secondary">Card subtitle</h6>
+    <p class="card-text">Navigasyon menüsü</p>
+    <a href="#" class="card-link">Derslerim   </a><br />
+    <a href="#" class="card-link">Öğrenci bilgileri</a><br />
+    <a href="#" class="card-link">Ders bilgileri</a><br />
+    <a href="#" class="card-link">Öğrenme çıktıları</a>
+  </div>
+</div>
+
+<div class="card">
+
     <table class="table table-striped table-hover">
   <thead>
     <tr>
@@ -73,8 +88,13 @@
    
   </tbody>
 </table>
+</div>
+</div>
+
     
-<button type="button" class="btn btn-light">Düzenle</button>
+<div class="d-flex justify-content-end">
+    <button type="button" class="btn btn-light">Düzenle</button>
+  </div>
 
   </template>
   

@@ -18,17 +18,6 @@
   
       <div class="collapse navbar-collapse" id="navbarSupportedContent">
         <ul class="navbar-nav mr-auto">
-          <!-- li class="nav-item dropdown">
-          <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-            Dropdown
-          </a>
-          <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-            <a class="dropdown-item" href="#">Action</a>
-            <a class="dropdown-item" href="#">Another action</a>
-            <div class="dropdown-divider"></div>
-            <a class="dropdown-item" href="#">Something else here</a>
-          </div>
-        </li !-->
         </ul>
         <span class="logout">
           <button class="btn btn-outline-danger my-2 my-sm-0" type="submit">
@@ -37,6 +26,19 @@
         </span>
       </div>
     </nav>
+    <div class="flex-container">
+  <div class="card" style="width: 13rem;margin-left: 10px;">
+  <div class="card-body">
+    <h5 class="card-title">menu</h5>
+    <h6 class="card-subtitle mb-2 text-body-secondary">Card subtitle</h6>
+    <p class="card-text">Navigasyon menüsü</p>
+    <a href="#" class="card-link">Derslerim   </a><br />
+    <a href="#" class="card-link">Öğrenci bilgileri</a><br />
+    <a href="#" class="card-link">Ders bilgileri</a><br />
+    <a href="#" class="card-link">Öğrenme çıktıları</a>
+  </div>
+</div>
+<div class="card">  
     <table class="table table-striped table-hover">
   <thead>
     <tr>
@@ -74,8 +76,12 @@
   </tbody>
 
 </table>
-<button type="button" class="btn btn-light">Düzenle</button>
+</div>
+</div>
 
+<div class="d-flex justify-content-end">
+    <button type="button" class="btn btn-light">Düzenle</button>
+  </div>
   </template>
   
   <script>
@@ -102,7 +108,12 @@
     margin-left: auto;
     margin-right: 20px;
   }
- 
+ .card{
+  display: flex;
+  width: 100%; /* Set the table width to 100% of its container */
+
+ }
+
   
   </style>
   
