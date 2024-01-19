@@ -1,31 +1,16 @@
 <template>
   <div>
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
-      <a
-        @click="refreshPage"
-        style="margin-left: 10px"
-        class="navbar-brand"
-        href="#"
-        >myEdu</a
-      >
-      <a
-        @click="refreshPage"
-        style="margin-left: 10px"
-        class="navbar-brand"
-        href="#"
-        >Kişiselleştirilmiş Akademik Gelişim ve <br />
-        Değerlendirme Sistemi</a
-      >
-
+      <a @click="refreshPage" style="margin-left: 10px" class="navbar-brand" href="#">myEdu</a>
+      <a @click="refreshPage" style="margin-left: 10px" class="navbar-brand" href="#">Kişiselleştirilmiş Akademik Gelişim ve <br /> Değerlendirme Sistemi</a>
       <div class="collapse navbar-collapse" id="navbarSupportedContent">
         <ul class="navbar-nav mr-auto"></ul>
         <span class="logout">
-          <button class="btn btn-outline-danger my-2 my-sm-0" type="submit">
-            Çıkış Yap
-          </button>
+          <button class="btn btn-outline-danger my-2 my-sm-0" type="submit">Çıkış Yap</button>
         </span>
       </div>
     </nav>
+
     <div class="flex-container">
       <div class="card" style="width: 13rem; margin-left: 10px;">
         <div class="card-body">
@@ -39,31 +24,32 @@
         </div>
       </div>
 
-      <div
-        class="card"
-        style="width: 75rem; height: 40rem; overflow-y: auto; overflow-x: hidden"
-      >
-        
+      <div class="card" style="width: 75rem; height: 40rem; overflow-y: auto; overflow-x: hidden">
         <div class="card-body">
-          <h5 class="card-title">Admin Sayfası</h5>
+          <h5 class="card-title">Kurs Ekle</h5>
           <table class="table">
             <thead>
               <tr>
-                <th scope="col">Program Çıktısı</th>
+                <th scope="col">Fakülte Adı</th>
                 <th scope="col">Bölüm Adı</th>
+                <th scope="col">Ders Adı</th>
+                <th scope="col">AKTS</th>
+                <th scope="col">Kredi</th>
                 <th scope="col">İşlemler</th>
               </tr>
             </thead>
             <tbody>
-              <tr v-for="(item, index) in programs" :key="index">
+              <tr v-for="(item, index) in courses" :key="index">
                 <td>
-                  <span v-if="editable === index && activeField === 'output'">
-                    <input
-                      v-model="item.output"
+                  <span v-if="editable === index && activeField === 'faculty'">
+                    <select
+                      v-model="item.faculty"
                       @blur="editable = -1; activeField = ''"
-                    />
+                    >
+                      <option value="Mühendislik">Mühendislik</option>
+                    </select>
                   </span>
-                  <span v-else @click="editCell(index, 'output')">{{ item.output }}</span>
+                  <span v-else @click="editCell(index, 'faculty')">{{ item.faculty }}</span>
                 </td>
                 <td>
                   <span v-if="editable === index && activeField === 'department'">
@@ -81,25 +67,37 @@
                   <span v-else @click="editCell(index, 'department')">{{ item.department }}</span>
                 </td>
                 <td>
-                  <button
-                    class="btn btn-danger btn-sm"
-                    @click="deleteProgram(index)"
-                  >
-                    Sil
-                  </button>
+                  <span v-if="editable === index && activeField === 'courseName'">
+                    <input v-model="item.courseName" @blur="editable = -1; activeField = ''" />
+                  </span>
+                  <span v-else @click="editCell(index, 'courseName')">{{ item.courseName }}</span>
+                </td>
+                <td>
+                  <span v-if="editable === index && activeField === 'akts'">
+                    <input v-model="item.akts" @blur="editable = -1; activeField = ''" />
+                  </span>
+                  <span v-else @click="editCell(index, 'akts')">{{ item.akts }}</span>
+                </td>
+                <td>
+                  <span v-if="editable === index && activeField === 'credit'">
+                    <input v-model="item.credit" @blur="editable = -1; activeField = ''" />
+                  </span>
+                  <span v-else @click="editCell(index, 'credit')">{{ item.credit }}</span>
+                </td>
+                <td>
+                  <button class="btn btn-danger btn-sm" @click="deleteCourse(index)">Sil</button>
                 </td>
               </tr>
             </tbody>
           </table>
           <div class="card-body">
-            
             <button
               class="btn btn-outline-primary my-2 my-sm-0"
               style="width: 150px; height: 35px"
               type="submit"
-              @click="addProgram"
+              @click="addCourse"
             >
-              Program Ekle
+              Ders Ekle
             </button>
           </div>
         </div>
@@ -110,14 +108,13 @@
 
 <script>
 export default {
-  name: "AdminPage",
+  name: "AddCoursePage",
   data() {
     return {
-      programs: [
-        { output: "Program Çıktısı 1", department: "Bilgisayar Mühendisliği" },
-
+      courses: [
+        { faculty: "Mühendislik", department: "Bilgisayar Mühendisliği", courseName: "BİL477-Veri Madenciliğine Giriş", akts: 7, credit: 4 },
       ],
-      selectedProgram: { output: "Program Çıktısı 1", department: "Bilgisayar Mühendisliği" },
+      selectedCourse: { faculty: "Mühendislik", department: "Bilgisayar Mühendisliği", courseName: "Program Çıktısı 1", akts: 7, credit: 4 },
       editable: -1,
       activeField: "",
     };
@@ -130,11 +127,11 @@ export default {
       this.editable = index;
       this.activeField = key;
     },
-    deleteProgram(index) {
-      this.programs.splice(index, 1);
+    deleteCourse(index) {
+      this.courses.splice(index, 1);
     },
-    addProgram() {
-      this.programs.push({ output: "Program Çıktısı Yazınız...", department: "Bölümler" });
+    addCourse() {
+      this.courses.push({ faculty: "Fakülte Adı", department: "Bölümler", courseName: "Ders Adı", akts: 0, credit: 0 });
     },
   },
 };
@@ -167,6 +164,7 @@ export default {
   font-size: 17px;
   font-weight: bold;
 }
+
 .table th,
 .table td {
   border: 1px solid #dee2e6;

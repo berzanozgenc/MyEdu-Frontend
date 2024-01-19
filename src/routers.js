@@ -4,6 +4,7 @@ import Course from "./components/Course.vue";
 import LearningOutcome from "./components/LearningOutcomes.vue";
 import StudentInfo from "./components/StudentInfo.vue";
 import AdminPageVue from "./components/AdminPage.vue";
+import AddCoursePage from "./components/AddCoursePage.vue";
 import InstructorLearningOutcome from "./components/InstructorLearningOutcome.vue";
 import MatchMatrix from "./components/MatchMatrix.vue";
 import { createRouter, createWebHistory } from "vue-router";
@@ -25,7 +26,7 @@ const routes = [{
         component: InstructorLearningOutcome,
         path: "/instructor-learning-outcome"
     },
-    {
+{
         name: "MatchMatrix",
         component: MatchMatrix,
         path: "/instructor-match-matrix"
@@ -49,8 +50,13 @@ const routes = [{
         name: "AdminPage",
         component: AdminPageVue,
         path: "/admin-page"
-    }
-
+    },
+    
+    {
+        name: "AddCoursePage",
+        component: AddCoursePage,
+        path: "/add-course-page"
+    },
 
 
 ];
