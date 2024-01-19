@@ -1,27 +1,55 @@
 <template>
-  <div class="flex-container">
-    <div class="card" style="width: 75rem; height: 40rem; overflow-y: auto; overflow-x: hidden">
-      <!-- Existing code for the profile header -->
-      <div class="card-body">
-        <h5 class="card-title">Derslerim</h5>
+  <div>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+      <a @click="refreshPage" style="margin-left: 10px" class="navbar-brand" href="#">myEdu</a>
+      <a @click="refreshPage" style="margin-left: 10px" class="navbar-brand" href="#">Kişiselleştirilmiş Akademik Gelişim ve <br /> Değerlendirme Sistemi</a>
 
-        <!-- Clear existing content and add the dynamic matrix -->
-        <table class="table table-bordered">
-          <thead>
-            <tr>
-              <th scope="col"></th> <!-- Empty corner cell -->
-              <th v-for="(col, colIndex) in matrix[0]" :key="colIndex" scope="col">{{ col }}</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr v-for="(row, rowIndex) in matrix.slice(1)" :key="rowIndex">
-              <td scope="row">{{ row[0] }}</td>
-              <td v-for="(cell, cellIndex) in row.slice(1)" :key="cellIndex">
-                <input type="checkbox" @change="handleCheckboxChange(rowIndex, cellIndex)" />
-              </td>
-            </tr>
-          </tbody>
-        </table>
+      <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav mr-auto">
+          <!-- Add your menu items here if needed -->
+        </ul>
+        <span class="logout">
+          <button class="btn btn-outline-danger my-2 my-sm-0" type="submit">Çıkış Yap</button>
+        </span>
+      </div>
+    </nav>
+
+    <div class="flex-container">
+      <div class="card" style="width: 13rem;margin-left: 10px;">
+        <div class="card-body">
+          <h5 class="card-title">menu</h5>
+          <h6 class="card-subtitle mb-2 text-body-secondary">Card subtitle</h6>
+          <p class="card-text">Navigasyon menüsü</p>
+          <a href="#" class="card-link">Derslerim   </a><br />
+          <a href="#" class="card-link">Öğrenci bilgileri</a><br />
+          <a href="#" class="card-link">Ders bilgileri</a><br />
+          <a href="#" class="card-link">Öğrenme çıktıları</a>
+        </div>
+      </div>
+
+      <div class="card" style="width: 75rem; height: 40rem; overflow-y: auto; overflow-x: hidden">
+        <!-- Existing code for the profile header -->
+        <div class="card-body">
+          <h5 class="card-title">PROGRAM YETERLİLİKLERİ (P) / DERSİN ÖĞRENME KAZANIMLARI (Ö) MATRİSİ</h5>
+
+          <!-- Clear existing content and add the dynamic matrix -->
+          <table class="table table-bordered">
+            <thead>
+              <tr>
+                <th scope="col"></th> <!-- Empty corner cell -->
+                <th v-for="(col, colIndex) in matrix[0]" :key="colIndex" scope="col">{{ col }}</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="(row, rowIndex) in matrix.slice(1)" :key="rowIndex">
+                <td scope="row">{{ row[0] }}</td>
+                <td v-for="(cell, cellIndex) in row.slice(1)" :key="cellIndex">
+                  <input type="checkbox" @change="handleCheckboxChange(rowIndex, cellIndex)" v-model="matrix[rowIndex][cellIndex + 1]" />
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   </div>
@@ -37,8 +65,8 @@ export default {
   data() {
     return {
       matrix: [],
-      rowCount: 6,
-      colCount: 7,
+      rowCount: 3,
+      colCount: 3,
     };
   },
   created() {
@@ -56,8 +84,8 @@ export default {
     updateMatrix() {
       // Update the matrix based on row count
       this.matrix = [
-        ["", ...Array(this.colCount).fill("").map((_, index) => `Col ${index + 1}`)],
-        ...Array(this.rowCount).fill(["Row", ...Array(this.colCount).fill(false)]),
+        [...Array(this.colCount).fill("").map((_, index) => `ÖÇ ${index + 1}`)],
+        ...Array(this.rowCount).fill(0).map((_, index) => [`PÇ ${index + 1}`, ...Array(this.colCount).fill(false)]),
       ];
     },
     initializeMatrix() {
