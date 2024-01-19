@@ -18,6 +18,17 @@
   
       <div class="collapse navbar-collapse" id="navbarSupportedContent">
         <ul class="navbar-nav mr-auto">
+          <!-- li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            Dropdown
+          </a>
+          <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+            <a class="dropdown-item" href="#">Action</a>
+            <a class="dropdown-item" href="#">Another action</a>
+            <div class="dropdown-divider"></div>
+            <a class="dropdown-item" href="#">Something else here</a>
+          </div>
+        </li !-->
         </ul>
         <span class="logout">
           <button class="btn btn-outline-danger my-2 my-sm-0" type="submit">
@@ -39,8 +50,7 @@
     </div>
   </div>
   
-
-
+  
     <div
       class="card"
       style="width: 75rem; height: 40rem; overflow-y: auto; overflow-x: hidden"
@@ -50,7 +60,7 @@
         <h2 style="margin-top: 12px; margin-left: 5px">Mustafa Sert</h2>
       </div>
       <div class="card-body">
-        <h5 class="card-title">Admin Page</h5>
+        <h5 class="card-title">Derslerim</h5>
         <ul style="max-width: 73rem" class="list-group">
           <li class="list-group-item">
             <a href="#">Bil429 - Bilgisayar Ağları</a>
@@ -90,7 +100,7 @@
   import "jquery";
   
   export default {
-    name: "InstructorHome",
+    name: "InstructorLearningOutcome",
     methods: {
       refreshPage() {
         window.location.reload();

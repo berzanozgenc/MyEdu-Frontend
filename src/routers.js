@@ -3,9 +3,10 @@ import InstructorHome from "./components/InstructorHome.vue";
 import Course from "./components/Course.vue";
 import LearningOutcome from "./components/LearningOutcomes.vue";
 import StudentInfo from "./components/StudentInfo.vue";
-
-import { createRouter, createWebHistory } from "vue-router";
 import AdminPageVue from "./components/AdminPage.vue";
+import InstructorLearningOutcome from "./components/InstructorLearningOutcome.vue";
+import { createRouter, createWebHistory } from "vue-router";
+
 
 const routes = [{
         name: "Login",
@@ -17,6 +18,11 @@ const routes = [{
         name: "InstructorHome",
         component: InstructorHome,
         path: "/instructor-home"
+    },
+    {
+        name: "InstructorLearningOutcome",
+        component: InstructorLearningOutcome,
+        path: "/instructor-learning-outcome"
     },
     {
         name: "Course",
@@ -39,10 +45,9 @@ const routes = [{
         path: "/admin-page"
     }
 
-   
+
 
 ];
-
 
 const router = createRouter({
     history: createWebHistory(),
