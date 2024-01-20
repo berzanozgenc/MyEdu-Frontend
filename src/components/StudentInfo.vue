@@ -52,25 +52,31 @@
   <tbody>
     <tr>
       <th scope="row">Öğrenci 1</th>
-      <td>-</td>
-      <td>-</td>
-      <td>-</td>
+      <td contenteditable="true">-</td>
+      <td contenteditable="true">-</td>
+      <td contenteditable="true">-</td>
+      <td contenteditable="true">-</td>
     </tr>
     <tr>
       <th scope="row">Öğrenci 2</th>
-      <td>-</td>
-      <td>-</td>
-      <td>-</td>
+      <td contenteditable="true">-</td>
+      <td contenteditable="true">-</td>
+      <td contenteditable="true">-</td>
+      <td contenteditable="true">-</td>
     </tr>
     <tr>
       <th scope="row">Öğrenci 3</th>
-      <td colspan="2">-</td>
-      <td>-</td>
+      <td contenteditable="true">-</td>
+      <td contenteditable="true">-</td>
+      <td contenteditable="true">-</td>
+      <td contenteditable="true">-</td>
     </tr>
     <tr>
       <th scope="row">Öğrenci 4</th>
-      <td colspan="2"></td>
-
+      <td contenteditable="true">-</td>
+      <td contenteditable="true">-</td>
+      <td contenteditable="true">-</td>
+      <td contenteditable="true">-</td>
     </tr>
 
   </tbody>

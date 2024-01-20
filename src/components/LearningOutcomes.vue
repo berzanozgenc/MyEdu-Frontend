@@ -6,16 +6,14 @@
         style="margin-left: 10px"
         class="navbar-brand"
         href="#"
-        >myEdu</a
-      >
+      >myEdu</a>
       <a
         @click="refreshPage"
         style="margin-left: 10px"
         class="navbar-brand"
         href="#"
-        >Kişiselleştirilmiş Akademik Gelişim ve <br />
-        Değerlendirme Sistemi</a
-      >
+      >Kişiselleştirilmiş Akademik Gelişim ve <br />
+        Değerlendirme Sistemi</a>
 
       <div class="collapse navbar-collapse" id="navbarSupportedContent">
         <ul class="navbar-nav mr-auto"></ul>
@@ -46,13 +44,24 @@
               <th scope="col">Öğrenme çıktıları</th>
               
               <!-- Dinamik olarak eklenen sütunlar -->
-              <th v-for="i in quizColumns" :key="i" scope="col">quiz{{ i }}</th>
+              <th v-for="(quiz, index) in quizColumns" :key="index" scope="col">
+                <div class="d-flex align-items-center">
+                  <span @click="selectColumn(index)">{{ `quiz${index + 1}` }}</span>
+                  <button
+                    v-if="selectedColumn === index"
+                    class="btn btn-sm btn-danger ml-2"
+                    @click="removeQuiz(index)"
+                  >
+                    Sil
+                  </button>
+                </div>
+              </th>
+
               <th scope="col">∑</th>
               <th scope="col">
                 <button type="button" class="btn btn-success" @click="addNewQuiz">+</button>
               </th>
-              <th scope="col"></th>
-              <th scope="col"></th>
+              
             </tr>
           </thead>
           <tbody>
@@ -61,30 +70,30 @@
               <td contenteditable="true">-</td>
 
               <!-- Dinamik olarak eklenen hücreler -->
-              <td v-for="i in quizColumns" :key="i" contenteditable="true">-</td>
+              <td v-for="(quiz, index) in quizColumns" :key="index" contenteditable="true">-</td>
             </tr>
             <tr>
               <th scope="row">ÖÇ 1</th>
               <td contenteditable="true">-</td>
               <!-- Dinamik olarak eklenen hücreler -->
-              <td v-for="i in quizColumns" :key="i" contenteditable="true">-</td>
+              <td v-for="(quiz, index) in quizColumns" :key="index" contenteditable="true">-</td>
             </tr>
             <tr>
               <th scope="row">ÖÇ 2</th>
               <td contenteditable="true">-</td>
               <!-- Dinamik olarak eklenen hücreler -->
-              <td v-for="i in quizColumns" :key="i" contenteditable="true">-</td>
+              <td v-for="(quiz, index) in quizColumns" :key="index" contenteditable="true">-</td>
             </tr>
             <tr>
               <th scope="row">ÖÇ 3</th>
               <td contenteditable="true">-</td>
               <!-- Dinamik olarak eklenen hücreler -->
-              <td v-for="i in quizColumns" :key="i" contenteditable="true">-</td>
+              <td v-for="(quiz, index) in quizColumns" :key="index" contenteditable="true">-</td>
             </tr>
             <tr>
               <th scope="row">Toplam (∑)</th>
               <!-- Dinamik olarak eklenen hücreler -->
-              <td v-for="i in quizColumns" :key="i" contenteditable="true"></td>
+              <td v-for="(quiz, index) in quizColumns" :key="index" contenteditable="true"></td>
               <td></td>
             </tr>
           </tbody>
@@ -103,7 +112,8 @@ export default {
   name: "LearningOutcome",
   data() {
     return {
-      quizColumns: 3,
+      quizColumns: [1, 2, 3], // Başlangıçta üç sütun var
+      selectedColumn: null,
     };
   },
   methods: {
@@ -111,7 +121,16 @@ export default {
       window.location.reload();
     },
     addNewQuiz() {
-      this.quizColumns++;
+      this.quizColumns.push(this.quizColumns.length + 1);
+    },
+    removeQuiz(index) {
+      if (this.quizColumns.length > 1) {
+        this.quizColumns.splice(index, 1);
+        this.selectedColumn = null;
+      }
+    },
+    selectColumn(index) {
+      this.selectedColumn = index;
     },
   },
 };

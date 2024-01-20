@@ -1,4 +1,5 @@
 <template>
+  <div>
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
       <a
         @click="refreshPage"
@@ -15,21 +16,9 @@
         >Kişiselleştirilmiş Akademik Gelişim ve <br />
         Değerlendirme Sistemi</a
       >
-  
+
       <div class="collapse navbar-collapse" id="navbarSupportedContent">
-        <ul class="navbar-nav mr-auto">
-          <!-- li class="nav-item dropdown">
-          <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-            Dropdown
-          </a>
-          <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-            <a class="dropdown-item" href="#">Action</a>
-            <a class="dropdown-item" href="#">Another action</a>
-            <div class="dropdown-divider"></div>
-            <a class="dropdown-item" href="#">Something else here</a>
-          </div>
-        </li !-->
-        </ul>
+        <ul class="navbar-nav mr-auto"></ul>
         <span class="logout">
           <button class="btn btn-outline-danger my-2 my-sm-0" type="submit">
             Çıkış Yap
@@ -38,103 +27,190 @@
       </div>
     </nav>
     <div class="flex-container">
-    <div class="card" style="width: 13rem;margin-left: 10px;">
-    <div class="card-body">
-      <h5 class="card-title">menu</h5>
-      <h6 class="card-subtitle mb-2 text-body-secondary">Card subtitle</h6>
-      <p class="card-text">Navigasyon menüsü</p>
-      <a href="#" class="card-link">Derslerim   </a><br />
-      <a href="#" class="card-link">Öğrenci bilgileri</a><br />
-      <a href="#" class="card-link">Ders bilgileri</a><br />
-      <a href="#" class="card-link">Öğrenme çıktıları</a>
+      <div class="card" style="width: 13rem; margin-left: 10px;">
+        <div class="card-body">
+          <h5 class="card-title">menu</h5>
+          <h6 class="card-subtitle mb-2 text-body-secondary">Card subtitle</h6>
+          <p class="card-text">Navigasyon menüsü</p>
+          <a href="#" class="card-link">Derslerim   </a><br />
+          <a href="#" class="card-link">Öğrenci bilgileri</a><br />
+          <a href="#" class="card-link">Ders bilgileri</a><br />
+          <a href="#" class="card-link">Öğrenim çıktıları</a>
+        </div>
+      </div>
+
+      <div
+        class="card"
+        style="width: 75rem; height: 40rem; overflow-y: auto; overflow-x: hidden"
+      >
+        
+        <div class="card-body">
+          <h5 class="card-title">Dersin Öğrenim Çıktıları</h5>
+          <table class="table">
+            <thead>
+              <tr>
+                <th scope="col">Öğrenim Çıktısı</th>
+                <th scope="col">Açıklama</th>
+                <th scope="col">İşlemler</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="(item, index) in programs" :key="index">
+                <td>
+                  <span v-if="editable === index && activeField === 'output'">
+                    <input
+                      v-model="item.output"
+                      @blur="editable = -1; activeField = ''"
+                    />
+                  </span>
+                  <span v-else @click="editCell(index, 'output')">{{ item.output }}</span>
+                </td>
+                <td>
+                  <span v-if="editable === index && activeField === 'description'">
+                    <input
+                      v-model="item.description"
+                      @blur="editable = -1; activeField = ''"
+                    />
+                  </span>
+                  <span v-else @click="editCell(index, 'description')">{{ item.description }}</span>
+                </td>
+                <td>
+                  <button
+                    class="btn btn-danger btn-sm"
+                    @click="deleteProgram(index)"
+                  >
+                    Sil
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="card-body">
+            <button
+              class="btn btn-outline-primary my-2 my-sm-0"
+              style="width: 150px; height: 35px"
+              type="submit"
+              @click="addProgram"
+            >
+              ÖÇ Ekle
+            </button>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
-  
-  
-    <div
-      class="card"
-      style="width: 75rem; height: 40rem; overflow-y: auto; overflow-x: hidden"
-    >
-      <div class="container">
-        <img class="icon" src="../assets/Profile_Icon.png" />
-        <h2 style="margin-top: 12px; margin-left: 5px">Mustafa Sert</h2>
-      </div>
-      <div class="card-body">
-        <h5 class="card-title">Derslerim</h5>
-        <ul style="max-width: 73rem" class="list-group">
-          <li class="list-group-item">
-            <a href="#">Bil429 - Bilgisayar Ağları</a>
-          </li>
-          <li class="list-group-item">
-            <a href="#">Bil477 - Veri Madenciliği</a>
-          </li>
-          <li class="list-group-item"><a href="#">Morbi leo risus</a></li>
-          <li class="list-group-item"><a href="#">Porta ac consectetur ac</a></li>
-          <li class="list-group-item"><a href="#">Vestibulum at eros</a></li>
-        </ul>
-      </div>
-      <ul style="max-width: 73rem" class="list-group list-group-flush"></ul>
-      <div class="card-body">
-        <select style="border-radius: 8px" v-model="selectedItem">
-          <option>Ders 1</option>
-          <option>Ders 2</option>
-          <option>Ders 3</option>
-          <option>DenemeDenemeDeneme</option>
-        </select>
-        <button
-          class="btn btn-outline-primary my-2 my-sm-0"
-          style="width: 100px; height: 35px; margin-left: 15px"
-          type="submit"
-        >
-          Ders Ekle
-        </button>
-      </div>
-    </div>
-  </div>
-  
-  </template>
-  
-  <script>
-  import "bootstrap/dist/css/bootstrap.min.css";
-  import "bootstrap/dist/js/bootstrap.bundle.min.js";
-  import "jquery";
-  
-  export default {
-    name: "InstructorLearningOutcome",
-    methods: {
-      refreshPage() {
-        window.location.reload();
-      },
+</template>
+
+<script>
+export default {
+  name: "AdminPage",
+  data() {
+    return {
+      programs: [
+        { output: "Öğrenim Çıktısı 1", description: "Açıklama 1", department: "Bilgisayar Mühendisliği" },
+      ],
+      selectedProgram: { output: "Öğrenim Çıktısı 1", description: "Açıklama 1", department: "Bilgisayar Mühendisliği" },
+      editable: -1,
+      activeField: "",
+    };
+  },
+  methods: {
+    refreshPage() {
+      window.location.reload();
     },
-  };
-  </script>
-  
-  <style>
-  .container {
-    display: flex;
-  }
-  
-  .logout {
-    margin-left: auto;
-    margin-right: 20px;
-  }
-  
-  .card {
-    margin-top: 3%;
-    margin-left: auto;
-    margin-right: auto;
-  }
-  
-  .icon {
-    width: 60px;
-  }
-  
-  .list-group a {
-    text-decoration: none;
-    color: black;
-    font-family: "Calibri", sans-serif;
-    font-size: 17px;
-    font-weight: bold;
-  }
-  </style>
-  
+    editCell(index, key) {
+      this.editable = index;
+      this.activeField = key;
+    },
+    deleteProgram(index) {
+      this.programs.splice(index, 1);
+    },
+    addProgram() {
+      this.programs.push({ output: "Öğrenim Çıktısı Yazınız...", description: "Açıklama Yazınız...", department: "Bölümler" });
+    },
+  },
+};
+</script>
+
+<style>
+.container {
+  display: flex;
+}
+
+.logout {
+  margin-left: auto;
+  margin-right: 20px;
+}
+
+.card {
+  margin-top: 3%;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.icon {
+  width: 60px;
+}
+
+.list-group a {
+  text-decoration: none;
+  color: black;
+  font-family: "Calibri", sans-serif;
+  font-size: 17px;
+  font-weight: bold;
+}
+.table th,
+.table td {
+  border: 1px solid #dee2e6;
+}
+
+.table th {
+  background-color: #f8f9fa;
+}
+
+.table td {
+  background-color: #fff;
+}
+
+.btn-outline-primary {
+  border-color: #007bff;
+  color: #007bff;
+}
+
+.btn-outline-primary:hover {
+  background-color: #007bff;
+  color: #fff;
+}
+
+.btn-outline-success {
+  border-color: #28a745;
+  color: #28a745;
+}
+
+.btn-outline-success:hover {
+  background-color: #28a745;
+  color: #fff;
+}
+
+.btn-outline-danger {
+  border-color: #dc3545;
+  color: #dc3545;
+}
+
+.btn-outline-danger:hover {
+  background-color: #dc3545;
+  color: #fff;
+}
+
+input,
+select {
+  border: 1px solid #ced4da;
+  border-radius: 0.25rem;
+  transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+
+input.editable,
+select.editable {
+  border-color: #007bff;
+}
+</style>
