@@ -1,6 +1,6 @@
 <template>
   <div>
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <nav class="navbar navbar-expand-lg navbar-light" style="background-color: #98bdff;">
       <a
         @click="refreshPage"
         style="margin-left: 10px"
