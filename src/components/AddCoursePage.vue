@@ -1,6 +1,6 @@
 <template>
   <div>
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <nav class="navbar navbar-expand-lg navbar-light" style="background-color: #98bdff;">
       <a @click="refreshPage" style="margin-left: 10px" class="navbar-brand" href="#">myEdu</a>
       <a @click="refreshPage" style="margin-left: 10px" class="navbar-brand" href="#">Kişiselleştirilmiş Akademik Gelişim ve <br /> Değerlendirme Sistemi</a>
       <div class="collapse navbar-collapse" id="navbarSupportedContent">
