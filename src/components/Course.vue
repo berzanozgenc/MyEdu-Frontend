@@ -86,6 +86,7 @@
     <div class="card-body">
       <div>
         <input type="text" placeholder="Araç türünü yazınız..">
+        <input style="margin-left: 4px;" type="text" placeholder="%Araç katkısını yazınız..">
       </div>
       <h1></h1>
       <button class="btn btn-outline-primary my-2 my-sm-0" style="width: auto; height: auto; margin-bottom: 20px;"
