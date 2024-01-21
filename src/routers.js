@@ -5,8 +5,10 @@ import LearningOutcome from "./components/LearningOutcomes.vue";
 import StudentInfo from "./components/StudentInfo.vue";
 import AdminPageVue from "./components/AdminPage.vue";
 import AddCoursePage from "./components/AddCoursePage.vue";
+import AdminLoadStudentPage from "./components/AdminLoadStudentPage.vue";
 import InstructorLearningOutcome from "./components/InstructorLearningOutcome.vue";
 import MatchMatrix from "./components/MatchMatrix.vue";
+import AdminHome from "./components/AdminHome.vue";
 import { createRouter, createWebHistory } from "vue-router";
 
 
@@ -49,15 +51,24 @@ const routes = [{
     {
         name: "AdminPage",
         component: AdminPageVue,
-        path: "/admin-page"
+        path: "/program-output"
     },
     
     {
         name: "AddCoursePage",
         component: AddCoursePage,
-        path: "/add-course-page"
+        path: "/add-course"
     },
-
+    {
+        name: "AdminLoadStudentPage",
+        component: AdminLoadStudentPage,
+        path: "/admin-load-student"
+    },
+    {
+        name: "AdminHome",
+        component: AdminHome,
+        path: "/admin-home"
+    },
 
 ];
 

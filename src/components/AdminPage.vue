@@ -32,6 +32,7 @@
           <h5 class="card-title">Menü</h5>
           <a href="#" class="card-link" @click="goToAddCoursePage">Ders Sayfası</a><br />
           <a href="#" class="card-link">Program Çıktıları Sayfası</a><br />
+          <a href="#" class="card-link" @click="goToLoadStudentPage" >Öğrenci Yükleme Sayfası</a><br />
         </div>
       </div>
 
@@ -119,14 +120,18 @@ export default {
     };
   },
   methods: {
+    goToLoadStudentPage(){
+      this.$router.push("/admin-load-student");
+    },
     goToLoginPage(){
       this.$router.push("/");
     },
     goToAddCoursePage(){
-      this.$router.push("/add-course-page");
+      this.$router.push("/add-course");
     },
     refreshPage() {
-      window.location.reload();
+      //window.location.reload();
+      this.$router.push("/admin-home");
     },
     editCell(index, key) {
       this.editable = index;

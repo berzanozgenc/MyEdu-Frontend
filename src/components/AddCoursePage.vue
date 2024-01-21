@@ -14,13 +14,14 @@
     </nav>
 
     <div class="flex-container">
-      <div class="card" style="width: 13rem; margin-left: 10px;">
-        <div class="card-body">
-          <h5 class="card-title">Menü</h5>
-          <a href="#" class="card-link">Ders Sayfası</a><br />
-          <a href="#" class="card-link" @click="goToAdminPage">Program Çıktıları Sayfası</a><br />
+        <div class="card" style="width: 13rem; margin-left: 10px;">
+          <div class="card-body">
+            <h5 class="card-title">Menü</h5>
+            <a href="#" class="card-link" >Ders Sayfası</a><br />
+            <a href="#" class="card-link" @click="goToProgramOutputPage">Program Çıktıları Sayfası</a><br />
+            <a href="#" class="card-link" @click="goToLoadStudentPage" >Öğrenci Yükleme Sayfası</a><br />
+          </div>
         </div>
-      </div>
 
       <div class="card" style="width: 75rem; height: 40rem; overflow-y: auto; overflow-x: hidden">
         <div class="card-body">
@@ -118,14 +119,19 @@ export default {
     };
   },
   methods: {
+    
+    goToProgramOutputPage(){
+      this.$router.push("/program-output");
+    }, 
+    goToLoadStudentPage(){
+      this.$router.push("/admin-load-student");
+    },
     goToLoginPage(){
       this.$router.push("/");
     },
-    goToAdminPage(){
-      this.$router.push("/admin-page");
-    },
     refreshPage() {
-      window.location.reload();
+      //window.location.reload();
+      this.$router.push("/admin-home");
     },
     editCell(index, key) {
       this.editable = index;
