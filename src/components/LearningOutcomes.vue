@@ -99,7 +99,7 @@
     </div>
 
     <div class="d-flex justify-content-end">
-      <button type="button" class="btn btn-light">Düzenle</button>
+      <button type="button" class="btn btn-light">kaydet</button>
     </div>
   </div>
 </template>
