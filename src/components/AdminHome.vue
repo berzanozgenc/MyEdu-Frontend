@@ -1,5 +1,6 @@
 <template>
-    <nav class="navbar navbar-expand-lg navbar-light bg-light" style="background-color: #98bdff;">
+    <div>
+    <nav class="navbar navbar-expand-lg navbar-light+" style="background-color: #98bdff;">
       <a
         @click="refreshPage"
         style="margin-left: 10px"
@@ -51,7 +52,7 @@
       
     </div>
   </div>
-  
+</div>
   </template>
   
   <script>
