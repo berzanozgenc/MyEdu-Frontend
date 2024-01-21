@@ -4,14 +4,19 @@
     <div class="login">
         <input type="email" placeholder="Email" />
         <input type="password" placeholder="Şifre" />
-        <button type="button" class="btn btn-danger">Giriş Yap</button>
+        <button @click="goToInstructorHomePage" type="button" class="btn btn-danger">Giriş Yap</button>
     </div>
 </template>
 
 <script>
 export default {
-    name: 'Login'
-}
+    name: "Login",
+    methods: {
+      goToInstructorHomePage(){
+      this.$router.push("/instructor-home");
+    },
+    },
+  };
 </script>
 
 <style>

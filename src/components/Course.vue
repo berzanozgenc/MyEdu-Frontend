@@ -21,22 +21,20 @@
         </li !-->
       </ul>
       <span class="logout">
-        <button class="btn btn-outline-danger my-2 my-sm-0" type="submit">
-          Çıkış Yap
-        </button>
+        <button @click="goToLoginPage" class="btn btn-outline-danger my-2 my-sm-0" type="submit">
+            Çıkış Yap
+          </button>
       </span>
     </div>
   </nav>
   <div class="flex-container">
   <div class="card" style="width: 13rem;margin-left: 10px;">
   <div class="card-body">
-    <h5 class="card-title">menu</h5>
-    <h6 class="card-subtitle mb-2 text-body-secondary">Card subtitle</h6>
-    <p class="card-text">Navigasyon menüsü</p>
-    <a href="#" class="card-link">Derslerim   </a><br />
-    <a href="#" class="card-link">Öğrenci bilgileri</a><br />
-    <a href="#" class="card-link">Ders bilgileri</a><br />
-    <a href="#" class="card-link">Öğrenme çıktıları</a>
+    <h5 class="card-title">Menü</h5>
+    <a href="#" class="card-link" @click="goToCoursePage">Derslerim   </a><br />
+    <a href="#" class="card-link" @click="goToStudentInfoPage">Not Girişi</a><br />    
+    <a href="#" class="card-link" @click="goToInstructorLearningOutcome">Öğrenim Çıktıları</a><br />
+    <a href="#" class="card-link" @click="goToMatchMatrixPage">ÖÇ ve PÇ Eşleştirme</a>
   </div>
 </div>
   <div class="card" style="width: 75rem; height: 40rem; overflow-y: auto; overflow-x: hidden">
@@ -45,9 +43,8 @@
       <h2 style="margin-top: 12px; margin-left: 6px;">BIL477</h2>
     </div>
       <div class="buttons-container">
-        <button style="margin-left: 16px;" class="btn btn-outline-primary" @click="handleButton1">Öğrenme çıktıları</button>
-        <button class="btn btn-outline-success" @click="handleButton2">Öğrenci
-          bilgileri</button>
+        <button style="margin-left: 16px;" class="btn btn-outline-primary" @click="goToInstructorLearningOutcome">Öğrenim Çıktıları</button>
+        <button class="btn btn-outline-success" @click="goToStudentInfoPage">Not Girişi</button>
       </div>
     
 
@@ -65,9 +62,9 @@
           <input type="text" v-model="labInput" placeholder="%Lab" />
 
         </li>
-        <li class="list-group-item">
-          <a href="#">Katılım</a>
-          <input type="text" v-model="katilimInput" placeholder="%Katılım" />
+        <li class="list-group-item" @click="goToLearningOutcomePage">
+          <a href="#">Quiz</a>
+          <input type="text" v-model="katilimInput" placeholder="%Quiz" />
 
         </li>
         <li class="list-group-item">
@@ -118,8 +115,27 @@ export default {
     };
   },
   methods: {
+    goToLoginPage(){
+      this.$router.push("/");
+    },
+    goToCoursePage(){
+      this.$router.push("/instructor-home");
+    },
+    goToLearningOutcomePage(){
+      this.$router.push("/learning-outcome");
+    },
+    goToMatchMatrixPage(){
+      this.$router.push("/instructor-match-matrix");
+    },
+    goToStudentInfoPage(){
+      this.$router.push("/student-info");
+    },
+    goToInstructorLearningOutcome(){
+      this.$router.push("/instructor-learning-outcome");
+    },
     refreshPage() {
-      window.location.reload();
+      //window.location.reload();
+      this.$router.push("/instructor-home");
     },
     handleButton1() {
       console.log("Button 1 clicked");
@@ -180,6 +196,7 @@ export default {
   align-items: center;
   
 }
+
 
 .list-group-item {
   display: flex;

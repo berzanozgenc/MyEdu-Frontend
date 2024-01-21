@@ -9,24 +9,24 @@
           <!-- Add your menu items here if needed -->
         </ul>
         <span class="logout">
-          <button class="btn btn-outline-danger my-2 my-sm-0" type="submit">Çıkış Yap</button>
+          <button @click="goToLoginPage" class="btn btn-outline-danger my-2 my-sm-0" type="submit">
+            Çıkış Yap
+          </button>
         </span>
       </div>
     </nav>
 
     <div class="container mt-4">
       <div class="flex-container">
-        <div class="card" style="width: 13rem; margin-left: 0px;">
-          <div class="card-body">
-            <h5 class="card-title">menu</h5>
-            <h6 class="card-subtitle mb-2 text-body-secondary">Card subtitle</h6>
-            <p class="card-text">Navigasyon menüsü</p>
-            <a href="#" class="card-link">Derslerim   </a><br />
-            <a href="#" class="card-link">Öğrenci bilgileri</a><br />
-            <a href="#" class="card-link">Ders bilgileri</a><br />
-            <a href="#" class="card-link">Öğrenme çıktıları</a>
-          </div>
-        </div>
+        <div class="card" style="width: 13rem;margin-left: 10px;">
+  <div class="card-body">
+    <h5 class="card-title">Menü</h5>
+    <a href="#" class="card-link" @click="goToCoursePage">Derslerim   </a><br />
+    <a href="#" class="card-link" @click="goToStudentInfoPage">Not Girişi</a><br />    
+    <a href="#" class="card-link" @click="goToInstructorLearningOutcome">Öğrenim Çıktıları</a><br />
+    <a href="#" class="card-link" @click="goToMatchMatrixPage">ÖÇ ve PÇ Eşleştirme</a>
+  </div>
+</div>
 
         <div class="card" style="width: 75rem; height: 40rem; overflow-y: auto; overflow-x: hidden; margin-left: 100px;">
           <!-- Existing code for the profile header -->
@@ -76,11 +76,30 @@ export default {
     this.generateMatrix();
   },
   methods: {
+    goToLoginPage(){
+      this.$router.push("/");
+    },
+    goToCoursePage(){
+      this.$router.push("/instructor-home");
+    },
+      goToLearningOutcomePage(){
+      this.$router.push("/learning-outcome");
+    },
+    goToMatchMatrixPage(){
+      this.$router.push("/instructor-match-matrix");
+    },
+    goToStudentInfoPage(){
+      this.$router.push("/student-info");
+    },
+    goToInstructorLearningOutcome(){
+      this.$router.push("/instructor-learning-outcome");
+    },
     generateMatrix() {
       this.matrix = Array.from({ length: this.rowCount }, () => Array(this.colCount).fill(false));
     },
     refreshPage() {
-      // Implement your page refresh logic here
+      //window.location.reload();
+      this.$router.push("/instructor-home");
     },
   },
 };
@@ -106,3 +125,5 @@ export default {
 }
 
 </style>
+
+

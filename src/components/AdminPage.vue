@@ -20,7 +20,7 @@
       <div class="collapse navbar-collapse" id="navbarSupportedContent">
         <ul class="navbar-nav mr-auto"></ul>
         <span class="logout">
-          <button class="btn btn-outline-danger my-2 my-sm-0" type="submit">
+          <button @click="goToLoginPage" class="btn btn-outline-danger my-2 my-sm-0" type="submit">
             Çıkış Yap
           </button>
         </span>
@@ -29,13 +29,9 @@
     <div class="flex-container">
       <div class="card" style="width: 13rem; margin-left: 10px;">
         <div class="card-body">
-          <h5 class="card-title">menu</h5>
-          <h6 class="card-subtitle mb-2 text-body-secondary">Card subtitle</h6>
-          <p class="card-text">Navigasyon menüsü</p>
-          <a href="#" class="card-link">Derslerim   </a><br />
-          <a href="#" class="card-link">Öğrenci bilgileri</a><br />
-          <a href="#" class="card-link">Ders bilgileri</a><br />
-          <a href="#" class="card-link">Öğrenme çıktıları</a>
+          <h5 class="card-title">Menü</h5>
+          <a href="#" class="card-link" @click="goToAddCoursePage">Ders Sayfası</a><br />
+          <a href="#" class="card-link">Program Çıktıları Sayfası</a><br />
         </div>
       </div>
 
@@ -123,6 +119,12 @@ export default {
     };
   },
   methods: {
+    goToLoginPage(){
+      this.$router.push("/");
+    },
+    goToAddCoursePage(){
+      this.$router.push("/add-course-page");
+    },
     refreshPage() {
       window.location.reload();
     },

@@ -31,22 +31,17 @@
       </li !-->
       </ul>
       <span class="logout">
-        <button class="btn btn-outline-danger my-2 my-sm-0" type="submit">
-          Çıkış Yap
-        </button>
+        <button @click="goToLoginPage" class="btn btn-outline-danger my-2 my-sm-0" type="submit">
+            Çıkış Yap
+          </button>
       </span>
     </div>
   </nav>
   <div class="flex-container">
   <div class="card" style="width: 13rem;margin-left: 10px;">
   <div class="card-body">
-    <h5 class="card-title">menu</h5>
-    <h6 class="card-subtitle mb-2 text-body-secondary">Card subtitle</h6>
-    <p class="card-text">Navigasyon menüsü</p>
+    <h5 class="card-title">Menü</h5>
     <a href="#" class="card-link">Derslerim   </a><br />
-    <a href="#" class="card-link">Öğrenci bilgileri</a><br />
-    <a href="#" class="card-link">Ders bilgileri</a><br />
-    <a href="#" class="card-link">Öğrenme çıktıları</a>
   </div>
 </div>
 
@@ -65,12 +60,11 @@
         <li class="list-group-item">
           <a href="#">Bil429 - Bilgisayar Ağları</a>
         </li>
-        <li class="list-group-item">
+        <li class="list-group-item" @click="goToCoursePage">
           <a href="#">Bil477 - Veri Madenciliği</a>
         </li>
-        <li class="list-group-item"><a href="#">Morbi leo risus</a></li>
-        <li class="list-group-item"><a href="#">Porta ac consectetur ac</a></li>
-        <li class="list-group-item"><a href="#">Vestibulum at eros</a></li>
+        <li class="list-group-item"><a href="#">Bil101 - Bilgisayar Yazılımı</a></li>
+
       </ul>
     </div>
     <ul style="max-width: 73rem" class="list-group list-group-flush"></ul>
@@ -79,7 +73,6 @@
         <option>Ders 1</option>
         <option>Ders 2</option>
         <option>Ders 3</option>
-        <option>DenemeDenemeDeneme</option>
       </select>
       <button
         class="btn btn-outline-primary my-2 my-sm-0"
@@ -98,12 +91,20 @@
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap/dist/js/bootstrap.bundle.min.js";
 import "jquery";
+import { resolveTransitionHooks } from "vue";
 
 export default {
   name: "InstructorHome",
   methods: {
+    goToLoginPage(){
+      this.$router.push("/");
+    },
+    goToCoursePage(){
+      this.$router.push("/course");
+    },
     refreshPage() {
-      window.location.reload();
+      //window.location.reload();
+      this.$router.push("/instructor-home");
     },
   },
 };
