@@ -25,7 +25,7 @@
 
       <div class="card" style="width: 75rem; height: 40rem; overflow-y: auto; overflow-x: hidden">
         <div class="card-body">
-          <h5 class="card-title">Kurs Ekle</h5>
+          <h5 class="card-title">Ders Sayfası</h5>
           <table class="table">
             <thead>
               <tr>

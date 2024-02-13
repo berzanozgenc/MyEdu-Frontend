@@ -42,7 +42,7 @@
       >
         
         <div class="card-body">
-          <h5 class="card-title">Admin Sayfası</h5>
+          <h5 class="card-title">Program Çıktıları Sayfası</h5>
           <table class="table">
             <thead>
               <tr>

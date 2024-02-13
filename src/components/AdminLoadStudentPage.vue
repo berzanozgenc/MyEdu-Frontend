@@ -26,7 +26,7 @@
   
         <div class="card" style="width: 75rem; height: 40rem; overflow-y: auto; overflow-x: hidden">
           <div class="card-body">
-            <h5 class="card-title">Admin Sayfası</h5>
+            <h5 class="card-title">Öğrenci Yükleme Sayfası</h5>
             <table class="table mt-4">
               <thead>
                 <tr>
