@@ -1,46 +1,31 @@
 <template>
   <div>
+    <!-- Navbar -->
     <nav class="navbar navbar-expand-lg navbar-light" style="background-color: #98bdff;">
-      <a
-        @click="refreshPage"
-        style="margin-left: 10px"
-        class="navbar-brand"
-        href="#"
-        >myEdu</a
-      >
-      <a
-        @click="refreshPage"
-        style="margin-left: 10px"
-        class="navbar-brand"
-        href="#"
-        >Kişiselleştirilmiş Akademik Gelişim ve <br />
-        Değerlendirme Sistemi</a
-      >
-
+      <a @click="refreshPage" style="margin-left: 10px" class="navbar-brand" href="#">myEdu</a>
+      <a @click="refreshPage" style="margin-left: 10px" class="navbar-brand" href="#">Kişiselleştirilmiş Akademik Gelişim ve <br /> Değerlendirme Sistemi</a>
       <div class="collapse navbar-collapse" id="navbarSupportedContent">
         <ul class="navbar-nav mr-auto"></ul>
         <span class="logout">
-          <button @click="goToLoginPage" class="btn btn-outline-danger my-2 my-sm-0" type="submit">
-            Çıkış Yap
-          </button>
+          <button @click="goToLoginPage" class="btn btn-outline-danger my-2 my-sm-0" type="submit">Çıkış Yap</button>
         </span>
       </div>
     </nav>
+
+    <!-- Ana İçerik -->
     <div class="flex-container">
+      <!-- Sol Menü -->
       <div class="card" style="width: 13rem; margin-left: 10px;">
         <div class="card-body">
           <h5 class="card-title">Menü</h5>
           <a href="#" class="card-link" @click="goToAddCoursePage">Ders Sayfası</a><br />
           <a href="#" class="card-link">Program Çıktıları Sayfası</a><br />
-          <a href="#" class="card-link" @click="goToLoadStudentPage" >Öğrenci Yükleme Sayfası</a><br />
+          <a href="#" class="card-link" @click="goToLoadStudentPage">Öğrenci Yükleme Sayfası</a><br />
         </div>
       </div>
 
-      <div
-        class="card"
-        style="width: 75rem; height: 40rem; overflow-y: auto; overflow-x: hidden"
-      >
-        
+      <!-- Program Çıktıları -->
+      <div class="card" style="width: 75rem; height: 40rem; overflow-y: auto; overflow-x: hidden">
         <div class="card-body">
           <h5 class="card-title">Program Çıktıları Sayfası</h5>
           <table class="table">
@@ -55,19 +40,13 @@
               <tr v-for="(item, index) in programs" :key="index">
                 <td>
                   <span v-if="editable === index && activeField === 'output'">
-                    <input
-                      v-model="item.output"
-                      @blur="editable = -1; activeField = ''"
-                    />
+                    <input v-model="item.output" @blur="editable = -1; activeField = ''" />
                   </span>
                   <span v-else @click="editCell(index, 'output')">{{ item.output }}</span>
                 </td>
                 <td>
                   <span v-if="editable === index && activeField === 'department'">
-                    <select
-                      v-model="item.department"
-                      @blur="editable = -1; activeField = ''"
-                    >
+                    <select v-model="item.department" @blur="editable = -1; activeField = ''">
                       <option value="Bilgisayar Mühendisliği">Bilgisayar Mühendisliği</option>
                       <option value="Elektrik Elektronik Mühendisliği">Elektrik Elektronik Mühendisliği</option>
                       <option value="Endüstri Mühendisliği">Endüstri Mühendisliği</option>
@@ -78,26 +57,14 @@
                   <span v-else @click="editCell(index, 'department')">{{ item.department }}</span>
                 </td>
                 <td>
-                  <button
-                    class="btn btn-danger btn-sm"
-                    @click="deleteProgram(index)"
-                  >
-                    Sil
-                  </button>
+                  <button class="btn btn-danger btn-sm" @click="deleteProgram(item.id, index)">Sil</button>
                 </td>
               </tr>
             </tbody>
           </table>
+          <!-- Ekle Butonu -->
           <div class="card-body">
-            
-            <button
-              class="btn btn-outline-primary my-2 my-sm-0"
-              style="width: 150px; height: 35px"
-              type="submit"
-              @click="addProgram"
-            >
-              Program Ekle
-            </button>
+            <button class="btn btn-outline-primary my-2 my-sm-0" style="width: 150px; height: 35px" type="submit" @click="addProgram">Program Ekle</button>
           </div>
         </div>
       </div>
@@ -106,43 +73,75 @@
 </template>
 
 <script>
+import axios from 'axios';
+
 export default {
   name: "AdminPage",
   data() {
     return {
-      programs: [
-        { output: "Program Çıktısı 1", department: "Bilgisayar Mühendisliği" },
-
-      ],
-      selectedProgram: { output: "Program Çıktısı 1", department: "Bilgisayar Mühendisliği" },
+      programs: [],
+      newProgramOutput: "",
+      newProgramDepartment: "",
       editable: -1,
       activeField: "",
     };
   },
   methods: {
-    goToLoadStudentPage(){
+    goToLoadStudentPage() {
       this.$router.push("/admin-load-student");
     },
-    goToLoginPage(){
+    goToLoginPage() {
       this.$router.push("/");
     },
-    goToAddCoursePage(){
+    goToAddCoursePage() {
       this.$router.push("/add-course");
     },
     refreshPage() {
-      //window.location.reload();
       this.$router.push("/admin-home");
     },
     editCell(index, key) {
       this.editable = index;
       this.activeField = key;
     },
-    deleteProgram(index) {
-      this.programs.splice(index, 1);
+    deleteProgram(programId, index) {
+      axios.delete(`http://localhost:8080/program-outcomes/${programId}`)
+        .then(response => {
+          console.log('Program silindi:', response.data);
+          this.programs.splice(index, 1);
+        })
+        .catch(error => {
+          console.error('Program silinirken bir hata oluştu:', error);
+        });
     },
     addProgram() {
-      this.programs.push({ output: "Program Çıktısı Yazınız...", department: "Bölümler" });
+      axios.post('http://localhost:8080/program-outcomes', {
+        output: this.newProgramOutput,
+        department: this.newProgramDepartment
+      })
+      .then(response => {
+        console.log('Yeni program eklendi:', response.data);
+        this.programs.push(response.data);
+        // Yeni program ekledikten sonra inputları temizle
+        this.newProgramOutput = "";
+        this.newProgramDepartment = "";
+      })
+      .catch(error => {
+        console.error('Program eklenirken bir hata oluştu:', error);
+      });
     },
+    getPrograms() {
+      axios.get('http://localhost:8080/program-outcomes')
+      .then(response => {
+        console.log('Alınan program çıktıları:', response.data);
+        this.programs = response.data;
+      })
+      .catch(error => {
+        console.error('Programlar alınırken bir hata oluştu:', error);
+      });
+    },
+  },
+  created() {
+    this.getPrograms();
   },
 };
 </script>
@@ -174,6 +173,7 @@ export default {
   font-size: 17px;
   font-weight: bold;
 }
+
 .table th,
 .table td {
   border: 1px solid #dee2e6;
