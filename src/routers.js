@@ -21,7 +21,7 @@ const routes = [{
     {
         name: "InstructorHome",
         component: InstructorHome,
-        path: "/instructor-home"
+        path: "/instructor-home",
     },
     {
         name: "InstructorLearningOutcome",

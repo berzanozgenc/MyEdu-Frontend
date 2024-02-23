@@ -14,12 +14,13 @@ import axios from 'axios';
 export default {
     name: "Login",
     data() {
-        return {
-            email: "",
-            password: "",
-            error: null
-        }
-    },
+    return {
+        email: "",
+        password: "",
+        error: null,
+        token: ""
+    }
+},
     methods: {
         async loginUser() {
             try {
@@ -30,6 +31,7 @@ export default {
                 
                 // İstek başarılı olduğunda yapılacak işlemler
                 console.log(response.data); // Örnek: response.data.token gibi bir dönüş olabilir
+                this.token = response.data.token;
                 
                 // Bu kısmı düzenleyin
                 this.goToInstructorHomePage();

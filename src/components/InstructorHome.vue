@@ -43,20 +43,21 @@
 
     <!-- New card added here, moved outside flex-container div -->
     <div class="card" style="margin-top: 20px;">
-      <div class="card-body">
-        <h5 class="card-title">Edit Classes</h5>
-        <div class="form-inline">
-          <div class="form-group mr-2">
-            <label for="classDropdown">Select Class:</label>
-            <select class="form-control" id="classDropdown" v-model="selectedClass">
-              <option v-for="(course, index) in courses.coursesNameAndCode" :key="index">{{ course }}</option>
-            </select>
-
-          </div>
-          <button class="btn btn-primary" @click="editClass">Ekle</button>
-        </div>
+  <div class="card-body">
+    <h5 class="card-title">Edit Classes</h5>
+    <div class="form-inline">
+      <div class="form-group mr-2">
+        <label for="classDropdown">Select Class:</label>
+        <select class="form-control" id="classDropdown" v-model="selectedClass">
+  <option v-for="(course, index) in courses" :key="index" :value="course.code">
+    {{ course.code }} - {{ course.courseName }} - {{ course.semester }}
+  </option>
+</select>
       </div>
+      <button class="btn btn-primary" @click="editClass">Ekle</button>
     </div>
+  </div>
+</div>
   </div>
 </template>
 
@@ -72,52 +73,30 @@ export default {
     };
   },
   mounted() {
-    console.log("mounted() method called.");
     this.fetchCourses();
   },
   methods: {
     fetchCourses() {
-      axios.get("http://localhost:8080/course/get-all-courses-name-and-code")
-        .then((response) => {
-          this.courses = response.data;
-          console.log("Courses data fetched:", this.courses);
-        })
-        .catch((error) => {
-          console.error("Failed to fetch course data:", error);
-        });
-    },
-    goToLoginPage() {
-      this.$router.push("/");
-    },
-    goToCoursePage(course) {
-      this.$router.push({ name: "CoursePage", params: { courseId: course.id } });
-    },
-    refreshPage() {
-      window.location.reload();
-      this.$router.push("/instructor-home");
-    },
-    editClass() {
-      if (this.selectedClass) {
-        console.log("Editing class:", this.selectedClass);
-      } else {
-        console.log("Please select a class to edit.");
-        // Handle case where no class is selected
-      }
-    },
-    deleteClass(classId) {
-      axios.delete(`http://localhost:8080/course/1`)
+      axios.get("http://localhost:8080/course/get-courses")
         .then(response => {
-          console.log("Class deleted:", classId);
-          // Update courses list after deletion
-          this.fetchCourses();
+          // Backend'den gelen veriyi uygun formata dönüştür
+          this.courses = response.data.map(course => ({
+            courseId: course.courseId,
+            courseName: course.courseName,
+            code: course.code,
+            semester: course.semester
+          }));
         })
         .catch(error => {
-          console.error("Error deleting class:", error);
+          console.error("Error fetching courses:", error);
         });
     },
-  },
-};
+    editClass() {
+  }
+  }
+}
 </script>
+
 
 <style>
 .container {
