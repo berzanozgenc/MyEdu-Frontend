@@ -22,7 +22,7 @@
       <div class="card" style="width: 75rem; height: 40rem; overflow-y: auto; overflow-x: hidden">
         <div class="container">
           <img class="icon" src="../assets/Profile_Icon.png" />
-          <h2 style="margin-top: 12px; margin-left: 5px">Mustafa Sert</h2>
+          <h2 style="margin-top: 12px; margin-left: 5px">{{ username }}</h2>
         </div>
         <div class="card-body">
           <h5 class="card-title">Derslerim</h5>
@@ -44,10 +44,10 @@
     <!-- New card added here, moved outside flex-container div -->
     <div class="card" style="margin-top: 20px;">
   <div class="card-body">
-    <h5 class="card-title">Edit Classes</h5>
+    <h5 class="card-title">Ders</h5>
     <div class="form-inline">
       <div class="form-group mr-2">
-        <label for="classDropdown">Select Class:</label>
+        <label for="classDropdown">Ders Seç:</label>
         <select class="form-control" id="classDropdown" v-model="selectedClass">
   <option v-for="(course, index) in courses" :key="index" :value="course.code">
     {{ course.code }} - {{ course.courseName }} - {{ course.semester }}
@@ -63,9 +63,17 @@
 
 <script>
 import axios from "axios";
+import { mapGetters } from 'vuex';
 
 export default {
   name: "InstructorHome",
+  computed: {
+    ...mapGetters(['getUser']),
+    username() {
+      const user = this.getUser;
+      return user ? `${user.firstName} ${user.lastName}` : '';
+    }
+  },
   data() {
     return {
       courses: [],

@@ -14,13 +14,13 @@ import axios from 'axios';
 export default {
     name: "Login",
     data() {
-    return {
-        email: "",
-        password: "",
-        error: null,
-        token: ""
-    }
-},
+        return {
+            email: "",
+            password: "",
+            error: null,
+            token: ""
+        }
+    },
     methods: {
         async loginUser() {
             try {
@@ -28,10 +28,11 @@ export default {
                     email: this.email,
                     password: this.password
                 });
+
+                 
+                this.$store.dispatch('loginUser', { user: response.data.user, token: response.data.token });
                 
-                // İstek başarılı olduğunda yapılacak işlemler
-                console.log(response.data); // Örnek: response.data.token gibi bir dönüş olabilir
-                this.token = response.data.token;
+                console.log(response.data); // Yanıtın içeriğini konsola yazdır
                 
                 // Bu kısmı düzenleyin
                 this.goToInstructorHomePage();
@@ -47,6 +48,7 @@ export default {
     },
 };
 </script>
+
 
 
 
