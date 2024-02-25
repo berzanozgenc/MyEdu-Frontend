@@ -1,6 +1,5 @@
 import { createStore } from "vuex";
 
-
 const store = createStore({
     state: {
         user: null,
@@ -21,6 +20,9 @@ const store = createStore({
         }
       },
       getters: {
+        getUserId(state) {
+          return state.user ? state.user.userId : null; 
+        },
         getUser(state) {
           return state.user;
         },
