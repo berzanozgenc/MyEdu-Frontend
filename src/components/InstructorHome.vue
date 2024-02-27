@@ -52,23 +52,23 @@
         </div>
 
         <div class="card-body">
-          <h5 class="card-title">Derslerim</h5>
-          <ul style="max-width: 73rem" class="list-group">
-            <li
-              class="list-group-item"
-              v-for="(course, index) in userCourses"
-              :key="index"
-            >
-              <a :href="'#'" @click="goToCoursePage(course)">
-                {{ course.code }} - {{ course.courseName }} -
-                {{ course.semester }}
-              </a>
-              <button class="btn btn-danger btn-sm ml-2" @click="deleteCourse">
-                Sil
-              </button>
-            </li>
-          </ul>
-        </div>
+  <h5 class="card-title">Derslerim</h5>
+  <ul style="max-width: 73rem" class="list-group">
+    <li
+      class="list-group-item"
+      v-for="(registration, index) in userCourses"
+      :key="index"
+    >
+      <a :href="'#'" @click="goToCoursePage(registration.course)">
+        {{ registration.course.code }} - {{ registration.course.courseName }} -
+        {{ registration.course.semester }}
+      </a>
+      <button class="btn btn-danger btn-sm ml-2" @click="deleteCourse(registration.registrationId)">
+        Sil
+      </button>
+    </li>
+  </ul>
+</div>
 
         <ul style="max-width: 73rem" class="list-group list-group-flush"></ul>
       </div>
@@ -189,9 +189,18 @@ export default {
           // Hata durumunda yapılacak işlemler
         });
     },
-    deleteCourse() {
-      // SİLME EKLENCEKS
-    },
+    deleteCourse(registrationId) {
+    axios
+      .delete(`http://localhost:8080/user-course-registrations/${registrationId}`)
+      .then((response) => {
+        console.log(response.data);
+        // Silme işlemi başarılıysa kullanıcıya ait derslerin listesini yeniden getir
+        this.fetchUserCourses();
+      })
+      .catch((error) => {
+        console.error("Hata:", error);
+      });
+  },
   },
 };
 </script>

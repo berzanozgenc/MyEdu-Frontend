@@ -1,5 +1,7 @@
 import { createStore } from "vuex";
 
+const savedState = localStorage.getItem('store');
+
 const store = createStore({
     state: {
         user: null,
@@ -11,6 +13,9 @@ const store = createStore({
         },
         setToken(state, token) {
           state.token = token;
+        },
+        restoreState(state, savedState) {
+          Object.assign(state, savedState);
         }
       },
       actions: {
@@ -30,6 +35,14 @@ const store = createStore({
           return state.token;
         }
       }
-})
+});
 
-export default store
+if (savedState) {
+  store.commit('restoreState', JSON.parse(savedState));
+}
+
+store.subscribe((mutation, state) => {
+  localStorage.setItem('store', JSON.stringify(state));
+});
+
+export default store;
