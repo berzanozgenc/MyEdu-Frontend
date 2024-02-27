@@ -152,11 +152,12 @@ export default {
     this.fetchUserCourses();
   },
   methods: {
-    goToCoursePage(registration) {
-      console.log(registration.courseId);
-      const courseId = registration.courseId;
-      this.$router.push({ name: 'Course', params: { courseId: courseId } });
-},
+   goToCoursePage(registration) {
+    const courseId = registration.courseId;
+    this.$router.push({ name: 'Course', params: { courseId: courseId } });
+    console.log(registration);
+    this.selectedCourse = registration; // Seçilen dersin bilgilerini selectedCourse değişkenine atar
+  },
 
     fetchUserCourses() {
       // Vuex'tan kullanıcı ID'sini alın

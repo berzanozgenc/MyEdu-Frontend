@@ -40,7 +40,7 @@
   <div class="card" style="width: 75rem; height: 40rem; overflow-y: auto; overflow-x: hidden">
     <div style="display: flex; margin-left: 14px;">
       <img class="icon" src="../assets/Books_Icon.png" />
-      <h2 style="margin-top: 12px; margin-left: 6px;">BIL477</h2>
+      <h2 style="margin-top: 12px; margin-left: 6px;">{{ course.code }} - {{ course.courseName }} - {{ course.semester }}</h2>
     </div>
       <div class="buttons-container">
         <button style="margin-left: 16px;" class="btn btn-outline-primary" @click="goToInstructorLearningOutcome">Öğrenim Çıktıları</button>
@@ -102,12 +102,14 @@
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap/dist/js/bootstrap.bundle.min.js";
 import "jquery";
+import axios from "axios";
 
 export default {
-  props: ['courseId'],
+   props: ['courseId'],
   name: "Course",
   data() {
     return {
+      course: {},
       odevInput: "",
       labInput: "",
       katilimInput: "",
@@ -116,7 +118,21 @@ export default {
       selectedItem: null,
     };
   },
+  created() {
+    // Parametreler arasında courseId bekleniyor varsayalım
+    const courseId = this.$route.params.courseId;
+    this.fetchCourse(courseId); // Dersin detaylarını backend'den almak için metod çağrılıyor
+  },
   methods: {
+    fetchCourse(courseId) {
+      axios.get(`http://localhost:8080/course/${courseId}`)
+        .then(response => {
+          this.course = response.data; // Backend'den gelen dersin detayları course değişkenine atanıyor
+        })
+        .catch(error => {
+          console.error('Error fetching course:', error);
+        });
+    },
     goToLoginPage(){
       this.$router.push("/");
     },
