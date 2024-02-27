@@ -52,27 +52,49 @@
         </div>
 
         <div class="card-body">
-  <h5 class="card-title">Derslerim</h5>
-  <ul style="max-width: 73rem" class="list-group">
-    <li
-      class="list-group-item"
-      v-for="(registration, index) in userCourses"
-      :key="index"
-    >
-      <a :href="'#'" @click="goToCoursePage(registration.course)">
-        {{ registration.course.code }} - {{ registration.course.courseName }} -
-        {{ registration.course.semester }}
-      </a>
-      <button class="btn btn-danger btn-sm ml-2" @click="deleteCourse(registration.registrationId)">
-        Sil
-      </button>
-    </li>
-  </ul>
-</div>
+          <h5 class="card-title">Derslerim</h5>
+          <ul style="max-width: 73rem" class="list-group">
+            <li
+              class="list-group-item"
+              v-for="(registration, index) in userCourses"
+              :key="index"
+            >
+              <a :href="'#'" @click="goToCoursePage(registration.course)">
+                {{ registration.course.code }} - {{ registration.course.courseName }} -
+                {{ registration.course.semester }}
+              </a>
+              <button class="btn btn-danger btn-sm ml-2" @click="openConfirmationModal(registration.registrationId)">
+                Sil
+              </button>
+            </li>
+          </ul>
+        </div>
 
         <ul style="max-width: 73rem" class="list-group list-group-flush"></ul>
       </div>
     </div>
+
+    <!-- Confirmation Modal -->
+    <div v-if="showModal" class="modal" tabindex="-1" role="dialog" style="display: block;">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Dersi Sil</h5>
+            
+             
+            
+          </div>
+          <div class="modal-body">
+            <p>Bu dersi silmek istediğinizden emin misiniz?</p>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" @click="closeModal">İptal</button>
+            <button type="button" class="btn btn-danger" @click="confirmDelete">Sil</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- End Confirmation Modal -->
 
     <!-- New card added here, moved outside flex-container div -->
     <div class="card" style="margin-top: 20px">
@@ -121,6 +143,8 @@ export default {
       userCourses: [], // Kullanıcıya ait derslerin listesi
       courses: [],
       selectedClass: null,
+      showModal: false,
+      registrationIdToDelete: null
     };
   },
   mounted() {
@@ -189,25 +213,43 @@ export default {
         .then((response) => {
           console.log(response.data);
           // Başarılı cevap durumunda yapılacak işlemler
+          
+          this.$toast.success("Ders başarıyla eklendi");
+          
+          this.fetchUserCourses();
         })
         .catch((error) => {
           console.error("Hata:", error);
           // Hata durumunda yapılacak işlemler
+          this.$toast.error("Ders eklenemedi!");
         });
     },
-    deleteCourse(registrationId) {
-    axios
-      .delete(`http://localhost:8080/user-course-registrations/${registrationId}`)
-      .then((response) => {
-        console.log(response.data);
-        // Silme işlemi başarılıysa kullanıcıya ait derslerin listesini yeniden getir
-        this.fetchUserCourses();
-      })
-      .catch((error) => {
-        console.error("Hata:", error);
-      });
-  },
-  },
+    openConfirmationModal(registrationId) {
+      // Silme işlemi için modal pencereyi aç
+      this.registrationIdToDelete = registrationId;
+      this.showModal = true;
+    },
+    closeModal() {
+      // Modal pencereyi kapat
+      this.showModal = false;
+    },
+    confirmDelete() {
+      // Silme işlemini onayla ve işlemi gerçekleştir
+      axios
+        .delete(`http://localhost:8080/user-course-registrations/${this.registrationIdToDelete}`)
+        .then((response) => {
+          console.log(response.data);
+          // Silme işlemi başarılıysa kullanıcıya ait derslerin listesini yeniden getir
+          this.fetchUserCourses();
+          // Modal pencereyi kapat
+          this.showModal = false;
+          this.$toast.success("Ders başarıyla silindi!");
+        })
+        .catch((error) => {
+          console.error("Hata:", error);
+        });
+    }
+  }
 };
 </script>
 
@@ -237,5 +279,27 @@ export default {
   font-family: "Calibri", sans-serif;
   font-size: 17px;
   font-weight: bold;
+}
+
+.modal {
+  background: rgba(0, 0, 0, 0.5); /* Background rengi ve saydamlık */
+  position: fixed; /* Sayfanın üzerinde sabit kalacak */
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex; /* İçerik merkezi konumlandırma için */
+  align-items: center;
+  justify-content: center;
+}
+
+.modal-dialog {
+  background: white;
+  padding: 20px;
+  border-radius: 5px;
+}
+
+.modal-title {
+  margin-bottom: 0;
 }
 </style>
