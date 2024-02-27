@@ -36,7 +36,7 @@ const routes = [{
     {
         name: "Course",
         component: Course,
-        path: "/course"
+        path: "/course/:courseId"  // courseId parametresi için dinamik yol tanımı
     },
     {
         name: "LearningOutcome",

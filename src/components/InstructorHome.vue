@@ -128,6 +128,12 @@ export default {
     this.fetchUserCourses();
   },
   methods: {
+    goToCoursePage(registration) {
+      console.log(registration.courseId);
+      const courseId = registration.courseId;
+      this.$router.push({ name: 'Course', params: { courseId: courseId } });
+},
+
     fetchUserCourses() {
       // Vuex'tan kullanıcı ID'sini alın
       const userId = this.getUser ? this.getUser.userId : null;

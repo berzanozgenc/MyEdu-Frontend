@@ -104,6 +104,7 @@ import "bootstrap/dist/js/bootstrap.bundle.min.js";
 import "jquery";
 
 export default {
+  props: ['courseId'],
   name: "Course",
   data() {
     return {
