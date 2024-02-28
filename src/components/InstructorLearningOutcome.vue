@@ -27,15 +27,15 @@
       </div>
     </nav>
     <div class="flex-container">
-  <div class="card" style="width: 13rem;margin-left: 10px;">
-  <div class="card-body">
-    <h5 class="card-title">Menü</h5>
-    <a href="#" class="card-link" @click="goToCoursePage">Derslerim   </a><br />
-    <a href="#" class="card-link" @click="goToStudentInfoPage">Not Girişi</a><br />    
-    <a href="#" class="card-link" >Öğrenim Çıktıları</a><br />
-    <a href="#" class="card-link" @click="goToMatchMatrixPage">ÖÇ ve PÇ Eşleştirme</a>
-  </div>
-</div>
+      <div class="card" style="width: 13rem;margin-left: 10px;">
+        <div class="card-body">
+          <h5 class="card-title">Menü</h5>
+          <a href="#" class="card-link" @click="goToCoursePage">Derslerim   </a><br />
+          <a href="#" class="card-link" @click="goToStudentInfoPage">Not Girişi</a><br />    
+          <a href="#" class="card-link" >Öğrenim Çıktıları</a><br />
+          <a href="#" class="card-link" @click="goToMatchMatrixPage">ÖÇ ve PÇ Eşleştirme</a>
+        </div>
+      </div>
       <div
         class="card"
         style="width: 75rem; height: 40rem; overflow-y: auto; overflow-x: hidden"
@@ -46,31 +46,15 @@
           <table class="table">
             <thead>
               <tr>
-                <th scope="col">Öğrenim Çıktısı</th>
+                <th scope="col" style="width: 200px;">Öğrenim Çıktısı</th>
                 <th scope="col">Açıklama</th>
                 <th scope="col">İşlemler</th>
               </tr>
             </thead>
             <tbody>
               <tr v-for="(item, index) in programs" :key="index">
-                <td>
-                  <span v-if="editable === index && activeField === 'output'">
-                    <input
-                      v-model="item.output"
-                      @blur="editable = -1; activeField = ''"
-                    />
-                  </span>
-                  <span v-else @click="editCell(index, 'output')">{{ item.output }}</span>
-                </td>
-                <td>
-                  <span v-if="editable === index && activeField === 'description'">
-                    <input
-                      v-model="item.description"
-                      @blur="editable = -1; activeField = ''"
-                    />
-                  </span>
-                  <span v-else @click="editCell(index, 'description')">{{ item.description }}</span>
-                </td>
+                <td>Öğrenim Çıktısı {{ index + 1 }}</td>
+                <td>{{ item.description }}</td>
                 <td>
                   <button
                     class="btn btn-danger btn-sm"
@@ -83,6 +67,12 @@
             </tbody>
           </table>
           <div class="card-body">
+            <h5 class="card-title">ÖÇ Ekle</h5>
+            
+            <div class="form-group">
+              <label for="description">Açıklama:</label>
+              <input type="text" class="form-control" id="description" v-model="newProgram.description" style="width: 250px;">
+            </div>
             <button
               class="btn btn-outline-primary my-2 my-sm-0"
               style="width: 150px; height: 35px"
@@ -107,8 +97,10 @@ export default {
         { output: "Öğrenim Çıktısı 1", description: "Açıklama 1", department: "Bilgisayar Mühendisliği" },
       ],
       selectedProgram: { output: "Öğrenim Çıktısı 1", description: "Açıklama 1", department: "Bilgisayar Mühendisliği" },
-      editable: -1,
-      activeField: "",
+      newProgram: {
+        output: '',
+        description: ''
+      }
     };
   },
   methods: {
@@ -125,18 +117,15 @@ export default {
       this.$router.push("/instructor-home");
     },
     refreshPage() {
-      //window.location.reload();
       this.$router.push("/instructor-home");
-    },
-    editCell(index, key) {
-      this.editable = index;
-      this.activeField = key;
     },
     deleteProgram(index) {
       this.programs.splice(index, 1);
     },
     addProgram() {
-      this.programs.push({ output: "Öğrenim Çıktısı Yazınız...", description: "Açıklama Yazınız...", department: "Bölümler" });
+      this.programs.push({ output: this.newProgram.output, description: this.newProgram.description });
+      this.newProgram.output = '';
+      this.newProgram.description = '';
     },
   },
 };
@@ -206,7 +195,10 @@ export default {
   border-color: #dc3545;
   color: #dc3545;
 }
-
+.card-body table {
+  width: 100%;
+  overflow-x: auto;
+}
 .btn-outline-danger:hover {
   background-color: #dc3545;
   color: #fff;
