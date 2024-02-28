@@ -48,52 +48,31 @@
       </div>
     
 
-    <div class="card-body">
+      <div class="card-body">
+  <h5 class="card-title">Ders Araçları</h5>
+  <ul style="max-width: 73rem" class="list-group">
+    <li class="list-group-item" v-for="assessment in generalAssessments" :key="assessment.generalAssesmentId">
+      <a href="#">{{ assessment.name }}</a>
+      <input type="text" v-model="assessment.totalContribution" :placeholder="'%' + assessment.name" />
+    </li>
+    <li>
+      <button style="margin-left: 2px; margin-top: 5px;" class="btn btn-outline-success" @click="saveChanges">Değişiklikleri Kaydet</button>
+    </li>
+  </ul>
+</div>
 
-      <h5 class="card-title">Ders Araçları</h5>
-
-      <ul style="max-width: 73rem" class="list-group">
-        <li class="list-group-item">
-          <a href="#">Ödev</a>
-          <input type="text" v-model="odevInput" placeholder="%Ödev" />
-        </li>
-        <li class="list-group-item">
-          <a href="#">Lab</a>
-          <input type="text" v-model="labInput" placeholder="%Lab" />
-
-        </li>
-        <li class="list-group-item" @click="goToLearningOutcomePage">
-          <a href="#">Quiz</a>
-          <input type="text" v-model="katilimInput" placeholder="%Quiz" />
-
-        </li>
-        <li class="list-group-item">
-          <a href="#">Ara Sınav</a>
-          <input type="text" v-model="araSınavInput" placeholder="%Ara Sınav" />
-
-        </li>
-        <li class="list-group-item">
-          <a href="#">Final</a>
-          <input type="text" v-model="finalInput" placeholder="%Final" />
-        </li>
-        <li>
-          <button style="margin-left: 2px; margin-top: 5px;" class="btn btn-outline-success">Değişiklikleri Kaydet
-          </button>
-        </li>
-      </ul>
-    </div>
     <ul style="max-width: 73rem" class="list-group list-group-flush"></ul>
     <div class="card-body">
-      <div>
-        <input type="text" placeholder="Araç türünü yazınız..">
-        <input style="margin-left: 4px;" type="text" placeholder="%Araç katkısını yazınız..">
-      </div>
-      <h1></h1>
-      <button class="btn btn-outline-primary my-2 my-sm-0" style="width: auto; height: auto; margin-bottom: 20px;"
-        type="submit">
-        Araç Türü Ekle
-      </button>
+    <div>
+      <input v-model="assessmentName" type="text" placeholder="Araç türünü yazınız..">
+      <input v-model="assessmentContribution" style="margin-left: 4px;" type="text" placeholder="%Araç katkısını yazınız..">
     </div>
+    <h1></h1>
+    <button @click="addGeneralAssessment" class="btn btn-outline-primary my-2 my-sm-0" style="width: auto; height: auto; margin-bottom: 20px;"
+      type="submit">
+      Araç Türü Ekle
+    </button>
+  </div>
   </div>
 </div>
 </template>
@@ -109,6 +88,8 @@ export default {
   name: "Course",
   data() {
     return {
+      courseId: null,
+      generalAssessments: [],
       course: {},
       odevInput: "",
       labInput: "",
@@ -122,8 +103,23 @@ export default {
     // Parametreler arasında courseId bekleniyor varsayalım
     const courseId = this.$route.params.courseId;
     this.fetchCourse(courseId); // Dersin detaylarını backend'den almak için metod çağrılıyor
+    this.fetchGeneralAssessments(courseId); // Dersin genel değerlendirmelerini getir
   },
   methods: {
+    async fetchGeneralAssessments(courseId) {
+      try {
+        const response = await fetch(`http://localhost:8080/generalAssesment/course/${courseId}/general-assessments`);
+        if (!response.ok) {
+          throw new Error('Failed to fetch general assessments');
+        }
+        this.generalAssessments = await response.json();
+      } catch (error) {
+        console.error(error);
+      }
+    },
+    async saveChanges() {
+      // Değişiklikleri kaydetmek için gerekli kod buraya gelecek
+    },
     fetchCourse(courseId) {
       axios.get(`http://localhost:8080/course/${courseId}`)
         .then(response => {
@@ -133,6 +129,28 @@ export default {
           console.error('Error fetching course:', error);
         });
     },
+    addGeneralAssessment() {
+    const courseId = this.$route.params.courseId;
+    const name = this.assessmentName; // Formdaki "Araç türü" girdisi
+    const totalContribution = this.assessmentContribution; // Formdaki "%Araç katkısı" girdisi
+
+    const requestData = {
+      courseId: courseId,
+      name: name,
+      totalContribution: totalContribution
+    };
+
+    axios.post('http://localhost:8080/generalAssesment/create-generalAssesment', requestData)
+      .then(response => {
+        console.log('GeneralAssessment başarıyla eklendi:', response.data);
+        // Ekleme başarılıysa gerekli işlemleri yapabilirsiniz
+        // Örneğin, eklenen GeneralAssessment'i listede göstermek gibi
+      })
+      .catch(error => {
+        console.error('GeneralAssessment eklenirken bir hata oluştu:', error);
+        // Hata durumunda gerekli işlemleri yapabilirsiniz
+      });
+  },
     goToLoginPage(){
       this.$router.push("/");
     },
