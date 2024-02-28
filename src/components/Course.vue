@@ -117,9 +117,6 @@ export default {
         console.error(error);
       }
     },
-    async saveChanges() {
-      // Değişiklikleri kaydetmek için gerekli kod buraya gelecek
-    },
     fetchCourse(courseId) {
       axios.get(`http://localhost:8080/course/${courseId}`)
         .then(response => {
@@ -129,6 +126,41 @@ export default {
           console.error('Error fetching course:', error);
         });
     },
+    saveChanges() {
+  try {
+    const courseId = this.$route.params.courseId;
+
+    this.generalAssessments.forEach(assessment => {
+      const requestData = {
+        generalAssesmentId: assessment.generalAssesmentId,
+        newAssesmentContribution: assessment.totalContribution
+      };
+
+      console.log("newAssesmentContribution:", requestData.newAssesmentContribution);
+      console.log("generalAssesmentId:", requestData.generalAssesmentId);
+
+      // Değişiklikleri backend'e gönderme
+      axios.put(`http://localhost:8080/updateTotalContributionForCourse/${courseId}`, requestData)
+        .then(response => {
+          if (response.status === 200) {
+            console.log("Değişiklikler başarıyla kaydedildi.");
+            // İsteğin başarılı olduğunu kullanıcıya bildirme veya gerekirse başka bir işlem yapma
+          } else {
+            console.error("Değişiklikler kaydedilemedi.");
+            // Hata durumunda kullanıcıya bildirme veya gerekirse başka bir işlem yapma
+          }
+        })
+        .catch(error => {
+          console.error("Değişiklikler kaydedilirken bir hata oluştu:", error);
+          // Hata durumunda kullanıcıya bildirme veya gerekirse başka bir işlem yapma
+        });
+    });
+  } catch (error) {
+    console.error("Değişiklikler kaydedilirken bir hata oluştu:", error);
+    // Hata durumunda kullanıcıya bildirme veya gerekirse başka bir işlem yapma
+  }
+},
+
     addGeneralAssessment() {
     const courseId = this.$route.params.courseId;
     const name = this.assessmentName; // Formdaki "Araç türü" girdisi
