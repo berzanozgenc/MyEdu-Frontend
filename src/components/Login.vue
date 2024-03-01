@@ -3,7 +3,15 @@
     <h1 class="title">myEdu</h1>
     <div class="login">
         <input type="email" placeholder="Email" v-model="email" />
-        <input type="password" placeholder="Şifre" v-model="password" />
+        <div class="password-container">
+    <div class="password-input-wrapper">
+        <input :type="showPassword ? 'text' : 'password'" placeholder="Şifre" v-model="password" />
+        <label class="show-password-label">
+            <i class="fa" :class="showPassword ? 'fa-eye-slash' : 'fa-eye'" @click="togglePasswordVisibility"></i>
+        </label>
+    </div>
+</div>
+
         <button @click="loginUser" type="button" class="btn btn-danger">Giriş Yap</button>
     </div>
 </template>
@@ -18,7 +26,8 @@ export default {
             email: "",
             password: "",
             error: null,
-            token: ""
+            token: "",
+            showPassword: false
         }
     },
     methods: {
@@ -29,7 +38,6 @@ export default {
                     password: this.password
                 });
 
-                 
                 this.$store.dispatch('loginUser', { user: response.data.user, token: response.data.token });
                 
                 console.log(response.data); // Yanıtın içeriğini konsola yazdır
@@ -42,16 +50,15 @@ export default {
                 this.$toast.error("Hatalı giriş. Lütfen tekrar deneyin.");
             }
         },
+        togglePasswordVisibility() {
+            this.showPassword = !this.showPassword; // Değişkeni tersine çevirerek şifrenin görünürlüğünü değiştirin
+        },
         goToInstructorHomePage() {
             this.$router.push("/instructor-home");
         }
     },
 };
 </script>
-
-
-
-
 
 <style>
 .logo {
@@ -91,4 +98,31 @@ export default {
     width: 120px;
     font-family: Arial;
 }
+
+.password-container {
+    position: relative;
+    width: 300px; /* veya istediğiniz bir genişlik */
+    margin: 0 auto; /* Ortalamak için */
+}
+
+.password-input-wrapper {
+    position: relative;
+}
+
+.password-input-wrapper input {
+    width: calc(100% - 40px); /* Göster/gizle simgesi için alan bırak */
+    height: 40px;
+    padding-left: 20px;
+    border: 1px solid red;
+    border-radius: 10px;
+}
+
+.show-password-label {
+    position: absolute;
+    right: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+}
+
 </style>

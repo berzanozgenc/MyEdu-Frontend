@@ -28,7 +28,8 @@
       </div>
 
       <!-- Course Details and Assessments -->
-      <div class="card course-details" style="width: calc(100% - 14rem); height: 40rem; overflow-y: auto; overflow-x: hidden;">
+      
+      <div class="card course-details" style="width: calc(100% - 14rem); height: 40rem; overflow-y: auto; overflow-x: hidden; margin-left: 60px;">
         <div style="display: flex; margin-left: 14px;">
           <img class="icon" src="../assets/Books_Icon.png" />
           <h2 style="margin-top: 12px; margin-left: 6px;">{{ course.code }} - {{ course.courseName }} - {{ course.semester }}</h2>
@@ -40,6 +41,16 @@
         
         <div class="card-body">
           <h5 class="card-title">Ders Araçları</h5>
+          <div class="form-group">
+    <label for="sortingOption">Sırala:</label>
+    <select class="form-control-sm" v-model="selectedSortingOption" @change="sortAssessments">
+      <option value="nameAsc">İsme Göre Artan</option>
+      <option value="nameDesc">İsme Göre Azalan</option>
+      <option value="contributionAsc">Katkıya Göre Artan</option>
+      <option value="contributionDesc">Katkıya Göre Azalan</option>
+    </select>
+  </div>
+  
           <table class="table">
             <thead>
               <tr>
@@ -102,7 +113,8 @@ export default {
       generalAssessments: [],
       course: {},
       assessmentName: "",
-      assessmentContribution: ""
+      assessmentContribution: "",
+      selectedSortingOption: ' ' // Varsayılan sıralama seçeneği
     };
   },
   created() {
@@ -111,6 +123,18 @@ export default {
     this.fetchGeneralAssessments(courseId);
   },
   methods: {
+    sortAssessments() {
+    const option = this.selectedSortingOption;
+    if (option === 'nameAsc') {
+      this.generalAssessments.sort((a, b) => a.name.localeCompare(b.name));
+    } else if (option === 'nameDesc') {
+      this.generalAssessments.sort((a, b) => b.name.localeCompare(a.name));
+    } else if (option === 'contributionAsc') {
+      this.generalAssessments.sort((a, b) => a.totalContribution - b.totalContribution);
+    } else if (option === 'contributionDesc') {
+      this.generalAssessments.sort((a, b) => b.totalContribution - a.totalContribution);
+    }
+  },
     async fetchGeneralAssessments(courseId) {
       try {
         const response = await fetch(`http://localhost:8080/generalAssesment/course/${courseId}/general-assessments`);
@@ -118,6 +142,7 @@ export default {
           throw new Error('Failed to fetch general assessments');
         }
         this.generalAssessments = await response.json();
+        this.sortAssessments();
       } catch (error) {
         console.error(error);
       }
@@ -149,9 +174,9 @@ export default {
             if (response.status === 200) {
               console.log("Değişiklikler başarıyla kaydedildi.");
               // İsteğin başarılı olduğunu kullanıcıya bildirme veya gerekirse başka bir işlem yapma
-              
+              this.fetchGeneralAssessments(courseId);
               // Değişikliklerin başarıyla kaydedildikten sonra sayfanın yenilenmesi
-              window.location.reload();
+              
             } else {
               console.error("Değişiklikler kaydedilemedi.");
               // Hata durumunda kullanıcıya bildirme veya gerekirse başka bir işlem yapma
@@ -198,10 +223,11 @@ export default {
       try {
         axios.delete(`http://localhost:8080/generalAssesment/delete-generalAssesment/${generalAssesmentId}`)
           .then(response => {
+            
             console.log("Araç başarıyla silindi.");
             // Silme işlemi başarılı olduğunda sayfanın yenilenmesi
-            this.fetchGeneralAssessments(this.courseId);
-            window.location.reload();
+            this.generalAssessments.splice(index, 1);
+            
           })
           .catch(error => {
             console.error("Araç silinirken bir hata oluştu:", error);
