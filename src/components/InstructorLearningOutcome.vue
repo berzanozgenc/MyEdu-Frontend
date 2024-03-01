@@ -36,19 +36,15 @@
           <a href="#" class="card-link" @click="goToMatchMatrixPage">ÖÇ ve PÇ Eşleştirme</a>
         </div>
       </div>
-      <div
-        class="card"
-        style="width: 75rem; height: 40rem; overflow-y: auto; overflow-x: hidden"
-      >
-        
-        <div class="card-body">
+      <div class="card" style="width: 75rem;">
+        <div class="card-body" style="overflow-x: auto;">
           <h5 class="card-title">Dersin Öğrenim Çıktıları</h5>
           <table class="table">
             <thead>
               <tr>
-                <th scope="col" style="width: 200px;">Öğrenim Çıktısı</th>
-                <th scope="col">Açıklama</th>
-                <th scope="col">İşlemler</th>
+                <th scope="col" style="width: 150px;">Öğrenim Çıktısı</th>
+                <th scope="col" style="width: 400px;">Açıklama</th>
+                <th scope="col" style="width: 150px;">İşlemler</th>
               </tr>
             </thead>
             <tbody>
@@ -56,12 +52,8 @@
                 <td>Öğrenim Çıktısı {{ index + 1 }}</td>
                 <td>{{ item.description }}</td>
                 <td>
-                  <button
-                    class="btn btn-danger btn-sm"
-                    @click="deleteProgram(index)"
-                  >
-                    Sil
-                  </button>
+                  <button class="btn btn-danger btn-sm" @click="deleteProgram(index)">Sil</button>
+                  <button class="btn btn-warning btn-sm text-white" @click="editProgram(index)">Düzenle</button>
                 </td>
               </tr>
             </tbody>
@@ -210,6 +202,7 @@ select {
   border-radius: 0.25rem;
   transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
 }
+
 
 input.editable,
 select.editable {

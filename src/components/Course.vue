@@ -1,82 +1,92 @@
 <template>
-  <nav class="navbar navbar-expand-lg navbar-light bg-light">
+  <div>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+      <a @click="refreshPage" style="margin-left: 10px" class="navbar-brand" href="#">myEdu</a>
+      <a @click="refreshPage" style="margin-left: 10px" class="navbar-brand" href="#">Kişiselleştirilmiş Akademik Gelişim ve <br /> Değerlendirme Sistemi</a>
 
-    <a @click="refreshPage" style="margin-left: 10px" class="navbar-brand" href="#">myEdu</a>
-    <a @click="refreshPage" style="margin-left: 10px" class="navbar-brand" href="#">Kişiselleştirilmiş Akademik Gelişim ve
-      <br />
-      Değerlendirme Sistemi</a>
-
-    <div class="collapse navbar-collapse" id="navbarSupportedContent">
-      <ul class="navbar-nav mr-auto">
-        <!-- li class="nav-item dropdown">
-          <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-            Dropdown
-          </a>
-          <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-            <a class="dropdown-item" href="#">Action</a>
-            <a class="dropdown-item" href="#">Another action</a>
-            <div class="dropdown-divider"></div>
-            <a class="dropdown-item" href="#">Something else here</a>
-          </div>
-        </li !-->
-      </ul>
-      <span class="logout">
-        <button @click="goToLoginPage" class="btn btn-outline-danger my-2 my-sm-0" type="submit">
+      <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav mr-auto"></ul>
+        <span class="logout">
+          <button @click="goToLoginPage" class="btn btn-outline-danger my-2 my-sm-0" type="submit">
             Çıkış Yap
           </button>
-      </span>
-    </div>
-  </nav>
-  <div class="flex-container">
-  <div class="card" style="width: 13rem;margin-left: 10px;">
-  <div class="card-body">
-    <h5 class="card-title">Menü</h5>
-    <a href="#" class="card-link" @click="goToCoursePage">Derslerim   </a><br />
-    <a href="#" class="card-link" @click="goToStudentInfoPage">Not Girişi</a><br />    
-    <a href="#" class="card-link" @click="goToInstructorLearningOutcome">Öğrenim Çıktıları</a><br />
-    <a href="#" class="card-link" @click="goToMatchMatrixPage">ÖÇ ve PÇ Eşleştirme</a>
-  </div>
-</div>
-  <div class="card" style="width: 75rem; height: 40rem; overflow-y: auto; overflow-x: hidden">
-    <div style="display: flex; margin-left: 14px;">
-      <img class="icon" src="../assets/Books_Icon.png" />
-      <h2 style="margin-top: 12px; margin-left: 6px;">{{ course.code }} - {{ course.courseName }} - {{ course.semester }}</h2>
-    </div>
-      <div class="buttons-container">
-        <button style="margin-left: 16px;" class="btn btn-outline-primary" @click="goToInstructorLearningOutcome">Öğrenim Çıktıları</button>
-        <button class="btn btn-outline-success" @click="goToStudentInfoPage">Not Girişi</button>
+        </span>
       </div>
-    
+    </nav>
 
-      <div class="card-body">
-  <h5 class="card-title">Ders Araçları</h5>
-  <ul style="max-width: 73rem" class="list-group">
-    <li class="list-group-item" v-for="assessment in generalAssessments" :key="assessment.generalAssesmentId">
-      <a href="#">{{ assessment.name }}</a>
-      <input type="text" v-model="assessment.totalContribution" :placeholder="'%' + assessment.name" />
-    </li>
-    <li>
-      <button style="margin-left: 2px; margin-top: 5px;" class="btn btn-outline-success" @click="saveChanges">Değişiklikleri Kaydet</button>
-    </li>
-  </ul>
-</div>
+    <div class="flex-container">
+      <!-- Side Menu -->
+      <div class="card menu" style="width: 13rem; margin-left: 10px;">
+        <div class="card-body">
+          <h5 class="card-title">Menü</h5>
+          <a href="#" class="card-link" @click="goToCoursePage">Derslerim</a><br />
+          <a href="#" class="card-link" @click="goToStudentInfoPage">Not Girişi</a><br />    
+          <a href="#" class="card-link" @click="goToInstructorLearningOutcome">Öğrenim Çıktıları</a><br />
+          <a href="#" class="card-link" @click="goToMatchMatrixPage">ÖÇ ve PÇ Eşleştirme</a>
+        </div>
+      </div>
 
-    <ul style="max-width: 73rem" class="list-group list-group-flush"></ul>
-    <div class="card-body">
-    <div>
-      <input v-model="assessmentName" type="text" placeholder="Araç türünü yazınız..">
-      <input v-model="assessmentContribution" style="margin-left: 4px;" type="text" placeholder="%Araç katkısını yazınız..">
+      <!-- Course Details and Assessments -->
+      <div class="card course-details" style="width: calc(100% - 14rem); height: 40rem; overflow-y: auto; overflow-x: hidden;">
+        <div style="display: flex; margin-left: 14px;">
+          <img class="icon" src="../assets/Books_Icon.png" />
+          <h2 style="margin-top: 12px; margin-left: 6px;">{{ course.code }} - {{ course.courseName }} - {{ course.semester }}</h2>
+        </div>
+        <div class="buttons-container">
+          <button style="margin-left: 16px;" class="btn btn-outline-primary" @click="goToInstructorLearningOutcome">Öğrenim Çıktıları</button>
+          <button class="btn btn-outline-success" @click="goToStudentInfoPage">Not Girişi</button>
+        </div>
+        
+        <div class="card-body">
+          <h5 class="card-title">Ders Araçları</h5>
+          <table class="table">
+            <thead>
+              <tr>
+                <th scope="col">Araç Türü</th>
+                <th scope="col">Katkı</th>
+                <th scope="col">İşlemler</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="(assessment, index) in generalAssessments" :key="assessment.generalAssesmentId">
+                <td>{{ assessment.name }}</td>
+                <td v-if="assessment.editMode">
+                  <input type="text" v-model="assessment.totalContribution"> 
+                </td>
+                <td v-else>
+                  {{ assessment.totalContribution }}
+                </td>
+                <td style="width: 200px;">
+                  <button class="btn btn-danger btn-sm" @click="deleteProgram(assessment.generalAssesmentId, index)">Sil</button>
+                  <span style="margin-left: 2px;"></span>
+                  <button class="btn btn-warning btn-sm text-white" @click="assessment.editMode ? saveChanges(assessment) : editProgram(assessment)">
+                    {{ assessment.editMode ? 'Kaydet' : 'Düzenle' }}
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="card-body">
+            <h5 class="card-title">Araç Türü Ekle</h5>
+            
+            <div class="form-group">
+              <label for="assessmentName">Araç Türü:</label>
+              <input type="text" class="form-control" id="assessmentName" v-model="assessmentName" style="width: 200px;">
+            </div>
+            <div class="form-group">
+              <label for="assessmentContribution">Katkı:</label>
+              <input type="text" class="form-control" id="assessmentContribution" v-model="assessmentContribution" style="width: 200px;">
+            </div>
+
+            <button class="btn btn-outline-primary" @click="addGeneralAssessment">Araç Türü Ekle</button>
+          </div>
+        </div>
+      </div>
     </div>
-    <h1></h1>
-    <button @click="addGeneralAssessment" class="btn btn-outline-primary my-2 my-sm-0" style="width: auto; height: auto; margin-bottom: 20px;"
-      type="submit">
-      Araç Türü Ekle
-    </button>
   </div>
-  </div>
-</div>
 </template>
-  
+
 <script>
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap/dist/js/bootstrap.bundle.min.js";
@@ -84,26 +94,21 @@ import "jquery";
 import axios from "axios";
 
 export default {
-   props: ['courseId'],
+  props: ['courseId'],
   name: "Course",
   data() {
     return {
       courseId: null,
       generalAssessments: [],
       course: {},
-      odevInput: "",
-      labInput: "",
-      katilimInput: "",
-      araSınavInput: "",
-      finalInput: "",
-      selectedItem: null,
+      assessmentName: "",
+      assessmentContribution: ""
     };
   },
   created() {
-    // Parametreler arasında courseId bekleniyor varsayalım
     const courseId = this.$route.params.courseId;
-    this.fetchCourse(courseId); // Dersin detaylarını backend'den almak için metod çağrılıyor
-    this.fetchGeneralAssessments(courseId); // Dersin genel değerlendirmelerini getir
+    this.fetchCourse(courseId);
+    this.fetchGeneralAssessments(courseId);
   },
   methods: {
     async fetchGeneralAssessments(courseId) {
@@ -120,102 +125,122 @@ export default {
     fetchCourse(courseId) {
       axios.get(`http://localhost:8080/course/${courseId}`)
         .then(response => {
-          this.course = response.data; // Backend'den gelen dersin detayları course değişkenine atanıyor
+          this.course = response.data;
         })
         .catch(error => {
           console.error('Error fetching course:', error);
         });
     },
-    saveChanges() {
-  try {
-    const courseId = this.$route.params.courseId;
-
-    this.generalAssessments.forEach(assessment => {
-      const requestData = {
-        generalAssesmentId: assessment.generalAssesmentId,
-        newAssesmentContribution: assessment.totalContribution
-      };
-
-      console.log("newAssesmentContribution:", requestData.newAssesmentContribution);
-      console.log("generalAssesmentId:", requestData.generalAssesmentId);
-
-      // Değişiklikleri backend'e gönderme
-      axios.put(`http://localhost:8080/updateTotalContributionForCourse/${courseId}`, requestData)
-        .then(response => {
-          if (response.status === 200) {
-            console.log("Değişiklikler başarıyla kaydedildi.");
-            // İsteğin başarılı olduğunu kullanıcıya bildirme veya gerekirse başka bir işlem yapma
-          } else {
-            console.error("Değişiklikler kaydedilemedi.");
+    saveChanges(assessment) {
+      try {
+        const courseId = this.$route.params.courseId;
+  
+        const requestData = {
+          generalAssesmentId: assessment.generalAssesmentId,
+          newAssesmentContribution: assessment.totalContribution
+        };
+  
+        console.log("newAssesmentContribution:", requestData.newAssesmentContribution);
+        console.log("generalAssesmentId:", requestData.generalAssesmentId);
+  
+        // Değişiklikleri backend'e gönderme
+        axios.put(`http://localhost:8080/generalAssesment/updateTotalContributionForCourse/${courseId}?generalAssesmentId=${assessment.generalAssesmentId}&newAssesmentContribution=${assessment.totalContribution}`)
+          .then(response => {
+            if (response.status === 200) {
+              console.log("Değişiklikler başarıyla kaydedildi.");
+              // İsteğin başarılı olduğunu kullanıcıya bildirme veya gerekirse başka bir işlem yapma
+              
+              // Değişikliklerin başarıyla kaydedildikten sonra sayfanın yenilenmesi
+              window.location.reload();
+            } else {
+              console.error("Değişiklikler kaydedilemedi.");
+              // Hata durumunda kullanıcıya bildirme veya gerekirse başka bir işlem yapma
+            }
+          })
+          .catch(error => {
+            console.error("Değişiklikler kaydedilirken bir hata oluştu:", error);
             // Hata durumunda kullanıcıya bildirme veya gerekirse başka bir işlem yapma
-          }
+          });
+      } catch (error) {
+        console.error("Değişiklikler kaydedilirken bir hata oluştu:", error);
+        // Hata durumunda kullanıcıya bildirme veya gerekirse başka bir işlem yapma
+      }
+    },
+  
+    addGeneralAssessment() {
+      const courseId = this.$route.params.courseId;
+      const name = this.assessmentName;
+      const totalContribution = this.assessmentContribution;
+  
+      const requestData = {
+        courseId: courseId,
+        name: name,
+        totalContribution: totalContribution
+      };
+  
+      axios.post('http://localhost:8080/generalAssesment/create-generalAssesment', requestData)
+        .then(response => {
+          console.log('GeneralAssessment başarıyla eklendi:', response.data);
+          this.fetchGeneralAssessments(courseId);
+          this.assessmentName = "";
+          this.assessmentContribution = "";
+          this.$toast.success("Araç başarıyla eklendi");
         })
         .catch(error => {
-          console.error("Değişiklikler kaydedilirken bir hata oluştu:", error);
-          // Hata durumunda kullanıcıya bildirme veya gerekirse başka bir işlem yapma
+          console.error('GeneralAssessment eklenirken bir hata oluştu:', error);
+          this.$toast.error("Araç eklenemedi!");
         });
-    });
-  } catch (error) {
-    console.error("Değişiklikler kaydedilirken bir hata oluştu:", error);
-    // Hata durumunda kullanıcıya bildirme veya gerekirse başka bir işlem yapma
-  }
-},
-
-    addGeneralAssessment() {
-    const courseId = this.$route.params.courseId;
-    const name = this.assessmentName; // Formdaki "Araç türü" girdisi
-    const totalContribution = this.assessmentContribution; // Formdaki "%Araç katkısı" girdisi
-
-    const requestData = {
-      courseId: courseId,
-      name: name,
-      totalContribution: totalContribution
-    };
-
-    axios.post('http://localhost:8080/generalAssesment/create-generalAssesment', requestData)
-      .then(response => {
-        console.log('GeneralAssessment başarıyla eklendi:', response.data);
-        // Ekleme başarılıysa gerekli işlemleri yapabilirsiniz
-        // Örneğin, eklenen GeneralAssessment'i listede göstermek gibi
-      })
-      .catch(error => {
-        console.error('GeneralAssessment eklenirken bir hata oluştu:', error);
-        // Hata durumunda gerekli işlemleri yapabilirsiniz
-      });
-  },
-    goToLoginPage(){
+    },
+    editProgram(assessment) {
+      assessment.editMode = true;
+    },
+    deleteProgram(generalAssesmentId, index) {
+      try {
+        axios.delete(`http://localhost:8080/generalAssesment/delete-generalAssesment/${generalAssesmentId}`)
+          .then(response => {
+            console.log("Araç başarıyla silindi.");
+            // Silme işlemi başarılı olduğunda sayfanın yenilenmesi
+            this.fetchGeneralAssessments(this.courseId);
+            window.location.reload();
+          })
+          .catch(error => {
+            console.error("Araç silinirken bir hata oluştu:", error);
+          });
+      } catch (error) {
+        console.error("Araç silinirken bir hata oluştu:", error);
+      }
+    },
+    goToLoginPage() {
       this.$router.push("/");
     },
-    goToCoursePage(){
+    goToCoursePage() {
       this.$router.push("/instructor-home");
     },
-    goToLearningOutcomePage(){
+    goToLearningOutcomePage() {
       this.$router.push("/learning-outcome");
     },
-    goToMatchMatrixPage(){
+    goToMatchMatrixPage() {
       this.$router.push("/instructor-match-matrix");
     },
-    goToStudentInfoPage(){
+    goToStudentInfoPage() {
       this.$router.push("/student-info");
     },
-    goToInstructorLearningOutcome(){
+    goToInstructorLearningOutcome() {
       this.$router.push("/instructor-learning-outcome");
     },
     refreshPage() {
-      //window.location.reload();
       this.$router.push("/instructor-home");
     },
     handleButton1() {
       console.log("Button 1 clicked");
     },
     handleButton2() {
-      // Logic for button 2
       console.log("Button 2 clicked");
     },
   },
 };
 </script>
-  
+
 <style>
 .container {
   display: flex;
@@ -231,14 +256,11 @@ export default {
 }
 
 .card {
-  
   margin-left: 20px;
-  
 }
 
 .icon {
   width: 60px;
-
 }
 
 .list-group a {
@@ -256,15 +278,8 @@ export default {
 }
 
 .buttons-container button {
-  margin-right: 25px;
-
+  margin-right: 10px; /* düzeltilmiş */
 }
-.container {
-  display: flex;
-  align-items: center;
-  
-}
-
 
 .list-group-item {
   display: flex;
@@ -275,10 +290,8 @@ export default {
 .list-group-item input {
   margin-left: 10px;
 }
-.menu{
-  width: 13rem;
-  margin-left: 10px;
 
+.course-details {
+  width: calc(100% - 14rem); /* menü genişliği çıkarıldı */
 }
 </style>
-  
