@@ -36,8 +36,9 @@ export default {
                 const response = await axios.post('http://localhost:8080/auth/authentication', {
                     email: this.email,
                     password: this.password
+                    
                 });
-
+                console.log(this.password);
                 this.$store.dispatch('loginUser', { user: response.data.user, token: response.data.token });
                 
                 console.log(response.data); // Yanıtın içeriğini konsola yazdır
@@ -109,13 +110,7 @@ export default {
     position: relative;
 }
 
-.password-input-wrapper input {
-    width: calc(100% - 40px); /* Göster/gizle simgesi için alan bırak */
-    height: 40px;
-    padding-left: 20px;
-    border: 1px solid red;
-    border-radius: 10px;
-}
+
 
 .show-password-label {
     position: absolute;
