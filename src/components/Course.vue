@@ -242,17 +242,16 @@ export default {
     goToCoursePage() {
       this.$router.push("/instructor-home");
     },
-    goToLearningOutcomePage() {
-      this.$router.push("/learning-outcome");
-    },
+    goToInstructorLearningOutcome() {
+  const courseId = this.$route.params.courseId;
+  console.log(courseId);
+  this.$router.push({ name: "InstructorLearningOutcome", params: { courseId: courseId }});
+},
     goToMatchMatrixPage() {
       this.$router.push("/instructor-match-matrix");
     },
     goToStudentInfoPage() {
       this.$router.push("/student-info");
-    },
-    goToInstructorLearningOutcome() {
-      this.$router.push("/instructor-learning-outcome");
     },
     refreshPage() {
       this.$router.push("/instructor-home");
