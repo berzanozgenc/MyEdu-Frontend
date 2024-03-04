@@ -71,8 +71,8 @@
                 <td style="width: 200px;">
                   <button class="btn btn-danger btn-sm" @click="deleteProgram(assessment.generalAssesmentId, index)">Sil</button>
                   <span style="margin-left: 2px;"></span>
-                  <button class="btn btn-warning btn-sm text-white" @click="assessment.editMode ? saveChanges(assessment) : editProgram(assessment)">
-                    {{ assessment.editMode ? 'Kaydet' : 'Düzenle' }}
+                  <button :class="{'btn-warning': !assessment.editMode, 'btn-success': assessment.editMode}" class="btn btn-sm text-white" @click="assessment.editMode ? saveChanges(assessment) : editProgram(assessment)">
+                  {{ assessment.editMode ? 'Kaydet' : 'Düzenle' }}
                   </button>
                 </td>
               </tr>
