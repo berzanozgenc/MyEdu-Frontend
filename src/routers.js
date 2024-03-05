@@ -31,7 +31,7 @@ const routes = [{
 {
         name: "MatchMatrix",
         component: MatchMatrix,
-        path: "/instructor-match-matrix"
+        path: "/instructor-match-matrix/:courseId" //courseId parametresi için dinamik yol tanımı
     },
     {
         name: "Course",

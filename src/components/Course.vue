@@ -248,7 +248,10 @@ export default {
   this.$router.push({ name: "InstructorLearningOutcome", params: { courseId: courseId }});
 },
     goToMatchMatrixPage() {
-      this.$router.push("/instructor-match-matrix");
+      const courseId = this.$route.params.courseId;
+      console.log(courseId);
+      this.$router.push({ name: "MatchMatrix", params: { courseId: courseId }});
+      
     },
     goToStudentInfoPage() {
       this.$router.push("/student-info");

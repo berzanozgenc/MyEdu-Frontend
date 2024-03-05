@@ -23,31 +23,31 @@
         </div>
       </div>
 
-      <div class="card" style="width: 75rem; height: 40rem; overflow-y: auto; overflow-x: hidden; margin-left: 100px;">
-        <div class="card-body">
-          <h5 class="card-title">PROGRAM YETERLİLİKLERİ (P) / DERSİN ÖĞRENME KAZANIMLARI (Ö) MATRİSİ</h5>
+      <div class="card" style="width: auto; margin-left: 100px; overflow-x: auto;">
+      <div class="card-body">
+        <h5 class="card-title">PROGRAM YETERLİLİKLERİ (P) / DERSİN ÖĞRENME KAZANIMLARI (Ö) MATRİSİ</h5>
 
-          <!-- Your matrix code goes here -->
-          <table class="table">
-            <thead>
-              <tr>
-                <th scope="col"></th>
-                <th v-for="(col, colIndex) in matrix[0]" :key="colIndex" scope="col">ÖÇ{{ colIndex + 1 }}</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr v-for="(row, rowIndex) in matrix" :key="rowIndex">
-                <th scope="row">PÇ{{ rowIndex + 1 }}</th>
-                <td v-for="(col, colIndex) in row" :key="colIndex">
-                  <input type="checkbox" v-model="matrix[rowIndex][colIndex]">
-                </td>
-              </tr>
-            </tbody>
-          </table>
-          <!-- End of matrix code -->
+        <!-- Your matrix code goes here -->
+        <table class="table" style="min-width: 600px;"> <!-- Min-width added to prevent table collapse -->
+          <thead>
+            <tr>
+              <th scope="col"></th>
+              <th v-for="(outcome, index) in outcomes" :key="index" scope="col">{{ outcome.description }}</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="(row, rowIndex) in matrix" :key="rowIndex">
+              <th scope="row">PÇ{{ rowIndex + 1 }}</th>
+              <td v-for="(col, colIndex) in row" :key="colIndex">
+                <input type="checkbox" v-model="matrix[rowIndex][colIndex]">
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        <!-- End of matrix code -->
 
-        </div>
       </div>
+    </div>
     </div>
   </div>
 </template>
@@ -61,6 +61,11 @@ export default {
       matrix: [],
     };
   },
+  created() {
+    const courseId = this.$route.params.courseId;
+    console.log("Course ID:", courseId);
+    this.fetchLearningOutcomes(courseId); // dersin öğrenim çıktılarını al
+  },
   watch: {
     rowCount: 'generateMatrix',
     colCount: 'generateMatrix',
@@ -71,6 +76,22 @@ export default {
   methods: {
     goToLoginPage() {
       this.$router.push("/");
+    },
+    async fetchLearningOutcomes(courseId) {
+      try {
+        const response = await fetch(`http://localhost:8080/learningOutcomes/course/${courseId}`);
+        if (!response.ok) {
+          throw new Error('Öğrenim çıktıları getirilirken bir hata oluştu.');
+        }
+        const data = await response.json();
+        // Gelen veriyi matris olarak ayarla
+        this.matrix = data.map(item => item.description); // Öğrenim çıktılarının açıklamalarını kullanarak matrisi oluştur
+        // Dersin öğrenim çıktılarını sütun olarak ekleyin
+        this.outcomes = data;
+        this.colCount = data.length;
+      } catch (error) {
+        console.error('Bir hata oluştu:', error);
+      }
     },
     goToCoursePage() {
       this.$router.push("/instructor-home");
@@ -98,6 +119,11 @@ export default {
 </script>
 
 <style scoped>
+
+.table {
+  width: max-content; /* Tablonun içeriği kadar genişlemesini sağlar */
+  table-layout: auto; /* Tablonun içeriğe göre otomatik olarak boyutlandırılmasını sağlar */
+}
 .flex-container {
   display: flex;
 }
