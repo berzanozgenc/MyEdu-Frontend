@@ -28,22 +28,22 @@
         <h5 class="card-title">PROGRAM YETERLİLİKLERİ (P) / DERSİN ÖĞRENME KAZANIMLARI (Ö) MATRİSİ</h5>
 
         <!-- Your matrix code goes here -->
-        <table class="table" style="min-width: 600px;"> <!-- Min-width added to prevent table collapse -->
-          <thead>
-            <tr>
-              <th scope="col"></th>
-              <th v-for="(outcome, index) in outcomes" :key="index" scope="col">{{ outcome.description }}</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr v-for="(row, rowIndex) in matrix" :key="rowIndex">
-              <th scope="row">PÇ{{ rowIndex + 1 }}</th>
-              <td v-for="(col, colIndex) in row" :key="colIndex">
-                <input type="checkbox" v-model="matrix[rowIndex][colIndex]">
-              </td>
-            </tr>
-          </tbody>
-        </table>
+        <table class="table" style="min-width: 600px;">
+            <thead>
+              <tr>
+                <th scope="col"></th>
+                <th v-for="(outcome, index) in outcomes" :key="index" scope="col">{{ outcome.description }}</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="(program, programIndex) in programs" :key="programIndex">
+                <th scope="row">{{ program.description }}</th>
+                <td v-for="(outcome, outcomeIndex) in outcomes" :key="outcomeIndex">
+                  <input type="checkbox" v-model="program.outcomes[outcomeIndex]">
+                </td>
+              </tr>
+            </tbody>
+          </table>
         <!-- End of matrix code -->
 
       </div>
@@ -53,18 +53,24 @@
 </template>
 
 <script>
+import axios from 'axios'; // axios'ı projenize dahil edin
+
+
 export default {
   data() {
     return {
       rowCount: 12,
       colCount: 3,
       matrix: [],
+      outcomes: [],
+      programs: [],
     };
   },
   created() {
     const courseId = this.$route.params.courseId;
     console.log("Course ID:", courseId);
     this.fetchLearningOutcomes(courseId); // dersin öğrenim çıktılarını al
+    this.fetchProgramOutcomes(); // Program çıktılarını al
   },
   watch: {
     rowCount: 'generateMatrix',
@@ -93,6 +99,23 @@ export default {
         console.error('Bir hata oluştu:', error);
       }
     },
+    async fetchProgramOutcomes() {
+  try {
+    const response = await axios.get(`http://localhost:8080/program-outcomes`);
+    if (response.status !== 200) {
+      throw new Error('Program çıktıları getirilirken bir hata oluştu.');
+    }
+    const data = response.data;
+    this.programs = data.map(program => {
+      return {
+        ...program,
+        outcomes: Array(this.outcomes.length).fill(false) // Öğrenim çıktılarına karşılık gelen varsayılan değerler içeren bir dizi oluştur
+      };
+    });
+  } catch (error) {
+    console.error('Bir hata oluştu:', error);
+  }
+},
     goToCoursePage() {
       this.$router.push("/instructor-home");
     },
@@ -121,8 +144,8 @@ export default {
 <style scoped>
 
 .table {
-  width: max-content; /* Tablonun içeriği kadar genişlemesini sağlar */
-  table-layout: auto; /* Tablonun içeriğe göre otomatik olarak boyutlandırılmasını sağlar */
+  width: max-content;
+  table-layout: auto;
 }
 .flex-container {
   display: flex;
