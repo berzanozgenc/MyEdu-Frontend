@@ -39,7 +39,8 @@
               <tr v-for="(program, programIndex) in programs" :key="programIndex">
                 <th scope="row">{{ program.description }}</th>
                 <td v-for="(outcome, outcomeIndex) in outcomes" :key="outcomeIndex">
-                  <input type="checkbox" v-model="program.outcomes[outcomeIndex]">
+                  <!-- Değiştirilmiş kısım: Onay kutusunu metin alanı ile değiştir -->
+                  <input placeholder="%" type="text" v-model="program.outcomes[outcomeIndex]">
                 </td>
               </tr>
             </tbody>
@@ -164,6 +165,12 @@ export default {
 
 .with-margin {
   margin-left: 10px;
+}
+
+.table input[type="text"] {
+  width: 80px; /* Boyutunu en olarak kısalt */
+  margin: 0 auto; /* Metin kutusunu yatayda ortala */
+  display: block; /* Blok öğe olarak ayarla */
 }
 
 </style>

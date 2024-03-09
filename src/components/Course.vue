@@ -44,8 +44,8 @@
           <div class="form-group">
     <label for="sortingOption">Sırala:</label>
     <select class="form-control-sm" v-model="selectedSortingOption" @change="sortAssessments">
-      <option value="nameAsc">İsme Göre Artan</option>
-      <option value="nameDesc">İsme Göre Azalan</option>
+      <option value="nameAsc">A-Z sırala</option>
+      <option value="nameDesc">Z-A sırala</option>
       <option value="contributionAsc">Katkıya Göre Artan</option>
       <option value="contributionDesc">Katkıya Göre Azalan</option>
     </select>
