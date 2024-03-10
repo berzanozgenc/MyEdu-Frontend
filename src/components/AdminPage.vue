@@ -146,7 +146,8 @@ export default {
           department: this.newProgramDepartment
         })
         .then(response => {
-          console.log('Yeni program eklendi:', response.data);
+          console.log('Yeni program çıktısı eklendi:', response.data);
+          this.$toast.success("Yeni program çıktısı eklendi");
           this.programs.push(response.data);
           // Yeni program ekledikten sonra inputları temizle
           this.newProgramOutput = "";
@@ -154,6 +155,7 @@ export default {
         })
         .catch(error => {
           console.error('Program eklenirken bir hata oluştu:', error);
+          this.$toast.success("Program çıktısı eklenirken bir hata oluştu:");
         });
     },
     getPrograms() {
