@@ -6,7 +6,8 @@
         style="margin-left: 10px"
         class="navbar-brand"
         href="#"
-      >myEdu</a>
+      > <img src="../assets/Baskent_University_Logo.png" alt="Logo" style="max-height: 50px;">
+      myEdu</a>
       <a
         @click="refreshPage"
         style="margin-left: 10px"
@@ -24,82 +25,106 @@
         </span>
       </div>
     </nav>
+
     <div class="flex-container">
-  <div class="card" style="width: 13rem;margin-left: 10px;">
-  <div class="card-body">
-    <h5 class="card-title">Menü</h5>
-    <a href="#" class="card-link" @click="goToCoursePage">Derslerim   </a><br />
-    <a href="#" class="card-link" @click="goToStudentInfoPage">Not Girişi</a><br />    
-    <a href="#" class="card-link" @click="goToInstructorLearningOutcome">Öğrenim Çıktıları</a><br />
-    <a href="#" class="card-link" @click="goToMatchMatrixPage">ÖÇ ve PÇ Eşleştirme</a>
-  </div>
-</div>
-      <div class="card">
-        <table class="table table-striped table-hover">
-          <thead>
-            <tr>
-              <th scope="col">Öğrenme çıktıları</th>
-              
-              <!-- Dinamik olarak eklenen sütunlar -->
-              <th v-for="(quiz, index) in quizColumns" :key="index" scope="col">
-                <div class="d-flex align-items-center">
-                  <span @click="selectColumn(index)">{{ `quiz${index + 1}` }}</span>
-                  <button
-                    v-if="selectedColumn === index"
-                    class="btn btn-sm btn-danger ml-2"
-                    @click="removeQuiz(index)"
-                  >
-                    Sil
-                  </button>
-                </div>
-              </th>
+      <div class="card" style="width: 13rem;margin-left: 10px;">
+        <div class="card-body">
+          <h5 class="card-title">Menü</h5>
+          <a href="#" class="card-link" @click="goToCoursePage">Derslerim   </a><br />
+          <a href="#" class="card-link" @click="goToStudentInfoPage">Not Girişi</a><br />    
+          <a href="#" class="card-link" @click="goToInstructorLearningOutcome">Öğrenim Çıktıları</a><br />
+          <a href="#" class="card-link" @click="goToMatchMatrixPage">ÖÇ ve PÇ Eşleştirme</a>
+        </div>
+      </div>
 
-              <th scope="col">∑</th>
-              <th scope="col">
-                <button type="button" class="btn btn-success" @click="addNewQuiz">+</button>
-              </th>
-              
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <th scope="row">Puan</th>
-              <td contenteditable="true">-</td>
+      <!-- Both tables in the same card -->
+      <div class="card mt-3" style="width: 1000px;" >
+        <div class="card-body">
+          <h5 class="card-title">Öğrenme Çıktıları</h5>
+          <table class="table table-stretched">
+            <thead>
+              <tr>
+                <th scope="col">Öğrenme çıktıları</th>
+                <!-- Dinamik olarak eklenen sütunlar -->
+                <th v-for="(quiz, index) in quizColumns" :key="index" scope="col">
+                  <div class="d-flex align-items-center">
+                    <span @click="selectColumn(index)">{{ `quiz${index + 1}` }}</span>
+                    <button
+                      v-if="selectedColumn === index"
+                      class="btn btn-sm btn-danger ml-2"
+                      @click="removeQuiz(index)"
+                    >
+                      Sil
+                    </button>
+                  </div>
+                </th>
+                <th scope="col">∑</th>
+                <th scope="col">
+                  <button type="button" class="btn btn-success" @click="addNewQuiz">+</button>
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <th scope="row">katkı</th>
+                <td contenteditable="true">-</td>
+                <!-- Dinamik olarak eklenen hücreler -->
+                <td v-for="(quiz, index) in quizColumns" :key="index" contenteditable="true">-</td>
+              </tr>
+            </tbody>
+          </table>
 
-              <!-- Dinamik olarak eklenen hücreler -->
-              <td v-for="(quiz, index) in quizColumns" :key="index" contenteditable="true">-</td>
-            </tr>
-            <tr>
-              <th scope="row">ÖÇ 1</th>
-              <td contenteditable="true">-</td>
-              <!-- Dinamik olarak eklenen hücreler -->
-              <td v-for="(quiz, index) in quizColumns" :key="index" contenteditable="true">-</td>
-            </tr>
-            <tr>
-              <th scope="row">ÖÇ 2</th>
-              <td contenteditable="true">-</td>
-              <!-- Dinamik olarak eklenen hücreler -->
-              <td v-for="(quiz, index) in quizColumns" :key="index" contenteditable="true">-</td>
-            </tr>
-            <tr>
-              <th scope="row">ÖÇ 3</th>
-              <td contenteditable="true">-</td>
-              <!-- Dinamik olarak eklenen hücreler -->
-              <td v-for="(quiz, index) in quizColumns" :key="index" contenteditable="true">-</td>
-            </tr>
-            <tr>
-              <th scope="row">Toplam (∑)</th>
-              <!-- Dinamik olarak eklenen hücreler -->
-              <td v-for="(quiz, index) in quizColumns" :key="index" contenteditable="true"></td>
-              <td></td>
-            </tr>
-          </tbody>
-        </table>
+          <!-- Second table -->
+          <table class="table table-stretched mt-3">
+            <thead>
+              <tr>
+                <th scope="col">Öğrenme çıktıları</th>
+                <!-- Dinamik olarak eklenen sütunlar -->
+                <th v-for="(quiz, index) in quizColumns" :key="'second-' + index" scope="col">
+                  <div class="d-flex align-items-center">
+                    <span @click="selectColumn(index)">{{ `quiz${index + 1}` }}</span>
+                    <button
+                      v-if="selectedColumn === index"
+                      class="btn btn-sm btn-danger ml-2"
+                      @click="removeQuiz(index)"
+                    >
+                      Sil
+                    </button>
+                  </div>
+                </th>
+                <th scope="col">∑</th>
+                <th scope="col">
+                  <button type="button" class="btn btn-success" @click="addNewQuiz">+</button>
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <th scope="row">ÖÇ 1</th>
+                <td contenteditable="true">-</td>
+                <!-- Dinamik olarak eklenen hücreler -->
+                <td v-for="(quiz, index) in quizColumns" :key="'second-' + index" contenteditable="true">-</td>
+              </tr>
+              <tr>
+                <th scope="row">ÖÇ 2</th>
+                <td contenteditable="true">-</td>
+                <!-- Dinamik olarak eklenen hücreler -->
+                <td v-for="(quiz, index) in quizColumns" :key="'second-' + index" contenteditable="true">-</td>
+              </tr>
+              <tr>
+                <th scope="row">ÖÇ 3</th>
+                <td contenteditable="true">-</td>
+                <!-- Dinamik olarak eklenen hücreler -->
+                <td v-for="(quiz, index) in quizColumns" :key="'second-' + index" contenteditable="true">-</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
 
-    <div class="d-flex justify-content-end">
-      <button type="button" class="btn btn-light">kaydet</button>
+    <div class="d-flex justify-content-center mt-3">
+      <button type="button" class="btn btn-outline-primary">kaydet</button>
     </div>
   </div>
 </template>
@@ -120,7 +145,7 @@ export default {
     goToCoursePage(){
       this.$router.push("/instructor-home");
     },
-      goToLearningOutcomePage(){
+    goToLearningOutcomePage(){
       this.$router.push("/learning-outcome");
     },
     goToMatchMatrixPage(){
@@ -156,9 +181,17 @@ export default {
 .container {
   display: flex;
 }
+.card mt-3{
+  
 
+}
 .logout {
   margin-left: auto;
   margin-right: 20px;
+}
+
+.table-stretched th,
+.table-stretched td {
+  width: 80%;
 }
 </style>

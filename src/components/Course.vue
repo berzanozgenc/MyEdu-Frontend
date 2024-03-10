@@ -2,7 +2,7 @@
   <div>
     <!-- Navbar -->
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
-      <a @click="refreshPage" style="margin-left: 10px" class="navbar-brand" href="#">myEdu</a>
+      <a @click="refreshPage" style="margin-left: 10px" class="navbar-brand" href="#"> <img src="../assets/Baskent_University_Logo.png" alt="Logo" style="max-height: 50px;"></a>
       <a @click="refreshPage" style="margin-left: 10px" class="navbar-brand" href="#">Kişiselleştirilmiş Akademik Gelişim ve <br /> Değerlendirme Sistemi</a>
 
       <div class="collapse navbar-collapse" id="navbarSupportedContent">
@@ -68,12 +68,14 @@
                 <td v-else>
                   {{ assessment.totalContribution }}
                 </td>
-                <td style="width: 200px;">
+                <td style="width: 350px;">
                   <button class="btn btn-danger btn-sm" @click="deleteProgram(assessment.generalAssesmentId, index)">Sil</button>
                   <span style="margin-left: 2px;"></span>
                   <button :class="{'btn-warning': !assessment.editMode, 'btn-success': assessment.editMode}" class="btn btn-sm text-white" @click="assessment.editMode ? saveChanges(assessment) : editProgram(assessment)">
                   {{ assessment.editMode ? 'Kaydet' : 'Düzenle' }}
                   </button>
+                  <button class="btn btn-info btn-sm text-white" @click="handleBilgileriGir">Bilgileri Gir</button>
+
                 </td>
               </tr>
             </tbody>
@@ -259,12 +261,16 @@ export default {
     refreshPage() {
       this.$router.push("/instructor-home");
     },
-    handleButton1() {
+    handleButton1() { 
       console.log("Button 1 clicked");
     },
     handleButton2() {
       console.log("Button 2 clicked");
     },
+    handleBilgileriGir() {
+  console.log("Bilgileri Gir button clicked");
+},
+
   },
 };
 </script>
@@ -322,4 +328,5 @@ export default {
 .course-details {
   width: calc(100% - 14rem); /* menü genişliği çıkarıldı */
 }
+
 </style>

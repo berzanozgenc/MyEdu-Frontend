@@ -6,7 +6,7 @@
         style="margin-left: 10px"
         class="navbar-brand"
         href="#"
-        >myEdu</a
+        > <img src="../assets/Baskent_University_Logo.png" alt="Logo" style="max-height: 50px;"></a
       >
       <a
         @click="refreshPage"
