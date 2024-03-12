@@ -1,17 +1,36 @@
 <template>
   <div>
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
-      <a @click="refreshPage" style="margin-left: 10px" class="navbar-brand" href="#">
-        <img src="../assets/Baskent_University_Logo.png" alt="Logo" style="max-height: 50px" />
-        myEdu</a>
-      <a @click="refreshPage" style="margin-left: 10px" class="navbar-brand" href="#">Kişiselleştirilmiş Akademik
-        Gelişim ve <br />
-        Değerlendirme Sistemi</a>
+      <a
+        @click="refreshPage"
+        style="margin-left: 10px"
+        class="navbar-brand"
+        href="#"
+      >
+        <img
+          src="../assets/Baskent_University_Logo.png"
+          alt="Logo"
+          style="max-height: 50px"
+        />
+        myEdu</a
+      >
+      <a
+        @click="refreshPage"
+        style="margin-left: 10px"
+        class="navbar-brand"
+        href="#"
+        >Kişiselleştirilmiş Akademik Gelişim ve <br />
+        Değerlendirme Sistemi</a
+      >
 
       <div class="collapse navbar-collapse" id="navbarSupportedContent">
         <ul class="navbar-nav mr-auto"></ul>
         <span class="logout">
-          <button @click="goToLoginPage" class="btn btn-outline-danger my-2 my-sm-0" type="submit">
+          <button
+            @click="goToLoginPage"
+            class="btn btn-outline-danger my-2 my-sm-0"
+            type="submit"
+          >
             Çıkış Yap
           </button>
         </span>
@@ -22,10 +41,17 @@
       <div class="card" style="width: 13rem; margin-left: 10px">
         <div class="card-body">
           <h5 class="card-title">Menü</h5>
-          <a href="#" class="card-link" @click="goToCoursePage">Derslerim </a><br />
-          <a href="#" class="card-link" @click="goToStudentInfoPage">Not Girişi</a><br />
-          <a href="#" class="card-link" @click="goToInstructorLearningOutcome">Öğrenim Çıktıları</a><br />
-          <a href="#" class="card-link" @click="goToMatchMatrixPage">ÖÇ ve PÇ Eşleştirme</a>
+          <a href="#" class="card-link" @click="goToCoursePage">Derslerim </a
+          ><br />
+          <a href="#" class="card-link" @click="goToStudentInfoPage"
+            >Not Girişi</a
+          ><br />
+          <a href="#" class="card-link" @click="goToInstructorLearningOutcome"
+            >Öğrenim Çıktıları</a
+          ><br />
+          <a href="#" class="card-link" @click="goToMatchMatrixPage"
+            >ÖÇ ve PÇ Eşleştirme</a
+          >
         </div>
       </div>
 
@@ -36,31 +62,53 @@
           <div style="max-width: 100%; overflow-x: auto">
             <div style="max-height: 300px; overflow-y: auto">
               <table class="table table-stretched">
-  <thead>
-    <tr>
-      <th scope="col"></th>
-      <!-- Dinamik olarak eklenen sütunlar -->
-      <th v-for="(assessment, index) in assessments" :key="assessment.id" scope="col">
-        <div class="d-flex align-items-center">
-          <span @click="selectColumn(index)">{{ assessment.name }}</span>
-          <button v-if="selectedColumn === index" class="btn btn-sm btn-danger ml-2" @click="removeQuiz(index)">
-            Sil
-          </button>
-        </div>
-      </th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <th scope="row">Katkı (%)</th>
-      <!-- Dinamik olarak eklenen hücreler -->
-      <td v-for="(assessment, index) in assessments" :key="assessment.id" contenteditable="true"></td>
-    </tr>
-  </tbody>
-</table>
-<button type="button" class="btn btn-success mb-2" @click="addNewAssessment">
-    Yeni Araç Ekle
-  </button>
+                <thead>
+                  <tr>
+                    <th scope="col"></th>
+                    <th
+                      v-for="(assessment, index) in assessments"
+                      :key="assessment.id"
+                      scope="col"
+                    >
+                      <div class="d-flex align-items-center">
+                        <span @click="selectColumn(index)">{{
+                          assessment.name + " " + (index + 1)
+                        }}</span>
+                      </div>
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <th scope="row">Katkı (%)</th>
+                    <td
+                      v-for="(assessment, index) in assessments"
+                      :key="assessment.id"
+                      contenteditable="true"
+                    >
+                      <span v-if="assessment.contribution !== 0">{{
+                        assessment.contribution
+                      }}</span>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+
+              <button
+                type="button"
+                class="btn btn-success mb-2"
+                @click="addNewAssessment"
+              >
+                Yeni Araç Ekle
+              </button>
+              <br />
+              <button
+                type="button"
+                class="btn btn-outline-primary"
+                @click="saveContributions"
+              >
+                Kaydet
+              </button>
             </div>
           </div>
 
@@ -70,46 +118,56 @@
           <div style="max-width: 100%; overflow-x: auto">
             <div style="max-height: 300px; overflow-y: auto">
               <table class="table table-stretched mt-3">
-  <thead>
-    <tr>
-      <th scope="col"></th>
-      <!-- Dinamik olarak eklenen sütunlar -->
-      <th v-for="(assessment, index) in assessments" :key="'assessment-' + index" scope="col">
-        <div class="d-flex align-items-center">
-          <span @click="selectColumn(index)">{{ assessment.name }}</span>
-          <button v-if="selectedColumn === index" class="btn btn-sm btn-danger ml-2" @click="removeQuiz(index)">
-            Sil
-          </button>
-        </div>
-      </th>
-      <th scope="col">
-        <button type="button" class="btn btn-success" @click="addNewQuiz">+</button>
-      </th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr v-for="(outcome, outcomeIndex) in outcomes" :key="outcomeIndex">
-      <th scope="row">{{ outcome.description }}</th>
-      <td v-for="(assessment, assessmentIndex) in assessments" :key="'assessment-' + assessmentIndex" contenteditable="true">
-        <!-- Her bir assessment için contenteditable hücresi -->
-      </td>
-    </tr>
-  </tbody>
-</table>
+                <thead>
+                  <tr>
+                    <th scope="col"></th>
+                    <!-- Dinamik olarak eklenen sütunlar -->
+                    <th
+                      v-for="(assessment, index) in assessments"
+                      :key="'assessment-' + index"
+                      scope="col"
+                    >
+                      <div class="d-flex align-items-center">
+                        <span @click="selectColumn(index)">{{
+                          assessment.name + " " + (index + 1)
+                        }}</span>
+                      </div>
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr
+                    v-for="(outcome, outcomeIndex) in outcomes"
+                    :key="outcomeIndex"
+                  >
+                    <th scope="row">{{ outcome.description }}</th>
+                    <td
+                      v-for="(assessment, assessmentIndex) in assessments"
+                      :key="'assessment-' + assessmentIndex"
+                      contenteditable="true"
+                    >
+                      <!-- Her bir assessment için contenteditable hücresi -->
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+              <button
+                type="button"
+                class="btn btn-outline-primary"
+                @click="saveContributions"
+              >
+                Kaydet
+              </button>
             </div>
           </div>
         </div>
       </div>
     </div>
-
-    <div class="d-flex justify-content-center mt-3">
-      <button type="button" class="btn btn-outline-primary">kaydet</button>
-    </div>
   </div>
 </template>
 
 <script>
-import axios from 'axios';
+import axios from "axios";
 
 export default {
   name: "LearningOutcome",
@@ -134,27 +192,52 @@ export default {
     this.fetchLearningOutcomes();
     this.fetchAssessments();
   },
-  
+
   methods: {
     async fetchLearningOutcomes() {
       try {
         const courseId = this.$route.params.courseId;
-        const response = await axios.get(`http://localhost:8080/learningOutcomes/course/${courseId}`);
+        const response = await axios.get(
+          `http://localhost:8080/learningOutcomes/course/${courseId}`
+        );
         this.outcomes = response.data;
       } catch (error) {
-        console.error('Error fetching learning outcomes:', error);
+        console.error("Error fetching learning outcomes:", error);
       }
     },
     async fetchAssessments() {
       try {
         const generalAssessmentId = this.$route.params.generalAssessmentId;
         console.log(generalAssessmentId);
-        const response = await axios.get(`http://localhost:8080/assessments/generalAssessment/${generalAssessmentId}`);
+        const response = await axios.get(
+          `http://localhost:8080/assessments/generalAssessment/${generalAssessmentId}`
+        );
         this.assessments = response.data; // Backend'den assessment'ları al
       } catch (error) {
-        console.error('Error fetching assessments:', error);
+        console.error("Error fetching assessments:", error);
       }
     },
+    async addNewAssessment() {
+      const generalAssessmentId = this.$route.params.generalAssessmentId;
+      try {
+        const response = await axios.post(
+          "http://localhost:8080/assessments/create-assessment",
+          {
+            contribution: 0.0,
+            generalAssessmentId: generalAssessmentId,
+          }
+        );
+
+        // Yeni değerlendirme başarıyla oluşturulduğunda bir mesaj gösterilebilir veya diğer gerekli işlemler yapılabilir
+        console.log("Yeni araç başarıyla oluşturuldu:", response.data);
+
+        // Değerlendirmeleri tekrar yükleme işlemi
+        this.fetchAssessments();
+      } catch (error) {
+        console.error("Yeni araç oluşturulurken hata oluştu:", error);
+      }
+    },
+
     goToLoginPage() {
       this.$router.push("/");
     },
@@ -202,6 +285,4 @@ export default {
   margin-left: auto;
   margin-right: 20px;
 }
-
-
 </style>
