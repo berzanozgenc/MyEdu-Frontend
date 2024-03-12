@@ -2,7 +2,7 @@
   <div>
     <!-- Navbar -->
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
-      <a @click="refreshPage" style="margin-left: 10px" class="navbar-brand" href="#">myEdu</a>
+      <a @click="refreshPage" style="margin-left: 10px" class="navbar-brand" href="#"> <img src="../assets/Baskent_University_Logo.png" alt="Logo" style="max-height: 50px;"></a>
       <a @click="refreshPage" style="margin-left: 10px" class="navbar-brand" href="#">Kişiselleştirilmiş Akademik Gelişim ve <br /> Değerlendirme Sistemi</a>
 
       <div class="collapse navbar-collapse" id="navbarSupportedContent">
@@ -44,8 +44,8 @@
           <div class="form-group">
     <label for="sortingOption">Sırala:</label>
     <select class="form-control-sm" v-model="selectedSortingOption" @change="sortAssessments">
-      <option value="nameAsc">İsme Göre Artan</option>
-      <option value="nameDesc">İsme Göre Azalan</option>
+      <option value="nameAsc">A-Z sırala</option>
+      <option value="nameDesc">Z-A sırala</option>
       <option value="contributionAsc">Katkıya Göre Artan</option>
       <option value="contributionDesc">Katkıya Göre Azalan</option>
     </select>
@@ -68,12 +68,15 @@
                 <td v-else>
                   {{ assessment.totalContribution }}
                 </td>
-                <td style="width: 200px;">
+                <td style="width: 350px;">
                   <button class="btn btn-danger btn-sm" @click="deleteProgram(assessment.generalAssesmentId, index)">Sil</button>
                   <span style="margin-left: 2px;"></span>
-                  <button class="btn btn-warning btn-sm text-white" @click="assessment.editMode ? saveChanges(assessment) : editProgram(assessment)">
-                    {{ assessment.editMode ? 'Kaydet' : 'Düzenle' }}
+                  <button :class="{'btn-warning': !assessment.editMode, 'btn-success': assessment.editMode}" class="btn btn-sm text-white" @click="assessment.editMode ? saveChanges(assessment) : editProgram(assessment)">
+                  {{ assessment.editMode ? 'Kaydet' : 'Düzenle' }}
                   </button>
+                  <button style="margin-left: 2px;" class="btn btn-info btn-sm text-white" @click="goToAssessmentPage(assessment.generalAssesmentId)">Bilgileri Gir</button>
+
+
                 </td>
               </tr>
             </tbody>
@@ -242,27 +245,34 @@ export default {
     goToCoursePage() {
       this.$router.push("/instructor-home");
     },
-    goToLearningOutcomePage() {
-      this.$router.push("/learning-outcome");
-    },
+    goToInstructorLearningOutcome() {
+  const courseId = this.$route.params.courseId;
+  console.log(courseId);
+  this.$router.push({ name: "InstructorLearningOutcome", params: { courseId: courseId }});
+},
     goToMatchMatrixPage() {
-      this.$router.push("/instructor-match-matrix");
+      const courseId = this.$route.params.courseId;
+      console.log(courseId);
+      this.$router.push({ name: "MatchMatrix", params: { courseId: courseId }});
+      
     },
     goToStudentInfoPage() {
       this.$router.push("/student-info");
     },
-    goToInstructorLearningOutcome() {
-      this.$router.push("/instructor-learning-outcome");
-    },
     refreshPage() {
       this.$router.push("/instructor-home");
     },
-    handleButton1() {
+    handleButton1() { 
       console.log("Button 1 clicked");
     },
     handleButton2() {
       console.log("Button 2 clicked");
     },
+    goToAssessmentPage(assessmentId) {
+      const courseId = this.$route.params.courseId;
+      this.$router.push({ name: "LearningOutcome", params: { courseId: courseId ,generalAssessmentId: assessmentId }});
+},
+
   },
 };
 </script>
@@ -320,4 +330,5 @@ export default {
 .course-details {
   width: calc(100% - 14rem); /* menü genişliği çıkarıldı */
 }
+
 </style>

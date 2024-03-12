@@ -2,7 +2,7 @@
   <div>
     <!-- Navbar -->
     <nav class="navbar navbar-expand-lg navbar-light" style="background-color: #98bdff;">
-      <a @click="refreshPage" style="margin-left: 10px" class="navbar-brand" href="#">myEdu</a>
+      <a @click="refreshPage" style="margin-left: 10px" class="navbar-brand" href="#"> <img src="../assets/Baskent_University_Logo.png" alt="Logo" style="max-height: 50px;"></a>
       <a @click="refreshPage" style="margin-left: 10px" class="navbar-brand" href="#">Kişiselleştirilmiş Akademik Gelişim ve <br /> Değerlendirme Sistemi</a>
       <div class="collapse navbar-collapse" id="navbarSupportedContent">
         <ul class="navbar-nav mr-auto"></ul>
@@ -25,46 +25,62 @@
       </div>
 
       <!-- Program Çıktıları -->
-      <div class="card" style="width: 75rem; height: 40rem; overflow-y: auto; overflow-x: hidden">
+      <div class="card" style="width: 80rem; height: 40rem; overflow-y: auto; overflow-x: hidden">
         <div class="card-body">
           <h5 class="card-title">Program Çıktıları Sayfası</h5>
           <table class="table">
             <thead>
               <tr>
                 <th scope="col">Program Çıktısı</th>
+                <th scope="col">Program Çıktısı Açıklaması</th>
                 <th scope="col">Bölüm Adı</th>
                 <th scope="col">İşlemler</th>
               </tr>
             </thead>
             <tbody>
-              <tr v-for="(item, index) in programs" :key="index">
+              <tr v-for="(item, index) in programs" :key="item.id">
+                <td>{{ 'PÇ ' + (index + 1) }}</td>
                 <td>
-                  <span v-if="editable === index && activeField === 'output'">
-                    <input v-model="item.output" @blur="editable = -1; activeField = ''" />
-                  </span>
-                  <span v-else @click="editCell(index, 'output')">{{ item.output }}</span>
+                  <span v-if="!item.editable">{{ item.description }}</span>
+                  <input v-else type="text" class="form-control" id="description" v-model="item.description" style="width: 250px;" @blur="saveProgram(index)" />
                 </td>
                 <td>
-                  <span v-if="editable === index && activeField === 'department'">
-                    <select v-model="item.department" @blur="editable = -1; activeField = ''">
-                      <option value="Bilgisayar Mühendisliği">Bilgisayar Mühendisliği</option>
-                      <option value="Elektrik Elektronik Mühendisliği">Elektrik Elektronik Mühendisliği</option>
-                      <option value="Endüstri Mühendisliği">Endüstri Mühendisliği</option>
-                      <option value="Makine Mühendisliği">Makine Mühendisliği</option>
-                      <option value="Biyomedikal Mühendisliği">Biyomedikal Mühendisliği</option>
-                    </select>
-                  </span>
-                  <span v-else @click="editCell(index, 'department')">{{ item.department }}</span>
+                  <span v-if="!item.editable">{{ item.department }}</span>
+                  <select v-else class="form-control" id="department" v-model="item.department" style="width: 250px;" @blur="saveProgram(index)">
+                    <option disabled selected value="">Bölüm Seçiniz</option>
+                    <option value="Bilgisayar Mühendisliği">Bilgisayar Mühendisliği</option>
+                    <option value="Elektrik Elektronik Mühendisliği">Elektrik Elektronik Mühendisliği</option>
+                    <option value="Endüstri Mühendisliği">Endüstri Mühendisliği</option>
+                    <option value="Makine Mühendisliği">Makine Mühendisliği</option>
+                    <option value="Biyomedikal Mühendisliği">Biyomedikal Mühendisliği</option>
+                  </select>
                 </td>
                 <td>
                   <button class="btn btn-danger btn-sm" @click="deleteProgram(item.id, index)">Sil</button>
+                  <button v-if="!item.editable" class="btn btn-warning btn-sm ml-2 text-white" @click="editProgram(item)">Düzenle</button>
+                  <button v-else class="btn btn-success btn-sm ml-2" @click="saveProgram(index)">Kaydet</button>
                 </td>
               </tr>
             </tbody>
           </table>
-          <!-- Ekle Butonu -->
+          <!-- Ekle Butonu ve Alanlar -->
           <div class="card-body">
-            <button class="btn btn-outline-primary my-2 my-sm-0" style="width: 150px; height: 35px" type="submit" @click="addProgram">Program Ekle</button>
+            <div class="form-group">
+              <label for="newProgramOutput">Program Çıktısı Açıklaması:</label>
+              <input type="text" class="form-control" id="newProgramOutput" v-model="newProgramOutput" style="width: 250px;">
+            </div>
+            <div class="form-group">
+              <label for="newProgramDepartment">Bölüm Adı:</label>
+              <select class="form-control" id="newProgramDepartment" v-model="newProgramDepartment" style="width: 250px;">
+                <option disabled selected value="">Bölüm Seçiniz</option>
+                <option value="Bilgisayar Mühendisliği">Bilgisayar Mühendisliği</option>
+                <option value="Elektrik Elektronik Mühendisliği">Elektrik Elektronik Mühendisliği</option>
+                <option value="Endüstri Mühendisliği">Endüstri Mühendisliği</option>
+                <option value="Makine Mühendisliği">Makine Mühendisliği</option>
+                <option value="Biyomedikal Mühendisliği">Biyomedikal Mühendisliği</option>
+              </select>
+            </div>
+            <button class="btn btn-outline-primary my-2 my-sm-0" style="width: 150px; height: 35px" type="submit" @click="addProgram">PÇ Ekle</button>
           </div>
         </div>
       </div>
@@ -82,8 +98,6 @@ export default {
       programs: [],
       newProgramOutput: "",
       newProgramDepartment: "",
-      editable: -1,
-      activeField: "",
     };
   },
   methods: {
@@ -99,9 +113,22 @@ export default {
     refreshPage() {
       this.$router.push("/admin-home");
     },
-    editCell(index, key) {
-      this.editable = index;
-      this.activeField = key;
+    editProgram(item) {
+      item.editable = true;
+    },
+    saveProgram(index) {
+      const program = this.programs[index];
+      axios.put(`http://localhost:8080/program-outcomes/${program.id}`, {
+          description: program.description,
+          department: program.department
+        })
+        .then(response => {
+          console.log('Program güncellendi:', response.data);
+          program.editable = false;
+        })
+        .catch(error => {
+          console.error('Program güncellenirken bir hata oluştu:', error);
+        });
     },
     deleteProgram(programId, index) {
       axios.delete(`http://localhost:8080/program-outcomes/${programId}`)
@@ -115,29 +142,34 @@ export default {
     },
     addProgram() {
       axios.post('http://localhost:8080/program-outcomes', {
-        output: this.newProgramOutput,
-        department: this.newProgramDepartment
-      })
-      .then(response => {
-        console.log('Yeni program eklendi:', response.data);
-        this.programs.push(response.data);
-        // Yeni program ekledikten sonra inputları temizle
-        this.newProgramOutput = "";
-        this.newProgramDepartment = "";
-      })
-      .catch(error => {
-        console.error('Program eklenirken bir hata oluştu:', error);
-      });
+          description: this.newProgramOutput,
+          department: this.newProgramDepartment
+        })
+        .then(response => {
+          console.log('Yeni program çıktısı eklendi:', response.data);
+          this.$toast.success("Yeni program çıktısı eklendi");
+          this.programs.push(response.data);
+          // Yeni program ekledikten sonra inputları temizle
+          this.newProgramOutput = "";
+          this.newProgramDepartment = "";
+        })
+        .catch(error => {
+          console.error('Program eklenirken bir hata oluştu:', error);
+          this.$toast.success("Program çıktısı eklenirken bir hata oluştu:");
+        });
     },
     getPrograms() {
       axios.get('http://localhost:8080/program-outcomes')
-      .then(response => {
-        console.log('Alınan program çıktıları:', response.data);
-        this.programs = response.data;
-      })
-      .catch(error => {
-        console.error('Programlar alınırken bir hata oluştu:', error);
-      });
+        .then(response => {
+          console.log('Alınan program çıktıları:', response.data);
+          this.programs = response.data.map(program => ({
+            ...program,
+            editable: false
+          }));
+        })
+        .catch(error => {
+          console.error('Programlar alınırken bir hata oluştu:', error);
+        });
     },
   },
   created() {

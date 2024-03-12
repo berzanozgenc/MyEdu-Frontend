@@ -26,12 +26,12 @@ const routes = [{
     {
         name: "InstructorLearningOutcome",
         component: InstructorLearningOutcome,
-        path: "/instructor-learning-outcome"
-    },
+        path: "/instructor-learning-outcome/:courseId" // courseId parametresi için dinamik yol tanımı
+      },
 {
         name: "MatchMatrix",
         component: MatchMatrix,
-        path: "/instructor-match-matrix"
+        path: "/instructor-match-matrix/:courseId" //courseId parametresi için dinamik yol tanımı
     },
     {
         name: "Course",
@@ -41,7 +41,7 @@ const routes = [{
     {
         name: "LearningOutcome",
         component: LearningOutcome,
-        path: "/learning-outcome"
+        path: "/learning-outcome/:courseId/:generalAssessmentId"
     },
     {
         name: "StudentInfo",
