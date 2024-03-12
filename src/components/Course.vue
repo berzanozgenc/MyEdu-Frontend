@@ -74,7 +74,8 @@
                   <button :class="{'btn-warning': !assessment.editMode, 'btn-success': assessment.editMode}" class="btn btn-sm text-white" @click="assessment.editMode ? saveChanges(assessment) : editProgram(assessment)">
                   {{ assessment.editMode ? 'Kaydet' : 'Düzenle' }}
                   </button>
-                  <button class="btn btn-info btn-sm text-white" @click="handleBilgileriGir">Bilgileri Gir</button>
+                  <button style="margin-left: 2px;" class="btn btn-info btn-sm text-white" @click="goToAssessmentPage(assessment.generalAssesmentId)">Bilgileri Gir</button>
+
 
                 </td>
               </tr>
@@ -267,8 +268,9 @@ export default {
     handleButton2() {
       console.log("Button 2 clicked");
     },
-    handleBilgileriGir() {
-  console.log("Bilgileri Gir button clicked");
+    goToAssessmentPage(assessmentId) {
+      const courseId = this.$route.params.courseId;
+      this.$router.push({ name: "LearningOutcome", params: { courseId: courseId ,generalAssessmentId: assessmentId }});
 },
 
   },

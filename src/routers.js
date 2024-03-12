@@ -41,7 +41,7 @@ const routes = [{
     {
         name: "LearningOutcome",
         component: LearningOutcome,
-        path: "/learning-outcome"
+        path: "/learning-outcome/:courseId/:generalAssessmentId"
     },
     {
         name: "StudentInfo",
