@@ -2,15 +2,15 @@
     <img class="logo" src="../assets/Baskent_University_Logo.png">
     <h1 class="title">myEdu</h1>
     <div class="login">
-        <input type="email" placeholder="Email" v-model="email" />
+        <input type="email" placeholder="Email" v-model="email" @keyup.enter="loginUser" />
         <div class="password-container">
-    <div class="password-input-wrapper">
-        <input :type="showPassword ? 'text' : 'password'" placeholder="Şifre" v-model="password" />
-        <label class="show-password-label">
-            <i class="fa" :class="showPassword ? 'fa-eye-slash' : 'fa-eye'" @click="togglePasswordVisibility"></i>
-        </label>
-    </div>
-</div>
+            <div class="password-input-wrapper">
+                <input :type="showPassword ? 'text' : 'password'" placeholder="Şifre" v-model="password" @keyup.enter="loginUser" />
+                <label class="show-password-label">
+                    <i class="fa" :class="showPassword ? 'fa-eye-slash' : 'fa-eye'" @click="togglePasswordVisibility"></i>
+                </label>
+            </div>
+        </div>
 
         <button @click="loginUser" type="button" class="btn btn-danger">Giriş Yap</button>
     </div>
@@ -124,5 +124,4 @@ export default {
     transform: translateY(-50%);
     cursor: pointer;
 }
-
 </style>

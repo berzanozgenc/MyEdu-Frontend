@@ -62,37 +62,29 @@
           <div style="max-width: 100%; overflow-x: auto">
             <div style="max-height: 300px; overflow-y: auto">
               <table class="table table-stretched">
-                <thead>
-                  <tr>
+            <thead>
+                <tr>
                     <th scope="col"></th>
-                    <th
-                      v-for="(assessment, index) in assessments"
-                      :key="assessment.id"
-                      scope="col"
-                    >
-                      <div class="d-flex align-items-center">
-                        <span @click="selectColumn(index)">{{
-                          assessment.name + " " + (index + 1)
-                        }}</span>
-                      </div>
+                    <th v-for="(assessment, index) in assessments" :key="assessment.id" scope="col">
+                        <div class="d-flex align-items-center justify-content-between">
+                            <span>{{ assessment.name + " " + (index + 1) }}</span>
+                            <button @click="deleteAssessment(assessment.assessmentId)" class="btn btn-sm btn-danger ml-2">
+                                <i class="fa fa-trash" style="font-size: 12px;"></i> <!-- Silme ikonu -->
+                            </button>
+                        </div>
                     </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
                     <th scope="row">Katkı (%)</th>
-                    <td
-                      v-for="(assessment, index) in assessments"
-                      :key="assessment.id"
-                      contenteditable="true"
-                    >
-                      <span v-if="assessment.contribution !== 0">{{
-                        assessment.contribution
-                      }}</span>
+                    <td v-for="(assessment, index) in assessments" :key="assessment.id" contenteditable="true">
+                        <span v-if="assessment.contribution !== 0">{{ assessment.contribution }}</span>
                     </td>
-                  </tr>
-                </tbody>
-              </table>
+                </tr>
+            </tbody>
+        </table>
+
 
               <button
                 type="button"
@@ -236,6 +228,19 @@ export default {
       } catch (error) {
         console.error("Yeni araç oluşturulurken hata oluştu:", error);
       }
+    },
+    deleteAssessment(assessmentId) {
+      console.log(assessmentId);
+            axios.delete(`http://localhost:8080/assessments/delete-assessment/${assessmentId}`)
+                .then(response => {
+                    // Silme başarılı olduysa burada gerekli işlemleri gerçekleştirin.
+                    console.log("Assessment silindi:", assessmentId);
+                    this.fetchAssessments();
+                })
+                .catch(error => {
+                    // Hata durumunda burada gerekli işlemleri gerçekleştirin.
+                    console.error("Assessment silinemedi:", error);
+                });
     },
 
     goToLoginPage() {

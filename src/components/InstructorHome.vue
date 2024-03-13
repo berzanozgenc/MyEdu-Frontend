@@ -71,6 +71,30 @@
         </div>
 
         <ul style="max-width: 73rem" class="list-group list-group-flush"></ul>
+        <div class="form-inline">
+          <div class="form-group mr-2">
+            <div style="margin-left: 5px;"> 
+            <h5 class="card-title">Ders Ekle</h5>
+            <label for="classDropdown">Ders Seç:</label>
+            <select
+              class="form-control"
+              id="classDropdown"
+              v-model="selectedClass"
+            >
+              <option
+                v-for="(course, index) in courses"
+                :key="index"
+                :value="course.courseId"
+              >
+                {{ course.code }} - {{ course.courseName }} -
+                {{ course.semester }}
+              </option>
+            </select>
+          </div>
+          <br>
+          <button class="btn btn-primary" @click="editClass">Ekle</button>
+        </div>
+        </div>
       </div>
     </div>
 
@@ -97,31 +121,7 @@
     <!-- End Confirmation Modal -->
 
     <!-- New card added here, moved outside flex-container div -->
-    <div class="card" style="margin-top: 20px">
-      <div class="card-body">
-        <h5 class="card-title">Ders</h5>
-        <div class="form-inline">
-          <div class="form-group mr-2">
-            <label for="classDropdown">Ders Seç:</label>
-            <select
-              class="form-control"
-              id="classDropdown"
-              v-model="selectedClass"
-            >
-              <option
-                v-for="(course, index) in courses"
-                :key="index"
-                :value="course.courseId"
-              >
-                {{ course.code }} - {{ course.courseName }} -
-                {{ course.semester }}
-              </option>
-            </select>
-          </div>
-          <button class="btn btn-primary" @click="editClass">Ekle</button>
-        </div>
-      </div>
-    </div>
+
   </div>
 </template>
 
