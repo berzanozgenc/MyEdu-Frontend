@@ -7,7 +7,7 @@
       <div class="collapse navbar-collapse" id="navbarSupportedContent">
         <ul class="navbar-nav mr-auto"></ul>
         <span class="logout">
-          <button @click="goToLoginPage" class="btn btn-outline-danger my-2 my-sm-0" type="submit">Çıkış Yap</button>
+          <button @click="logoutUser" class="btn btn-outline-danger my-2 my-sm-0" type="submit">Çıkış Yap</button>
         </span>
       </div>
     </nav>
@@ -70,6 +70,8 @@
 </template>
 
 <script>
+import { useStore } from 'vuex';
+import { useRouter } from 'vue-router';
 export default {
   name: "AdminPage",
   data() {
@@ -91,6 +93,13 @@ export default {
     refreshPage() {
       this.$router.push("/instructor-home");
     },
+    logoutUser() {
+            const store = useStore();
+            const router = useRouter();
+            localStorage.removeItem('store');
+            this.$store.dispatch('logoutUser');
+            this.$router.push("/");
+        },
   },
 };
 </script>
