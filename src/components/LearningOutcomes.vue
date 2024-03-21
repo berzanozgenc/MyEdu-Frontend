@@ -136,20 +136,19 @@
                   </tr>
                 </thead>
                 <tbody>
-                  <tr
-                    v-for="(outcome, outcomeIndex) in outcomes"
-                    :key="outcomeIndex"
-                  >
-                    <th scope="row">{{ outcome.description }}</th>
-                    <td
-                      v-for="(assessment, assessmentIndex) in assessments"
-                      :key="'assessment-' + assessmentIndex"
-                      contenteditable="true"
-                    >
-                      <!-- Her bir assessment için contenteditable hücresi -->
-                    </td>
-                  </tr>
-                </tbody>
+  <tr v-for="(outcome, outcomeIndex) in outcomes" :key="outcomeIndex">
+    <th scope="row">{{ outcome.description }}</th>
+    <td v-for="(assessment, assessmentIndex) in assessments" :key="'assessment-' + assessmentIndex" contenteditable="true">
+      <!-- Her bir assessment için contenteditable hücresi -->
+      <div
+        ref="assessmentCells"
+        :id="'cell-' + outcome.id + '-' + assessment.id"
+        @blur="updateRelationship(outcome.id, assessment.id, $event.target.innerText)"
+      ></div>
+    </td>
+  </tr>
+</tbody>
+
               </table>
               <button
                 type="button"
@@ -220,44 +219,61 @@ export default {
         console.error("Error fetching assessments:", error);
       }
     },
-    saveContributions() {
-      this.assessments.forEach(assessment => {
-        const newContribution = parseFloat(assessment.contribution);
-        console.log(assessment.contribution);
-        console.log("ASSESMENT",assessment);
-        axios.put(`http://localhost:8080/assessments/update-assessment-contribution/${assessment.assessmentId}?newContribution=${newContribution}`)
-          .then(response => {
-            console.log(`Assessment contribution updated for assessmentId ${assessment.assessmentId} to ${newContribution}`);
-            // Backend'deki veriler güncellendikten sonra frontend'deki verileri yeniden yükle
-            this.fetchAssessments();
-          })
-          .catch(error => {
-            console.error(`Error updating assessment contribution for assessmentId ${assessment.assessmentId}:`, error);
-          });
-      });
-    }, async saveLearningOutcomeContributions() {
-      // Her öğrenim çıktısı için katkı değerlerini saklayan objeyi oluştur
-      this.outcomeContributions = {};
-
-      // Her bir öğrenim çıktısı için katkı değerini topla
-      this.outcomes.forEach(outcome => {
-        const outcomeId = outcome.id;
-        const contribution = this.assessments.map(assessment => {
-          const assessmentId = assessment.id;
-          const contribution = parseFloat(this.$refs[outcomeId + "-" + assessmentId].innerText);
-          return { assessmentId, contribution };
-        });
-        this.outcomeContributions[outcomeId] = contribution;
-      });
-
-      // Endpointe uygun bir şekilde HTTP isteği gönder
+    async saveContributions() {
       try {
-        await axios.post(`http://localhost:8080/aloc`, this.outcomeContributions);
-        console.log("Öğrenim çıktısı katkı değerleri başarıyla kaydedildi.");
+        for (const assessment of this.assessments) {
+          const newContribution = parseFloat(assessment.contribution);
+          console.log(assessment.contribution);
+          console.log("ASSESMENT",assessment);
+          await axios.put(`http://localhost:8080/assessments/update-assessment-contribution/${assessment.assessmentId}?newContribution=${newContribution}`);
+          console.log(`Assessment contribution updated for assessmentId ${assessment.assessmentId} to ${newContribution}`);
+        }
+        // Backend'deki veriler güncellendikten sonra frontend'deki verileri yeniden yükle
+        this.fetchAssessments();
+        this.$toast.success("Katkı değeri başarıyla kaydedildi!");
       } catch (error) {
-        console.error("Öğrenim çıktısı katkı değerlerini kaydederken hata oluştu:", error);
+        console.error("Error updating assessment contributions:", error);
+        this.$toast.error("Katkı değeri kaydedilirken hata oluştu!");
       }
     },
+    async saveLearningOutcomeContributions() {
+  try {
+    for (const outcome of this.outcomes) {
+      const outcomeId = outcome.id;
+      for (const assessment of this.assessments) {
+        const assessmentId = assessment.id;
+        const contributionCell = this.$refs[outcomeId + "-" + assessmentId];
+        if (contributionCell) {
+          let relationship = parseFloat(contributionCell.innerText);
+          if (isNaN(relationship)) {
+            relationship = 0.0; // Geçersiz değerler için varsayılan 0 atanır
+          }
+          const data = {
+            assessmentId,
+            learningOutcomeId: outcomeId,
+            relationship
+          };
+          console.log("Gönderilecek veri:", data); // Veriyi konsola yazdırarak kontrol edin
+          await axios.post(`http://localhost:8080/aloc`, data);
+        }
+      }
+    } 
+    console.log("İlişkiler başarıyla kaydedildi.");
+    this.$toast.success("İlişkiler başarıyla kaydedildi!");
+
+  } catch (error) {
+    console.error("İlişkileri kaydederken hata oluştu:", error);
+    this.$toast.error("İlişkileri kaydederken hata oluştu!");
+  }
+},
+updateRelationship(outcomeId, assessmentId, value) {
+    const relationship = parseFloat(value);
+    if (isNaN(relationship)) {
+      // Eğer değer girilmemişse veya geçersizse, varsayılan değer olan 0 atanır
+      return;
+    }
+    // İlişkiyi güncelleme veya başka bir işlem yapma
+  },
 
     updateContribution(index, value) {
       this.assessments[index].contribution = parseFloat(value);
@@ -273,39 +289,34 @@ export default {
           }
         );
 
-        // Yeni değerlendirme başarıyla oluşturulduğunda bir mesaj gösterilebilir veya diğer gerekli işlemler yapılabilir
         console.log("Yeni araç başarıyla oluşturuldu:", response.data);
-
-        // Değerlendirmeleri tekrar yükleme işlemi
         this.fetchAssessments();
+        this.$toast.success("Yeni araç başarıyla oluşturuldu!");
       } catch (error) {
         console.error("Yeni araç oluşturulurken hata oluştu:", error);
+        this.$toast.error("Yeni araç oluşturulurken hata oluştu!");
       }
     },
-    deleteAssessment(assessmentId) {
-      console.log(assessmentId);
-            axios.delete(`http://localhost:8080/assessments/delete-assessment/${assessmentId}`)
-                .then(response => {
-                    // Silme başarılı olduysa burada gerekli işlemleri gerçekleştirin.
-                    console.log("Assessment silindi:", assessmentId);
-                    this.fetchAssessments();
-                })
-                .catch(error => {
-                    // Hata durumunda burada gerekli işlemleri gerçekleştirin.
-                    console.error("Assessment silinemedi:", error);
-                });
+    async deleteAssessment(assessmentId) {
+      try {
+        await axios.delete(`http://localhost:8080/assessments/delete-assessment/${assessmentId}`);
+        console.log("Assessment silindi:", assessmentId);
+        this.fetchAssessments();
+      } catch (error) {
+        console.error("Assessment silinemedi:", error);
+      }
     },
 
     goToLoginPage() {
       this.$router.push("/");
     },
     logoutUser() {
-            const store = useStore();
-            const router = useRouter();
-            localStorage.removeItem('store');
-            this.$store.dispatch('logoutUser');
-            this.$router.push("/");
-        },
+      const store = useStore();
+      const router = useRouter();
+      localStorage.removeItem('store');
+      this.$store.dispatch('logoutUser');
+      this.$router.push("/");
+    },
     goToCoursePage() {
       this.$router.push("/instructor-home");
     },
@@ -322,7 +333,6 @@ export default {
       this.$router.push("/instructor-learning-outcome");
     },
     refreshPage() {
-      //window.location.reload();
       this.$router.push("/instructor-home");
     },
     addNewQuiz() {
@@ -340,7 +350,6 @@ export default {
   },
 };
 </script>
-
 <style>
 .container {
   display: flex;
