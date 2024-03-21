@@ -1,48 +1,59 @@
 import { createStore } from "vuex";
 
-const savedState = localStorage.getItem('store');
-
 const store = createStore({
     state: {
         user: null,
         token: null
-      },
-      mutations: {
+    },
+    mutations: {
         setUser(state, user) {
-          state.user = user;
+            state.user = user;
         },
         setToken(state, token) {
-          state.token = token;
+            state.token = token;
+        },
+        logoutUser(state) {
+            state.user = null;
+            state.token = null;
         },
         restoreState(state, savedState) {
-          Object.assign(state, savedState);
+            Object.assign(state, savedState);
         }
-      },
-      actions: {
+    },
+    actions: {
         loginUser({ commit }, { user, token }) {
-          commit('setUser', user);
-          commit('setToken', token);
+            commit('setUser', user);
+            commit('setToken', token);
+        },
+        logoutUser({ commit }) {
+            commit('logoutUser');
+        },
+        restoreState({ commit }) {
+            const savedState = JSON.parse(localStorage.getItem('store'));
+            if (savedState) {
+                commit('restoreState', savedState);
+            }
         }
-      },
-      getters: {
+    },
+    getters: {
         getUserId(state) {
-          return state.user ? state.user.userId : null; 
+            return state.user ? state.user.userId : null; 
         },
         getUser(state) {
-          return state.user;
+            return state.user;
         },
         getToken(state) {
-          return state.token;
+            return state.token;
         }
-      }
+    }
 });
 
-if (savedState) {
-  store.commit('restoreState', JSON.parse(savedState));
-}
-
+// Vuex store'u tarayıcı hafızasına kaydetmek için subscribe işlemi
 store.subscribe((mutation, state) => {
-  localStorage.setItem('store', JSON.stringify(state));
+    localStorage.setItem('store', JSON.stringify(state));
 });
+
+// Oturum bilgilerini geri yükle
+store.dispatch('restoreState');
 
 export default store;

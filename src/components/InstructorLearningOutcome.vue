@@ -6,7 +6,7 @@
       <div class="collapse navbar-collapse" id="navbarSupportedContent">
         <ul class="navbar-nav mr-auto"></ul>
         <span class="logout">
-          <button @click="goToLoginPage" class="btn btn-outline-danger my-2 my-sm-0" type="submit">Çıkış Yap</button>
+          <button @click="logoutUser" class="btn btn-outline-danger my-2 my-sm-0" type="submit">Çıkış Yap</button>
         </span>
       </div>
     </nav>
@@ -63,6 +63,8 @@
 </template>
 
 <script>
+import { useStore } from 'vuex';
+import { useRouter } from 'vue-router';
 import axios from 'axios'; // axios'ı projenize dahil edin
 
 export default {
@@ -140,6 +142,14 @@ export default {
         alert("Öğrenim çıktısı eklenirken bir hata oluştu.");
       }
     },
+    logoutUser() {
+            const store = useStore();
+            const router = useRouter();
+            localStorage.removeItem('store');
+            this.$store.dispatch('logoutUser');
+            this.$router.push("/");
+        },
+
     async fetchLearningOutcomes(courseId) {
       try {
         const response = await axios.get(`http://localhost:8080/learningOutcomes/course/${courseId}`);

@@ -26,13 +26,7 @@
       <div class="collapse navbar-collapse" id="navbarSupportedContent">
         <ul class="navbar-nav mr-auto"></ul>
         <span class="logout">
-          <button
-            @click="goToLoginPage"
-            class="btn btn-outline-danger my-2 my-sm-0"
-            type="submit"
-          >
-            Çıkış Yap
-          </button>
+          <button @click="logoutUser" class="btn btn-outline-danger my-2 my-sm-0" type="submit">Çıkış Yap</button>
         </span>
       </div>
     </nav>
@@ -62,29 +56,43 @@
           <div style="max-width: 100%; overflow-x: auto">
             <div style="max-height: 300px; overflow-y: auto">
               <table class="table table-stretched">
-            <thead>
-                <tr>
+                <thead>
+                  <tr>
                     <th scope="col"></th>
                     <th v-for="(assessment, index) in assessments" :key="assessment.id" scope="col">
-                        <div class="d-flex align-items-center justify-content-between">
-                            <span>{{ assessment.name + " " + (index + 1) }}</span>
-                            <button @click="deleteAssessment(assessment.assessmentId)" class="btn btn-sm btn-danger ml-2">
-                                <i class="fa fa-trash" style="font-size: 12px;"></i> <!-- Silme ikonu -->
-                            </button>
-                        </div>
+                      <div class="d-flex align-items-center justify-content-between">
+                        <span>{{ assessment.name + " " + (index + 1) }}</span>
+                        <button @click="deleteAssessment(assessment.assessmentId)" class="btn btn-sm btn-danger ml-2">
+                          <i class="fa fa-trash" style="font-size: 12px;"></i> <!-- Silme ikonu -->
+                        </button>
+                      </div>
                     </th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
                     <th scope="row">Katkı (%)</th>
-                    <td v-for="(assessment, index) in assessments" :key="assessment.id" contenteditable="true">
-                        <span v-if="assessment.contribution !== 0">{{ assessment.contribution }}</span>
+                    <td v-for="(assessment, index) in assessments" :key="assessment.id">
+                      <input
+                        type="number"
+                        v-model="assessment.contribution"
+                        @input="updateContribution(index, $event.target.value)"
+                        style="width: 60px;"
+                      />
                     </td>
-                </tr>
-            </tbody>
-        </table>
+                  </tr>
+                </tbody>
+              </table>
 
+              <div style="margin-bottom: 10px;">
+                <label for="contributionInput" style="margin-right: 10px;">Katkı Değeri:</label>
+                <input
+                  type="number"
+                  id="contributionInput"
+                  v-model="contributionValue"
+                  style="width: 100px;"
+                />
+              </div>
 
               <button
                 type="button"
@@ -146,7 +154,7 @@
               <button
                 type="button"
                 class="btn btn-outline-primary"
-                @click="saveContributions"
+                @click="saveLearningOutcomeContributions"
               >
                 Kaydet
               </button>
@@ -159,6 +167,8 @@
 </template>
 
 <script>
+import { useStore } from 'vuex';
+import { useRouter } from 'vue-router';
 import axios from "axios";
 
 export default {
@@ -170,6 +180,7 @@ export default {
       assessments: [],
       quizColumns: [1, 2, 3], // Başlangıçta üç sütun var
       selectedColumn: null,
+      contributionValue: 0.0, // Kullanıcı tarafından girilen katkı değeri
     };
   },
   created() {
@@ -209,13 +220,55 @@ export default {
         console.error("Error fetching assessments:", error);
       }
     },
+    saveContributions() {
+      this.assessments.forEach(assessment => {
+        const newContribution = parseFloat(assessment.contribution);
+        console.log(assessment.contribution);
+        console.log("ASSESMENT",assessment);
+        axios.put(`http://localhost:8080/assessments/update-assessment-contribution/${assessment.assessmentId}?newContribution=${newContribution}`)
+          .then(response => {
+            console.log(`Assessment contribution updated for assessmentId ${assessment.assessmentId} to ${newContribution}`);
+            // Backend'deki veriler güncellendikten sonra frontend'deki verileri yeniden yükle
+            this.fetchAssessments();
+          })
+          .catch(error => {
+            console.error(`Error updating assessment contribution for assessmentId ${assessment.assessmentId}:`, error);
+          });
+      });
+    }, async saveLearningOutcomeContributions() {
+      // Her öğrenim çıktısı için katkı değerlerini saklayan objeyi oluştur
+      this.outcomeContributions = {};
+
+      // Her bir öğrenim çıktısı için katkı değerini topla
+      this.outcomes.forEach(outcome => {
+        const outcomeId = outcome.id;
+        const contribution = this.assessments.map(assessment => {
+          const assessmentId = assessment.id;
+          const contribution = parseFloat(this.$refs[outcomeId + "-" + assessmentId].innerText);
+          return { assessmentId, contribution };
+        });
+        this.outcomeContributions[outcomeId] = contribution;
+      });
+
+      // Endpointe uygun bir şekilde HTTP isteği gönder
+      try {
+        await axios.post(`http://localhost:8080/aloc`, this.outcomeContributions);
+        console.log("Öğrenim çıktısı katkı değerleri başarıyla kaydedildi.");
+      } catch (error) {
+        console.error("Öğrenim çıktısı katkı değerlerini kaydederken hata oluştu:", error);
+      }
+    },
+
+    updateContribution(index, value) {
+      this.assessments[index].contribution = parseFloat(value);
+    },
     async addNewAssessment() {
       const generalAssessmentId = this.$route.params.generalAssessmentId;
       try {
         const response = await axios.post(
           "http://localhost:8080/assessments/create-assessment",
           {
-            contribution: 0.0,
+            contribution: this.contributionValue,
             generalAssessmentId: generalAssessmentId,
           }
         );
@@ -246,6 +299,13 @@ export default {
     goToLoginPage() {
       this.$router.push("/");
     },
+    logoutUser() {
+            const store = useStore();
+            const router = useRouter();
+            localStorage.removeItem('store');
+            this.$store.dispatch('logoutUser');
+            this.$router.push("/");
+        },
     goToCoursePage() {
       this.$router.push("/instructor-home");
     },

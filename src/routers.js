@@ -10,7 +10,7 @@ import InstructorLearningOutcome from "./components/InstructorLearningOutcome.vu
 import MatchMatrix from "./components/MatchMatrix.vue";
 import AdminHome from "./components/AdminHome.vue";
 import { createRouter, createWebHistory } from "vue-router";
-
+import store from "./store/auth";
 
 const routes = [{
         name: "Login",
@@ -22,52 +22,62 @@ const routes = [{
         name: "InstructorHome",
         component: InstructorHome,
         path: "/instructor-home",
+        meta: { requiresAuth: true }, // Oturum açma gerektiren sayfaları belirtin
     },
     {
         name: "InstructorLearningOutcome",
         component: InstructorLearningOutcome,
-        path: "/instructor-learning-outcome/:courseId" // courseId parametresi için dinamik yol tanımı
+        path: "/instructor-learning-outcome/:courseId", // courseId parametresi için dinamik yol tanımı
+        meta: { requiresAuth: true }, // Oturum açma gerektiren sayfaları belirtin
       },
 {
         name: "MatchMatrix",
         component: MatchMatrix,
-        path: "/instructor-match-matrix/:courseId" //courseId parametresi için dinamik yol tanımı
+        path: "/instructor-match-matrix/:courseId", //courseId parametresi için dinamik yol tanımı
+        meta: { requiresAuth: true }, // Oturum açma gerektiren sayfaları belirtin
     },
     {
         name: "Course",
         component: Course,
-        path: "/course/:courseId"  // courseId parametresi için dinamik yol tanımı
+        path: "/course/:courseId",  // courseId parametresi için dinamik yol tanımı
+        meta: { requiresAuth: true }, // Oturum açma gerektiren sayfaları belirtin
     },
     {
         name: "LearningOutcome",
         component: LearningOutcome,
-        path: "/learning-outcome/:courseId/:generalAssessmentId"
+        path: "/learning-outcome/:courseId/:generalAssessmentId",
+        meta: { requiresAuth: true }, // Oturum açma gerektiren sayfaları belirtin
     },
     {
         name: "StudentInfo",
         component: StudentInfo,
-        path: "/student-info"
+        path: "/student-info",
+        meta: { requiresAuth: true }, // Oturum açma gerektiren sayfaları belirtin
     },
     {
         name: "AdminPage",
         component: AdminPageVue,
-        path: "/program-output"
+        path: "/program-output",
+        meta: { requiresAuth: true }, // Oturum açma gerektiren sayfaları belirtin
     },
     
     {
         name: "AddCoursePage",
         component: AddCoursePage,
-        path: "/add-course"
+        path: "/add-course",
+        meta: { requiresAuth: true }, // Oturum açma gerektiren sayfaları belirtin
     },
     {
         name: "AdminLoadStudentPage",
         component: AdminLoadStudentPage,
-        path: "/admin-load-student"
+        path: "/admin-load-student",
+        meta: { requiresAuth: true }, // Oturum açma gerektiren sayfaları belirtin
     },
     {
         name: "AdminHome",
         component: AdminHome,
-        path: "/admin-home"
+        path: "/admin-home",
+        meta: { requiresAuth: true }, // Oturum açma gerektiren sayfaları belirtin
     },
 
 ];
@@ -77,4 +87,18 @@ const router = createRouter({
     routes,
 });
 
+// Navigation guard tanımlayın
+router.beforeEach((to, from, next) => {
+    // Kullanıcının oturum durumunu kontrol edin
+    const isAuthenticated = store.getters.getUser !== null;
+    
+    // Rota giriş yapma gerektiriyorsa ve kullanıcı giriş yapmamışsa, Login sayfasına yönlendirin
+    if (to.meta.requiresAuth && !isAuthenticated) {
+        next({ name: 'Login' });
+    } else {
+        next(); // Diğer durumlarda rota değişikliğine izin verin
+    }
+});
+
+ 
 export default router;
