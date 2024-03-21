@@ -7,7 +7,7 @@
       <div class="collapse navbar-collapse" id="navbarSupportedContent">
         <ul class="navbar-nav mr-auto"></ul>
         <span class="logout">
-          <button @click="logoutUser" class="btn btn-outline-danger my-2 my-sm-0" type="submit">Çıkış Yap</button>
+        <button @click="logoutUser" class="btn btn-outline-danger my-2 my-sm-0" type="submit">Çıkış Yap</button>
         </span>
       </div>
     </nav>
@@ -45,6 +45,7 @@
               </tr>
             </tbody>
           </table>
+          <button @click="saveMatrix" class="btn btn-primary mt-3">Kaydet</button>
         <!-- End of matrix code -->
 
       </div>
@@ -71,7 +72,7 @@ export default {
   },
   created() {
     const courseId = this.$route.params.courseId;
-    console.log("Course ID:", courseId);
+    console.log("Current Course ID : ", courseId);
     this.fetchLearningOutcomes(courseId); // dersin öğrenim çıktılarını al
     this.fetchProgramOutcomes(); // Program çıktılarını al
   },
@@ -102,6 +103,46 @@ export default {
         console.error('Bir hata oluştu:', error);
       }
     },
+    async saveMatrix() {
+  try {
+    for (let i = 0; i < this.programs.length; i++) {
+      const program = this.programs[i];
+      for (let j = 0; j < program.outcomes.length; j++) {
+        const outcome = program.outcomes[j];
+        const learningOutcomeId = this.outcomes[j].id;
+        const programOutcomeId = program.id;
+        const contribution = parseFloat(outcome); // Veri tipini doğru bir şekilde dönüştür
+
+        // Eğer boş bir değer girilmişse veya geçerli bir sayı değilse atla
+        if (!isNaN(contribution)) {
+          console.log('Kaydedilen Learning Outcome ID:', learningOutcomeId, 'Kaydedilen Program Outcome ID:', programOutcomeId);
+          const response = await axios.post('http://localhost:8080/learning-outcome-program-outcome', {
+            learningOutcomeId,
+            programOutcomeId,
+            contribution
+          });
+          if (response.status === 201) {
+            console.log('Başarıyla kaydedildi.');
+            this.$toast.success("Çıktı ilişkileri başarıyla kaydedildi!");
+          } else {
+            console.error('Kaydedilirken bir hata oluştu:', response.data);
+            this.$toast.error("Çıktı ilişkileri güncellenirken bir hata oluştu!");
+          }
+        }
+      }
+    }
+    console.log('Outcome ilişkileri başarıyla güncellendi');
+    this.$toast.success("Çıktı ilişkileri başarıyla güncellendi!");
+  } catch (error) {
+    console.error('Outcome ilişkileri güncellenirken bir hata oluştu:', error);
+    this.$toast.error("Çıktı ilişkileri güncellenirken bir hata oluştu!");
+  }
+},
+
+
+
+
+
     async fetchProgramOutcomes() {
   try {
     const response = await axios.get(`http://localhost:8080/program-outcomes`);
@@ -123,12 +164,12 @@ export default {
       this.$router.push("/instructor-home");
     },
     logoutUser() {
-            const store = useStore();
-            const router = useRouter();
-            localStorage.removeItem('store');
-            this.$store.dispatch('logoutUser');
-            this.$router.push("/");
-        },
+      const store = useStore();
+      const router = useRouter();
+      localStorage.removeItem('store');
+      this.$store.dispatch('logoutUser');
+      this.$router.push("/");
+  },
     goToLearningOutcomePage() {
       this.$router.push("/learning-outcome");
     },
