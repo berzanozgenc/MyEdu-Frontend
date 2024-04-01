@@ -130,9 +130,7 @@
                       scope="col"
                     >
                       <div class="d-flex align-items-center">
-                        <span @click="selectColumn(index)">{{
-                          assessment.name + " " + (index + 1)
-                        }}</span>
+                        <span @click="selectColumn(index)">{{useCustomNames ?  assessment.name  : 'Soru'}} {{ index + 1 }}</span>
                       </div>
                     </th>
                   </tr>
