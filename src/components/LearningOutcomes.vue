@@ -60,13 +60,14 @@
                   <tr>
                     <th scope="col"></th>
                     <th v-for="(assessment, index) in assessments" :key="assessment.id" scope="col">
-                      <div class="d-flex align-items-center justify-content-between">
-                        <span>{{ assessment.name + " " + (index + 1) }}</span>
-                        <button @click="deleteAssessment(assessment.assessmentId)" class="btn btn-sm btn-danger ml-2">
-                          <i class="fa fa-trash" style="font-size: 12px;"></i> <!-- Silme ikonu -->
-                        </button>
-                      </div>
-                    </th>
+  <div class="d-flex align-items-center justify-content-between">
+    <span>{{useCustomNames ?  assessment.name  : 'Soru'}} {{ index + 1 }}</span>
+    <button @click="deleteAssessment(assessment.assessmentId)" class="btn btn-sm btn-danger ml-2">
+      <i class="fa fa-trash" style="font-size: 12px;"></i> <!-- Silme ikonu -->
+    </button>
+  </div>
+</th>
+
                   </tr>
                 </thead>
                 <tbody>
@@ -101,6 +102,7 @@
               >
                 Yeni Araç Ekle
               </button>
+              <input style="margin-left: 4px;" type="checkbox" @change="toggleColumnNames" /> Soru Bazlı Değerlendirme
               <br />
               <button
                 type="button"
@@ -180,6 +182,7 @@ export default {
       quizColumns: [1, 2, 3], // Başlangıçta üç sütun var
       selectedColumn: null,
       contributionValue: 0.0, // Kullanıcı tarafından girilen katkı değeri
+      useCustomNames: true // Özel isimleri kullanma durumu
     };
   },
   created() {
@@ -306,7 +309,10 @@ updateRelationship(outcomeId, assessmentId, value) {
         console.error("Assessment silinemedi:", error);
       }
     },
-
+    toggleColumnNames() {
+    // Checkbox durumuna göre useCustomNames değerini değiştirin
+    this.useCustomNames = !this.useCustomNames;
+  },
     goToLoginPage() {
       this.$router.push("/");
     },
