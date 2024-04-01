@@ -28,21 +28,16 @@
           <h5 class="card-title">Öğrenci Notları</h5>
           <table class="table">
             <thead>
-              <tr>
-                <th scope="col">Öğrenci</th>
-                <th scope="col">Ödev</th>
-                <th scope="col">Quiz</th>
-                <th scope="col">Ara Sınav</th>
-                <th scope="col">Final</th>
-              </tr>
-            </thead>
+  <tr>
+    <th scope="col">Öğrenci</th>
+    <!-- assessments dizisini kullanarak sütun başlıklarını oluştur -->
+    <th v-for="assessment in assessments" :key="assessment.assessmentId" scope="col">{{ assessment.name }}</th>
+  </tr>
+</thead>
             <tbody>
               <tr>
                 <th scope="row">Öğrenci 1</th>
-                <td contenteditable="true">-</td>
-                <td contenteditable="true">-</td>
-                <td contenteditable="true">-</td>
-                <td contenteditable="true">-</td>
+                s
               </tr>
               <tr>
                 <th scope="row">Öğrenci 2</th>
@@ -70,12 +65,26 @@
 </template>
 
 <script>
+import axios from 'axios';
 import { useStore } from 'vuex';
 import { useRouter } from 'vue-router';
 export default {
-  name: "AdminPage",
+  name: "StudentInfo",
   data() {
-    return {};
+    return {
+      assessments: [],
+    };
+  },
+  created() {
+    const courseId = this.$route.params.courseId;
+    const generalAssessmentId = this.$route.params.generalAssessmentId; 
+    axios.get(`http://localhost:8080/assessments/generalAssessment/${generalAssessmentId}`)
+      .then(response => {
+        this.assessments = response.data; // Aldığımız veriyi assessments değişkenine atadık
+      })
+      .catch(error => {
+        console.error('Error fetching assessments:', error);
+      });
   },
   methods: {
     goToLoginPage() {

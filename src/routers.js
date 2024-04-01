@@ -51,7 +51,7 @@ const routes = [{
     {
         name: "StudentInfo",
         component: StudentInfo,
-        path: "/student-info",
+        path: "/student-info/:courseId/:generalAssessmentId",
         meta: { requiresAuth: true }, // Oturum açma gerektiren sayfaları belirtin
     },
     {

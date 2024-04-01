@@ -19,7 +19,6 @@
         <div class="card-body">
           <h5 class="card-title">Menü</h5>
           <a href="#" class="card-link" @click="goToCoursePage">Derslerim</a><br />
-          <a href="#" class="card-link" @click="goToStudentInfoPage">Not Girişi</a><br />    
           <a href="#" class="card-link" @click="goToInstructorLearningOutcome">Öğrenim Çıktıları</a><br />
           <a href="#" class="card-link" @click="goToMatchMatrixPage">ÖÇ ve PÇ Eşleştirme</a>
         </div>
@@ -34,7 +33,7 @@
         </div>
         <div class="buttons-container">
           <button style="margin-left: 16px;" class="btn btn-outline-primary" @click="goToInstructorLearningOutcome">Öğrenim Çıktıları</button>
-          <button class="btn btn-outline-success" @click="goToStudentInfoPage">Not Girişi</button>
+          
         </div>
         
         <div class="card-body">
@@ -73,8 +72,7 @@
                   {{ assessment.editMode ? 'Kaydet' : 'Düzenle' }}
                   </button>
                   <button style="margin-left: 2px;" class="btn btn-info btn-sm text-white" @click="goToAssessmentPage(assessment.generalAssesmentId)">Bilgileri Gir</button>
-
-
+                  <button style="margin-left: 2px; height: 31px;" type="button" class="btn btn-sm btn-primary" @click="goToStudentInfoPage(assessment.generalAssesmentId)">Not Gir</button>
                 </td>
               </tr>
             </tbody>
@@ -256,8 +254,9 @@ export default {
       this.$router.push({ name: "MatchMatrix", params: { courseId: courseId }});
       
     },
-    goToStudentInfoPage() {
-      this.$router.push("/student-info");
+    goToStudentInfoPage(assessmentId) {
+      const courseId = this.$route.params.courseId;
+      this.$router.push({ name: "StudentInfo", params: { courseId: courseId ,generalAssessmentId: assessmentId }});
     },
     refreshPage() {
       this.$router.push("/instructor-home");
