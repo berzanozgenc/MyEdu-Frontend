@@ -31,14 +31,15 @@
   <tr>
     <th scope="col">Öğrenci</th>
     <!-- assessments dizisini kullanarak sütun başlıklarını oluştur -->
-    <th v-for="assessment in assessments" :key="assessment.assessmentId" scope="col">{{ assessment.name }}</th>
+    <th v-for="(assessment, index) in assessments" :key="assessment.assessmentId" scope="col">
+                  <!-- İsimlendirme kontrolü -->
+                  <span v-if="isQuestionBased">Soru {{ index + 1 }}</span>
+                  <span v-else>{{ assessment.name }} {{ index + 1 }}</span>
+                </th>
+
   </tr>
 </thead>
             <tbody>
-              <tr>
-                <th scope="row">Öğrenci 1</th>
-                s
-              </tr>
               <tr>
                 <th scope="row">Öğrenci 2</th>
                 <td contenteditable="true">-</td>
@@ -73,6 +74,7 @@ export default {
   data() {
     return {
       assessments: [],
+      isQuestionBased: false,
     };
   },
   created() {
@@ -85,6 +87,15 @@ export default {
       .catch(error => {
         console.error('Error fetching assessments:', error);
       });
+
+      axios.get(`http://localhost:8080/generalAssesment/${generalAssessmentId}/isQuestionBased`)
+      .then(response => {
+        this.isQuestionBased = response.data; // Aldığımız veriyi kullanarak isQuestionBased değişkenini güncelle
+      })
+      .catch(error => {
+        console.error('Error fetching question based status:', error);
+      });
+      
   },
   methods: {
     goToLoginPage() {

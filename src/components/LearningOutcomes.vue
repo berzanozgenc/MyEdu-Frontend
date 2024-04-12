@@ -61,7 +61,7 @@
                     <th scope="col"></th>
                     <th v-for="(assessment, index) in assessments" :key="assessment.id" scope="col">
   <div class="d-flex align-items-center justify-content-between">
-    <span>{{useCustomNames ?  assessment.name  : 'Soru'}} {{ index + 1 }}</span>
+    <span>{{!useCustomNames ?  assessment.name  : 'Soru'}} {{ index + 1 }}</span>
     <button @click="deleteAssessment(assessment.assessmentId)" class="btn btn-sm btn-danger ml-2">
       <i class="fa fa-trash" style="font-size: 12px;"></i> <!-- Silme ikonu -->
     </button>
@@ -102,7 +102,7 @@
               >
                 Yeni Araç Ekle
               </button>
-              <input style="margin-left: 4px;" type="checkbox" @change="toggleColumnNames" /> Soru Bazlı Değerlendirme
+              <input style="margin-left: 4px;" type="checkbox" v-model="useCustomNames" @change="toggleQuestionBased">Soru Bazlı Değerlendirme
               <br />
               <button
                 type="button"
@@ -130,7 +130,7 @@
                       scope="col"
                     >
                       <div class="d-flex align-items-center">
-                        <span @click="selectColumn(index)">{{useCustomNames ?  assessment.name  : 'Soru'}} {{ index + 1 }}</span>
+                        <span @click="selectColumn(index)">{{!useCustomNames ?  assessment.name  : 'Soru'}} {{ index + 1 }}</span>
                       </div>
                     </th>
                   </tr>
@@ -180,7 +180,7 @@ export default {
       quizColumns: [1, 2, 3], // Başlangıçta üç sütun var
       selectedColumn: null,
       contributionValue: 0.0, // Kullanıcı tarafından girilen katkı değeri
-      useCustomNames: true // Özel isimleri kullanma durumu
+      useCustomNames: null,
     };
   },
   created() {
@@ -194,9 +194,28 @@ export default {
   mounted() {
     this.fetchLearningOutcomes();
     this.fetchAssessments();
+    this.fetchUseCustomNames();
   },
-
   methods: {
+    async toggleQuestionBased() {
+      console.log("deneme");
+    try {
+      const generalAssessmentId = this.$route.params.generalAssessmentId;
+      await axios.put(`http://localhost:8080/generalAssesment/${generalAssessmentId}/toggleQuestionBased`);
+      console.log("Question based toggled successfully.");
+    } catch (error) {
+      console.error("Error toggling question based:", error);
+    }
+  },
+    async fetchUseCustomNames() {
+    try {
+      const generalAssessmentId = this.$route.params.generalAssessmentId;
+      const response = await axios.get(`http://localhost:8080/generalAssesment/${generalAssessmentId}/isQuestionBased`);
+      this.useCustomNames = response.data; // Backend'den gelen veriyi useCustomNames değişkenine atar
+    } catch (error) {
+      console.error("Error fetching useCustomNames:", error);
+    }
+  },
     async fetchLearningOutcomes() {
       try {
         const courseId = this.$route.params.courseId;
@@ -307,10 +326,6 @@ updateRelationship(outcomeId, assessmentId, value) {
         console.error("Assessment silinemedi:", error);
       }
     },
-    toggleColumnNames() {
-    // Checkbox durumuna göre useCustomNames değerini değiştirin
-    this.useCustomNames = !this.useCustomNames;
-  },
     goToLoginPage() {
       this.$router.push("/");
     },
