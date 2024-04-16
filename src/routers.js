@@ -12,7 +12,8 @@ import AdminHome from "./components/AdminHome.vue";
 import { createRouter, createWebHistory } from "vue-router";
 import store from "./store/auth";
 import StudentPage from "./components/StudentPage.vue";
-import StudentPageMatrix from "./components/Student-PageMatrix.vue";
+import StudentPageMatrix from "./components/StudentPageMatrix.vue";
+import ProgramOutcomeResult from "./components/ProgramOutcomeResult.vue";
 const routes = [{
         name: "Login",
         component: Login,
@@ -30,8 +31,8 @@ const routes = [{
         component: InstructorLearningOutcome,
         path: "/instructor-learning-outcome/:courseId", // courseId parametresi için dinamik yol tanımı
         meta: { requiresAuth: true }, // Oturum açma gerektiren sayfaları belirtin
-      },
-{
+    },
+    {
         name: "MatchMatrix",
         component: MatchMatrix,
         path: "/instructor-match-matrix/:courseId", //courseId parametresi için dinamik yol tanımı
@@ -40,7 +41,7 @@ const routes = [{
     {
         name: "Course",
         component: Course,
-        path: "/course/:courseId",  // courseId parametresi için dinamik yol tanımı
+        path: "/course/:courseId", // courseId parametresi için dinamik yol tanımı
         meta: { requiresAuth: true }, // Oturum açma gerektiren sayfaları belirtin
     },
     {
@@ -56,12 +57,18 @@ const routes = [{
         meta: { requiresAuth: true }, // Oturum açma gerektiren sayfaları belirtin
     },
     {
+        name: "ProgramOutcomeResult",
+        component: ProgramOutcomeResult,
+        path: "/program-outcome-result/:courseId",
+        meta: { requiresAuth: true }, // Oturum açma gerektiren sayfaları belirtin
+    },
+    {
         name: "AdminPage",
         component: AdminPageVue,
         path: "/program-output",
         meta: { requiresAuth: true }, // Oturum açma gerektiren sayfaları belirtin
     },
-    
+
     {
         name: "AddCoursePage",
         component: AddCoursePage,
@@ -104,7 +111,7 @@ const router = createRouter({
 router.beforeEach((to, from, next) => {
     // Kullanıcının oturum durumunu kontrol edin
     const isAuthenticated = store.getters.getUser !== null;
-    
+
     // Rota giriş yapma gerektiriyorsa ve kullanıcı giriş yapmamışsa, Login sayfasına yönlendirin
     if (to.meta.requiresAuth && !isAuthenticated) {
         next({ name: 'Login' });
@@ -113,5 +120,5 @@ router.beforeEach((to, from, next) => {
     }
 });
 
- 
+
 export default router;
