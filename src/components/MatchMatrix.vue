@@ -37,33 +37,35 @@
         <div class="card-body">
           <h5 class="card-title">PROGRAM YETERLİLİKLERİ (P) / DERSİN ÖĞRENME KAZANIMLARI (Ö) MATRİSİ</h5>
 
+          <!-- Düzenle butonu -->
+          <button v-if="!editMode" @click="toggleEditMode" class="btn btn-primary mt-2 mr-2 float-right">
+  <i class="fas fa-pencil-alt"></i> 
+</button>
+
           <!-- Matrix table -->
           <table class="table" style="min-width: 600px;">
-  <thead>
-    <tr>
-      <th scope="col"></th>
-      <th v-for="(outcome, index) in outcomes" :key="index" scope="col">{{ outcome.description }}</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr v-for="(program, programIndex) in programs" :key="programIndex">
-      <th scope="row">{{ program.description }}</th>
-      <td v-for="(outcome, outcomeIndex) in outcomes" :key="outcomeIndex">
-        <div>
-          <input v-if="program.editMode[outcomeIndex]" placeholder="%" type="text" v-model="program.outcomes[outcomeIndex]">
-          <span v-else>{{ program.outcomes[outcomeIndex] }}</span>
-          <button @click="toggleEditMode(programIndex, outcomeIndex)" class="btn btn-sm btn-primary ml-1">
-            {{ program.editMode[outcomeIndex] ? 'Vazgeç' : 'Düzenle' }}
-          </button>
-          <button v-if="program.editMode[outcomeIndex]" @click="saveChanges(programIndex, outcomeIndex)" class="btn btn-sm btn-success ml-1">Kaydet</button>
-        </div>
-      </td>
-    </tr>
-  </tbody>
-</table>
+            <thead>
+              <tr>
+                <th scope="col"></th>
+                <th v-for="(outcome, index) in outcomes" :key="index" scope="col">{{ outcome.description }}</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="(program, programIndex) in programs" :key="programIndex">
+                <th scope="row">{{ program.description }}</th>
+                <td v-for="(outcome, outcomeIndex) in outcomes" :key="outcomeIndex">
+                  <div>
+                    <input v-if="editMode" placeholder="%" type="text" v-model="program.outcomes[outcomeIndex]">
+                    <span v-else>{{ program.outcomes[outcomeIndex] }}</span>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
           <!-- End of matrix table -->
-          
-  <button @click="saveAllChanges" class="btn btn-primary mt-3">Tümünü Kaydet</button>
+
+          <!-- Tümünü kaydet butonu -->
+          <button v-if="editMode" @click="saveAllChanges" class="btn btn-primary mt-3">Tümünü Kaydet</button>
 
         </div>
       </div>
@@ -79,9 +81,7 @@ import axios from 'axios';
 export default {
   data() {
     return {
-      rowCount: 12,
-      colCount: 3,
-      matrix: [],
+      editMode: false,
       outcomes: [],
       programs: [],
     };
@@ -91,13 +91,6 @@ export default {
     console.log("Current Course ID : ", courseId);
     this.fetchLearningOutcomes(courseId);
     this.fetchProgramOutcomes();
-  },
-  watch: {
-    rowCount: 'generateMatrix',
-    colCount: 'generateMatrix',
-  },
-  mounted() {
-    this.generateMatrix();
   },
   methods: {
     // Functions for navigation
@@ -123,21 +116,22 @@ export default {
       this.$router.push("/instructor-home");
     },
     async saveAllChanges() {
-    try {
-      for (let i = 0; i < this.programs.length; i++) {
-        const program = this.programs[i];
-        for (let j = 0; j < program.outcomes.length; j++) {
-          if (program.editMode[j]) {
-            await this.saveChanges(i, j);
+      try {
+        for (let i = 0; i < this.programs.length; i++) {
+          const program = this.programs[i];
+          for (let j = 0; j < program.outcomes.length; j++) {
+            if (program.outcomes[j] !== undefined && program.outcomes[j] !== null) {
+              await this.saveChanges(i, j);
+            }
           }
         }
+        this.$toast.success("Tüm değişiklikler başarıyla kaydedildi!");
+        this.editMode = false; // Düzenleme modunu kapat
+      } catch (error) {
+        console.error('Tüm değişiklikler kaydedilirken bir hata oluştu:', error);
+        this.$toast.error("Tüm değişiklikler kaydedilirken bir hata oluştu!");
       }
-      this.$toast.success("Tüm değişiklikler başarıyla kaydedildi!");
-    } catch (error) {
-      console.error('Tüm değişiklikler kaydedilirken bir hata oluştu:', error);
-      this.$toast.error("Tüm değişiklikler kaydedilirken bir hata oluştu!");
-    }
-  },
+    },
     async logoutUser() {
       const store = useStore();
       const router = useRouter();
@@ -152,9 +146,7 @@ export default {
           throw new Error('Öğrenim çıktıları getirilirken bir hata oluştu.');
         }
         const data = await response.json();
-        this.matrix = data.map(item => item.description);
         this.outcomes = data;
-        this.colCount = data.length;
       } catch (error) {
         console.error('Bir hata oluştu:', error);
       }
@@ -165,61 +157,51 @@ export default {
         if (response.status !== 200) {
           throw new Error('Program çıktıları getirilirken bir hata oluştu.');
         }
-        const data = response.data;
-        this.programs = data.map(program => {
+        this.programs = response.data.map(program => {
           return {
             ...program,
-            outcomes: Array(this.outcomes.length).fill(false),
-            editMode: Array(this.outcomes.length).fill(false) // Edit mode for each outcome
+            outcomes: Array(this.outcomes.length).fill(null)
           };
         });
       } catch (error) {
         console.error('Bir hata oluştu:', error);
       }
     },
-    toggleEditMode(programIndex, outcomeIndex) {
-      this.programs[programIndex].editMode[outcomeIndex] = !this.programs[programIndex].editMode[outcomeIndex];
-    },
     async saveChanges(programIndex, outcomeIndex) {
-  try {
-    const program = this.programs[programIndex];
-    const outcome = program.outcomes[outcomeIndex];
-    const learningOutcomeId = this.outcomes[outcomeIndex].id;
-    const programOutcomeId = program.id;
-    const contribution = parseFloat(outcome);
+      try {
+        const program = this.programs[programIndex];
+        const outcome = program.outcomes[outcomeIndex];
+        const learningOutcomeId = this.outcomes[outcomeIndex].id;
+        const programOutcomeId = program.id;
+        const contribution = parseFloat(outcome);
 
-    if (isNaN(contribution) || contribution < 0 || contribution > 100 || outcome.trim() === '') {
-      // Girilen değer geçerli bir sayı değil veya boşsa
-      this.$toast.error("Lütfen geçerli bir değer giriniz.");
-      return;
-    }
+        if (isNaN(contribution) || contribution < 0 || contribution > 100 || outcome.trim() === '') {
+          // Girilen değer geçerli bir sayı değil veya boşsa
+          this.$toast.error("Lütfen geçerli bir değer giriniz.");
+          return;
+        }
 
-    console.log('Kaydedilen Learning Outcome ID:', learningOutcomeId, 'Kaydedilen Program Outcome ID:', programOutcomeId);
-    const response = await axios.post('http://localhost:8080/learning-outcome-program-outcome', {
-      learningOutcomeId,
-      programOutcomeId,
-      contribution
-    });
+        console.log('Kaydedilen Learning Outcome ID:', learningOutcomeId, 'Kaydedilen Program Outcome ID:', programOutcomeId);
+        const response = await axios.post('http://localhost:8080/learning-outcome-program-outcome', {
+          learningOutcomeId,
+          programOutcomeId,
+          contribution
+        });
 
-    if (response.status === 201) {
-      console.log('Başarıyla kaydedildi.');
-      this.$toast.success("Başarıyla kaydedildi!");
-      // Success message or other actions
-    } else {
-      console.error('Kaydedilirken bir hata oluştu:', response.data);
-      this.$toast.error("Kaydedilirken bir hata oluştu!");
-      // Error handling
-    }
-    // Disable edit mode after saving
-    this.programs[programIndex].editMode[outcomeIndex] = false;
-  } catch (error) {
-    console.error('Kaydedilirken bir hata oluştu:', error);
-    this.$toast.error("Kaydedilirken bir hata oluştu!");
-    // Error handling
-  }
-},
-    generateMatrix() {
-      this.matrix = Array.from({ length: this.rowCount }, () => Array(this.colCount).fill(false));
+        if (response.status === 201) {
+          console.log('Başarıyla kaydedildi.');
+          
+        } else {
+          console.error('Kaydedilirken bir hata oluştu:', response.data);
+          this.$toast.error("Kaydedilirken bir hata oluştu!");
+        }
+      } catch (error) {
+        console.error('Kaydedilirken bir hata oluştu:', error);
+        this.$toast.error("Kaydedilirken bir hata oluştu!");
+      }
+    },
+    toggleEditMode() {
+      this.editMode = !this.editMode;
     },
   },
 };
