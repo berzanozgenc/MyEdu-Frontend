@@ -11,7 +11,8 @@ import MatchMatrix from "./components/MatchMatrix.vue";
 import AdminHome from "./components/AdminHome.vue";
 import { createRouter, createWebHistory } from "vue-router";
 import store from "./store/auth";
-
+import StudentPage from "./components/StudentPage.vue";
+import StudentPageMatrix from "./components/Student-PageMatrix.vue";
 const routes = [{
         name: "Login",
         component: Login,
@@ -77,6 +78,18 @@ const routes = [{
         name: "AdminHome",
         component: AdminHome,
         path: "/admin-home",
+        meta: { requiresAuth: true }, // Oturum açma gerektiren sayfaları belirtin
+    },
+    {
+        name: "StudentPage",
+        component: StudentPage,
+        path: "/student-page",
+        meta: { requiresAuth: true }, // Oturum açma gerektiren sayfaları belirtin
+    },
+    {
+        name: "StudentPageMatrix",
+        component: StudentPageMatrix,
+        path: "/student-pageMatrix",
         meta: { requiresAuth: true }, // Oturum açma gerektiren sayfaları belirtin
     },
 
