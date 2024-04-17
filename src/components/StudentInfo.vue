@@ -27,36 +27,26 @@
         <div class="card-body">
           <h5 class="card-title">Öğrenci Notları</h5>
           <table class="table">
-            <thead>
-  <tr>
-    <th scope="col">Öğrenci</th>
-    <!-- assessments dizisini kullanarak sütun başlıklarını oluştur -->
-    <th v-for="(assessment, index) in assessments" :key="assessment.assessmentId" scope="col">
-                  <!-- İsimlendirme kontrolü -->
-                  <span v-if="isQuestionBased">Soru {{ index + 1 }}</span>
-                  <span v-else>{{ assessment.name }} {{ index + 1 }}</span>
-                </th>
-
-  </tr>
-</thead>
-            <tbody>
-              <tr>
-                <th scope="row">Öğrenci 2</th>
-                <td contenteditable="true">-</td>
-                <td contenteditable="true">-</td>
-                <td contenteditable="true">-</td>
-                <td contenteditable="true">-</td>
-              </tr>
-              <tr>
-                <th scope="row">Öğrenci 3</th>
-                <td contenteditable="true">-</td>
-                <td contenteditable="true">-</td>
-                <td contenteditable="true">-</td>
-                <td contenteditable="true">-</td>
-              </tr>
-            </tbody>
-            
-          </table>
+  <thead>
+    <tr>
+      <th scope="col">Öğrenci</th>
+      <!-- assessments dizisini kullanarak sütun başlıklarını oluştur -->
+      <th v-for="(assessment, index) in assessments" :key="assessment.assessmentId" scope="col">
+        <!-- İsimlendirme kontrolü -->
+        <span v-if="isQuestionBased">Soru {{ index + 1 }}</span>
+        <span v-else>{{ assessment.name }} {{ index + 1 }}</span>
+      </th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr v-for="student in students" :key="student.id">
+      <th scope="row">{{ student.firstName }} {{ student.lastName }} {{ student.studentNumber }}</th>
+      <!-- Değerlendirme hücrelerini öğrenci sayısı kadar oluştur -->
+      <td v-for="(assessment, index) in assessments" :key="assessment.assessmentId" contenteditable="true">-</td>
+    </tr>
+  </tbody>
+</table>
+<button type="button" class="btn btn-primary">Notları Kaydet</button>
           
         </div>
         
@@ -69,17 +59,31 @@
 import axios from 'axios';
 import { useStore } from 'vuex';
 import { useRouter } from 'vue-router';
+
 export default {
   name: "StudentInfo",
   data() {
     return {
       assessments: [],
       isQuestionBased: false,
+      students: [], // Öğrenci listesini tutmak için yeni bir veri alanı
     };
   },
   created() {
     const courseId = this.$route.params.courseId;
-    const generalAssessmentId = this.$route.params.generalAssessmentId; 
+    const generalAssessmentId = this.$route.params.generalAssessmentId;
+
+    // Dersi alan öğrencileri getir
+    axios.get(`http://localhost:8080/student-course/${courseId}/students`)
+      .then(response => {
+        this.students = response.data; // Öğrenci listesini al
+        console.log(response.data);
+      })
+      .catch(error => {
+        console.error('Error fetching student list:', error);
+      });
+
+    // Genel değerlendirmeye ait soruları veya değerlendirmeleri getir
     axios.get(`http://localhost:8080/assessments/generalAssessment/${generalAssessmentId}`)
       .then(response => {
         this.assessments = response.data; // Aldığımız veriyi assessments değişkenine atadık
@@ -88,14 +92,14 @@ export default {
         console.error('Error fetching assessments:', error);
       });
 
-      axios.get(`http://localhost:8080/generalAssesment/${generalAssessmentId}/isQuestionBased`)
+    // Genel değerlendirmenin soru tabanlı olup olmadığını kontrol et
+    axios.get(`http://localhost:8080/generalAssesment/${generalAssessmentId}/isQuestionBased`)
       .then(response => {
         this.isQuestionBased = response.data; // Aldığımız veriyi kullanarak isQuestionBased değişkenini güncelle
       })
       .catch(error => {
         console.error('Error fetching question based status:', error);
       });
-      
   },
   methods: {
     goToLoginPage() {
@@ -114,12 +118,12 @@ export default {
       this.$router.push("/instructor-home");
     },
     logoutUser() {
-            const store = useStore();
-            const router = useRouter();
-            localStorage.removeItem('store');
-            this.$store.dispatch('logoutUser');
-            this.$router.push("/");
-        },
+      const store = useStore();
+      const router = useRouter();
+      localStorage.removeItem('store');
+      this.$store.dispatch('logoutUser');
+      this.$router.push("/");
+    },
   },
 };
 </script>
