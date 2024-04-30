@@ -1,8 +1,12 @@
 <template>
   <div>
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
-      <a @click="refreshPage" style="margin-left: 10px" class="navbar-brand" href="#"> <img src="../assets/Baskent_University_Logo.png" alt="Logo" style="max-height: 50px;"></a>
-      <a @click="refreshPage" style="margin-left: 10px" class="navbar-brand" href="#">Kişiselleştirilmiş Akademik Gelişim ve <br /> Değerlendirme Sistemi</a>
+      <a @click="refreshPage" style="margin-left: 10px" class="navbar-brand" href="#">
+        <img src="../assets/Baskent_University_Logo.png" alt="Logo" style="max-height: 50px;">
+      </a>
+      <a @click="refreshPage" style="margin-left: 10px" class="navbar-brand" href="#">
+        Kişiselleştirilmiş Akademik Gelişim ve <br /> Değerlendirme Sistemi
+      </a>
       <div class="collapse navbar-collapse" id="navbarSupportedContent">
         <ul class="navbar-nav mr-auto"></ul>
         <span class="logout">
@@ -28,6 +32,7 @@
               <tr>
                 <th scope="col" style="width: 150px;">Öğrenim Çıktısı</th>
                 <th scope="col" style="width: 400px;">Açıklama</th>
+                <th scope="col" style="width: 150px;">Hedef</th>
                 <th scope="col" style="width: 150px;">İşlemler</th>
               </tr>
             </thead>
@@ -37,6 +42,12 @@
                 <td>
                   <input v-if="item.editable" type="text" class="form-control editable" v-model="item.description" style="width: 250px;">
                   <div v-else>{{ item.description }}</div>
+                </td>
+                <td>
+                  <div v-if="item.editable" class="form-group">
+                    <input type="text" class="form-control editable" v-model="item.target" style="width: 150px;">
+                  </div>
+                  <div v-else>{{ item.target }}</div>
                 </td>
                 <td>
                   <button class="btn btn-danger btn-sm" @click="deleteProgram(item.id, item)">Sil</button>
@@ -51,6 +62,10 @@
             <div class="form-group">
               <label for="description">Açıklama:</label>
               <input type="text" class="form-control" id="description" v-model="newProgram.description" style="width: 250px;">
+            </div>
+            <div class="form-group">
+              <label for="target">Hedef:</label>
+              <input type="text" class="form-control" id="target" v-model="newProgram.target" style="width: 150px;">
             </div>
             <button class="btn btn-outline-primary my-2 my-sm-0" style="width: 150px; height: 35px" type="submit" @click="addProgram">
               ÖÇ Ekle
@@ -74,7 +89,8 @@ export default {
       programs: [],
       newProgram: {
         output: '',
-        description: ''
+        description: '',
+        target:''
       }
     };
   },
@@ -104,12 +120,35 @@ export default {
     },
     async updateProgram(program) {
       try {
-        await axios.put(`http://localhost:8080/learningOutcomes/${program.id}`, { description: program.description });
+        await axios.put(`http://localhost:8080/learningOutcomes/${program.id}`, {
+          description: program.description,
+          desiredTarget: program.target // Hedef değerini de gönder
+        });
+
+        // Hedef değerini tamsayıya dönüştür
+        const newTarget = parseInt(program.target);
+
+        // Toplam hedefleri hesapla (güncellenmiş hedefi dahil etmek için mevcut programın eski hedefini çıkart)
+        const totalTargets = this.programs.reduce((total, p) => {
+          if (p.id !== program.id) {
+            return total + parseInt(p.target);
+          } else {
+            return total;
+          }
+        }, 0);
+
+        // Toplam hedeflerin 100'ü geçip geçmediğini kontrol et
+        if (totalTargets + newTarget > 100) {
+          this.$toast.error("Hedeflerin Toplamı 100'ü Geçemez.");
+          return;
+        }
+
         program.editable = false;
         this.fetchLearningOutcomes(this.$route.params.courseId);
+        this.$toast.success("Öğrenim çıktısı başarıyla güncellendi.");
       } catch (error) {
         console.error(error);
-        alert("Öğrenim çıktısı güncellenirken bir hata oluştu.");
+        this.$toast.error("Öğrenim çıktısı güncellenirken bir hata oluştu.");
       }
     },
     async deleteProgram(programId, item) {
@@ -117,49 +156,70 @@ export default {
         await axios.delete(`http://localhost:8080/learningOutcomes/${programId}`);
         this.programs = this.programs.filter(program => program.id !== programId);
         this.fetchLearningOutcomes(this.$route.params.courseId);
+        this.$toast.success("Öğrenim çıktısı başarıyla silindi.");
       } catch (error) {
         console.error(error);
-        alert("Öğrenim çıktısı silinirken bir hata oluştu.");
+        this.$toast.error("Öğrenim çıktısı silinirken bir hata oluştu.");
       }
     },
     async addProgram() {
-      if (!this.newProgram.description.trim()) {
-        alert("Lütfen açıklamayı girin.");
+      if (!this.newProgram.description.trim() || !this.newProgram.target.trim()) {
+        this.$toast.error("Lütfen açıklama ve hedefi girin.");
+        return;
+      }
+
+      // Yeni öğrenim çıktısının hedefini tamsayıya dönüştür
+      const newTarget = parseInt(this.newProgram.target);
+
+      // Toplam hedefleri hesapla
+      const totalTargets = this.programs.reduce((total, program) => total + parseInt(program.target), 0);
+
+      // Toplam hedeflerin 100 olup olmadığını kontrol et
+      if (totalTargets + newTarget > 100) {
+        this.$toast.error("Hedeflerin Toplamı 100'ü Geçemez.");
         return;
       }
       const data = {
         description: this.newProgram.description,
+        desiredTarget: newTarget, // Yeni hedefi kullan
         courseId: this.$route.params.courseId
       };
       try {
         const response = await axios.post('http://localhost:8080/learningOutcomes/create-learningOutcome', data);
         console.log(response.data);
-        this.programs.push({ description: this.newProgram.description });
+        this.programs.push({ description: this.newProgram.description, target: this.newProgram.target }); // Hedefi de yeni öğrenim çıktıları listesine ekle
         this.newProgram.description = '';
+        this.newProgram.target = ''; // Açıklama ve hedef alanlarını temizle
         this.fetchLearningOutcomes(this.$route.params.courseId);
+        this.$toast.success("Öğrenim çıktısı başarıyla oluşturuldu.");
       } catch (error) {
         console.error(error);
-        alert("Öğrenim çıktısı eklenirken bir hata oluştu.");
+        this.$toast.error("Öğrenim çıktısı eklenirken bir hata oluştu.");
       }
     },
-    logoutUser() {
-            const store = useStore();
-            const router = useRouter();
-            localStorage.removeItem('store');
-            this.$store.dispatch('logoutUser');
-            this.$router.push("/");
-        },
 
+    logoutUser() {
+      const store = useStore();
+      const router = useRouter();
+      localStorage.removeItem('store');
+      this.$store.dispatch('logoutUser');
+      this.$router.push("/");
+    },
     async fetchLearningOutcomes(courseId) {
       try {
         const response = await axios.get(`http://localhost:8080/learningOutcomes/course/${courseId}`);
         console.log(response.data);
-        this.programs = response.data;
+        // Her öğenin bir id alanı olduğunu varsayarak, bu id değerini kullanarak programları oluşturun
+        this.programs = response.data.map(item => ({
+          id: item.id, // Her öğe için bir id alanı oluştur
+          description: item.description,
+          target: item.desiredTarget
+        }));
       } catch (error) {
         console.error(error);
-        alert("Öğrenim çıktıları alınırken bir hata oluştu.");
+        this.$toast.error("Öğrenim çıktıları alınırken bir hata oluştu.");
       }
-    }
+    },
   },
 };
 </script>
