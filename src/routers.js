@@ -15,6 +15,9 @@ import StudentPage from "./components/StudentPage.vue";
 import StudentPageMatrix from "./components/StudentPageMatrix.vue";
 import ProgramOutcomeResult from "./components/ProgramOutcomeResult.vue";
 import LearningOutcomeResult from "./components/LearningOutcomeResult.vue";
+import AddCourseDepartment from "./components/AddCourseDepartment.vue";
+import InstructorStudent from "./components/InstructorStudent.vue";
+
 const routes = [{
         name: "Login",
         component: Login,
@@ -104,6 +107,18 @@ const routes = [{
         name: "LearningOutcomeResult",
         component: LearningOutcomeResult,
         path: "/learning-outcome-result/:courseId",
+        meta: { requiresAuth: true }, // Oturum açma gerektiren sayfaları belirtin
+    },
+    {
+        name: "AddCourseDepartment",
+        component: AddCourseDepartment,
+        path: "/addCourse-Department",
+        meta: { requiresAuth: true }, // Oturum açma gerektiren sayfaları belirtin
+    },
+    {
+        name: "InstructorStudent",
+        component: InstructorStudent,
+        path: "/Instructor-Student",
         meta: { requiresAuth: true }, // Oturum açma gerektiren sayfaları belirtin
     },
 
