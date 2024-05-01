@@ -120,7 +120,7 @@
           <div style="max-width: 100%; overflow-x: auto">
             <div>
   <button v-if="!isEditMode" @click="enableEditMode" class="btn btn-primary mb-2"><i class="fas fa-pencil-alt"></i> </button>
-  <button v-if="isEditMode" @click="saveAndDisableEditMode" class="btn btn-success mb-2">Kaydet</button>
+  <button v-if="isEditMode" @click="saveLearningOutcomeContributions" class="btn btn-success mb-2">Kaydet</button>
 </div>
             <div style="max-height: 300px; overflow-y: auto">
               <table class="table table-stretched mt-3">
@@ -272,40 +272,18 @@ export default {
     },
     async saveLearningOutcomeContributions() {
   try {
-    const requests = [];
-    for (const outcome of this.outcomes) {
-      const outcomeId = outcome.id;
-      for (const assessment of this.assessments) {
-        const assessmentId = assessment.id;
-        const contributionCell = this.$refs[outcomeId + "-" + assessmentId];
-        if (contributionCell) {
-          let relationship = parseFloat(contributionCell.innerText);
-          if (isNaN(relationship)) {
-            relationship = 0.0; // Geçersiz değerler için varsayılan 0 atanır
-          }
-          const data = {
-            assessmentId,
-            learningOutcomeId: outcomeId,
-            relationship
-          };
-          console.log("Gönderilecek veri:", data); // Veriyi konsola yazdırarak kontrol edin
-          const request = axios.post(`http://localhost:8080/aloc`, data);
-          requests.push(request);
-        }
-      }
-    } 
-    const responses = await Promise.all(requests);
-    responses.forEach(response => {
-      if (response.status === 201) {
-        console.log('Başarıyla kaydedildi.');
-      } else {
-        console.error('Kaydedilirken bir hata oluştu:', response.data);
-        this.$toast.error("Kaydedilirken bir hata oluştu!");
-      }
-    });
+    const data = {
+      assessmentId: 1, // Assessment ID'yi güncelleyin, uygun bir değer ile değiştirin
+      learningOutcomeId: 1, // Learning Outcome ID'yi güncelleyin, uygun bir değer ile değiştirin
+      contribution: 100 // Contribution değerini güncelleyin, uygun bir değer ile değiştirin
+    };
+
+    const response = await axios.post("http://localhost:8080/aloc", data);
+    console.log("Learning outcome contributions saved successfully:", response.data);
+    this.$toast.success("Öğrenim çıktısı katkıları başarıyla kaydedildi!");
   } catch (error) {
-    console.error("İlişkileri kaydederken hata oluştu:", error);
-    this.$toast.error("İlişkileri kaydederken hata oluştu!");
+    console.error("Error saving learning outcome contributions:", error);
+    this.$toast.error("Öğrenim çıktısı katkıları kaydedilirken hata oluştu!");
   }
 },
 updateRelationship(outcomeId, assessmentId, value) {
