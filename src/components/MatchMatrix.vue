@@ -61,7 +61,7 @@
                 </td>
               </tr>
             </tbody>
-          </table>
+          </table>""
           <!-- End of matrix table -->
 
           <!-- Tümünü kaydet butonu -->

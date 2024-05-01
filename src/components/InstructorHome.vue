@@ -44,27 +44,7 @@
           <img class="icon" src="../assets/Profile_Icon.png" />
           <h2 style="margin-top: 12px; margin-left: 5px">{{ username }}</h2>
         </div>
-
-        <div class="card-body">
-          <h5 class="card-title">Derslerim</h5>
-          <ul style="max-width: 73rem" class="list-group">
-            <li
-              class="list-group-item"
-              v-for="(registration, index) in userCourses"
-              :key="index"
-            >
-              <a :href="'#'" @click="goToCoursePage(registration.course)">
-                {{ registration.course.code }} - {{ registration.course.courseName }} -
-                {{ registration.course.semester }}
-              </a>
-              <button class="btn btn-danger btn-sm ml-2" @click="openConfirmationModal(registration.registrationId)">
-                Sil
-              </button>
-            </li>
-          </ul>
-        </div>
-
-        <ul style="max-width: 73rem" class="list-group list-group-flush"></ul>
+<ul style="max-width: 73rem" class="list-group list-group-flush"></ul>
         <div class="form-inline">
           <div class="form-group mr-2">
             <div style="margin-left: 5px;"> 
@@ -88,6 +68,26 @@
           <br>
           <button class="btn btn-primary" @click="editClass">Ekle</button>
         </div>
+        <div class="card-body">
+          <h5 class="card-title">Derslerim</h5>
+          <ul style="max-width: 73rem" class="list-group">
+            <li
+              class="list-group-item"
+              v-for="(registration, index) in userCourses"
+              :key="index"
+            >
+              <a :href="'#'" @click="goToCoursePage(registration.course)">
+                {{ registration.course.code }} - {{ registration.course.courseName }} -
+                {{ registration.course.semester }}
+              </a>
+              <button class="btn btn-danger btn-sm ml-2" @click="openConfirmationModal(registration.registrationId)">
+                Sil
+              </button>
+            </li>
+          </ul>
+        </div>
+
+        
         </div>
       </div>
     </div>

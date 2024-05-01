@@ -118,6 +118,10 @@
           <br />
           <h5 class="card-title">Öğrenim Çıktısı - Araç Eşleştirme</h5>
           <div style="max-width: 100%; overflow-x: auto">
+            <div>
+  <button v-if="!isEditMode" @click="enableEditMode" class="btn btn-primary mb-2"><i class="fas fa-pencil-alt"></i> </button>
+  <button v-if="isEditMode" @click="saveAndDisableEditMode" class="btn btn-success mb-2">Kaydet</button>
+</div>
             <div style="max-height: 300px; overflow-y: auto">
               <table class="table table-stretched mt-3">
                 <thead>
@@ -138,25 +142,24 @@
                 <tbody>
   <tr v-for="(outcome, outcomeIndex) in outcomes" :key="outcomeIndex">
     <th scope="row">{{ outcome.description }}</th>
-    <td v-for="(assessment, assessmentIndex) in assessments" :key="'assessment-' + assessmentIndex" contenteditable="true">
+    <td v-for="(assessment, assessmentIndex) in assessments" :key="'assessment-' + assessmentIndex" :contenteditable="isEditMode" contenteditable="true">
+
       <!-- Her bir assessment için contenteditable hücresi -->
-      <div
-        ref="assessmentCells"
-        :id="'cell-' + outcome.id + '-' + assessment.id"
-        @blur="updateRelationship(outcome.id, assessment.id, $event.target.innerText)"
-      ></div>
+      <div 
+      ref="assessmentCells"
+      :id="'cell-' + outcome.id + '-' + assessment.id"
+      @blur="updateRelationship(outcome.id, assessment.id, $event.target.innerText)"
+    ></div>
+    <div>
+      <input v-if="isEditMode" placeholder="%" type="number" v-model="editedOutcome">
+      <span v-else>{{ outcome.value }}</span>
+    </div>
     </td>
   </tr>
 </tbody>
 
               </table>
-              <button
-                type="button"
-                class="btn btn-outline-primary"
-                @click="saveLearningOutcomeContributions"
-              >
-                Kaydet
-              </button>
+              
             </div>
           </div>
         </div>
@@ -181,6 +184,7 @@ export default {
       selectedColumn: null,
       contributionValue: 0.0, // Kullanıcı tarafından girilen katkı değeri
       useCustomNames: null,
+      isEditMode: false,
     };
   },
   created() {
@@ -197,6 +201,10 @@ export default {
     this.fetchUseCustomNames();
   },
   methods: {
+    async saveAndDisableEditMode() {
+    await this.saveLearningOutcomeContributions(); // İlişkileri kaydet
+    this.disableEditMode(); // Düzenleme modunu kapat
+  },
     async toggleQuestionBased() {
       console.log("deneme");
     try {
@@ -206,6 +214,12 @@ export default {
     } catch (error) {
       console.error("Error toggling question based:", error);
     }
+  },
+  enableEditMode() {
+    this.isEditMode = true;
+  },
+  disableEditMode() {
+    this.isEditMode = false;
   },
     async fetchUseCustomNames() {
     try {
@@ -258,6 +272,7 @@ export default {
     },
     async saveLearningOutcomeContributions() {
   try {
+    const requests = [];
     for (const outcome of this.outcomes) {
       const outcomeId = outcome.id;
       for (const assessment of this.assessments) {
@@ -274,13 +289,20 @@ export default {
             relationship
           };
           console.log("Gönderilecek veri:", data); // Veriyi konsola yazdırarak kontrol edin
-          await axios.post(`http://localhost:8080/aloc`, data);
+          const request = axios.post(`http://localhost:8080/aloc`, data);
+          requests.push(request);
         }
       }
     } 
-    console.log("İlişkiler başarıyla kaydedildi.");
-    this.$toast.success("İlişkiler başarıyla kaydedildi!");
-
+    const responses = await Promise.all(requests);
+    responses.forEach(response => {
+      if (response.status === 201) {
+        console.log('Başarıyla kaydedildi.');
+      } else {
+        console.error('Kaydedilirken bir hata oluştu:', response.data);
+        this.$toast.error("Kaydedilirken bir hata oluştu!");
+      }
+    });
   } catch (error) {
     console.error("İlişkileri kaydederken hata oluştu:", error);
     this.$toast.error("İlişkileri kaydederken hata oluştu!");
@@ -378,4 +400,5 @@ updateRelationship(outcomeId, assessmentId, value) {
   margin-left: auto;
   margin-right: 20px;
 }
+
 </style>
