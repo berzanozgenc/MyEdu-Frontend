@@ -52,7 +52,7 @@
       <!-- Both tables in the same card -->
       <div class="card mt-3" style="width: 1000px">
         <div class="card-body">
-          <h5 class="card-title">Araç Yüzdelerini Belirleme</h5>
+          <h5 class="card-title">Araç Puanlarını Belirleme</h5>
           <div style="max-width: 100%; overflow-x: auto">
             <div style="max-height: 300px; overflow-y: auto">
               <table class="table table-stretched">
@@ -60,14 +60,13 @@
                   <tr>
                     <th scope="col"></th>
                     <th v-for="(assessment, index) in assessments" :key="assessment.id" scope="col">
-  <div class="d-flex align-items-center justify-content-between">
-    <span>{{!useCustomNames ?  assessment.name  : 'Soru'}} {{ index + 1 }}</span>
-    <button @click="deleteAssessment(assessment.assessmentId)" class="btn btn-sm btn-danger ml-2">
-      <i class="fa fa-trash" style="font-size: 12px;"></i> <!-- Silme ikonu -->
-    </button>
-  </div>
-</th>
-
+                      <div class="d-flex align-items-center justify-content-between">
+                        <span>{{!useCustomNames ?  assessment.name  : 'Soru'}} {{ index + 1 }}</span>
+                        <button @click="deleteAssessment(assessment.assessmentId)" class="btn btn-sm btn-danger ml-2">
+                          <i class="fa fa-trash" style="font-size: 12px;"></i> <!-- Silme ikonu -->
+                        </button>
+                      </div>
+                    </th>
                   </tr>
                 </thead>
                 <tbody>
