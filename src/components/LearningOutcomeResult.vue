@@ -33,6 +33,7 @@
       </div>
 
       <div class="row">
+
         <!-- Learning Outcomes Table -->
         <div class="col-md-12">
           <div class="card" style="margin-top: 20px;">
@@ -42,7 +43,7 @@
                 <table class="table table-sm">
                   <thead>
                     <tr>
-                      <th scope="col">Öğrenim Çıktısı</th>
+                      <th scope="col">Öğr. Çıktı</th>
                       <th scope="col">ÖÇ'leri Sağlama Düzeyi</th>
                       <th scope="col">HEDEFLER</th>
                       <th scope="col">ARAÇLAR</th>
@@ -52,54 +53,13 @@
                   <tbody>
                     <tr v-for="(outcome, index) in outcomes" :key="index">
                       <td>{{ outcome.description }}</td>
-                      <td></td>
-                      <td></td>
-                      <td></td>
-                      <td></td>
+                      <td>%{{ outcome.levelOfProvision.toFixed(2) }}</td>
+                      <td>{{ outcome.desiredTarget }}</td>
+                      <td>{{ outcome.assessmentSum }}</td>
+                      <td>{{ outcome.scoreSum }}</td>
                     </tr>
                     <!-- Son satır kontrolü -->
-                    <tr :key="'last-row'">
-                      <td v-for="column in 5" :key="column" :class="{ 'math-sum': column === 1 }">
-                        {{ column === 1 ? '∑' : '' }}
-                      </td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          </div>
-        </div>
 
-        <!-- Program Outcomes Table -->
-        <div class="col-md-12">
-          <div class="card" style="margin-top: 20px;">
-            <div class="card-body">
-              <h5 class="card-title">PROGRAM YETERLİLİKLERİ</h5>
-              <div class="table-responsive">
-                <table class="table table-sm">
-                  <thead>
-                    <tr>
-                      <th scope="col">Prg. Çıktı</th>
-                      <th scope="col">PÇ'leri Sağlama Düzeyi</th>
-                      <th scope="col">HEDEFLER</th>
-                      <th scope="col">ARAÇLAR</th>
-                      <th scope="col">SKOR</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr v-for="(program, index) in programs" :key="index">
-                      <td>{{ program }}</td>
-                      <td></td>
-                      <td></td>
-                      <td></td>
-                      <td></td>
-                    </tr>
-                    <!-- Son satır kontrolü -->
-                    <tr :key="'last-row'">
-                      <td v-for="column in 5" :key="column" :class="{ 'math-sum': column === 1 }">
-                        {{ column === 1 ? '∑' : '' }}
-                      </td>
-                    </tr>
                   </tbody>
                 </table>
               </div>
@@ -119,12 +79,10 @@ export default {
   data() {
     return {
       outcomes: [],
-      programs: [],
     };
   },
   created() {
     this.fetchLearningOutcomes();
-    this.fetchProgramOutcomes();
   },
   methods: {
     async fetchLearningOutcomes() {
@@ -134,20 +92,6 @@ export default {
         this.outcomes = response.data;
       } catch (error) {
         console.error("Error fetching learning outcomes:", error);
-      }
-    },
-    async fetchProgramOutcomes() {
-      try {
-        const response = await axios.get('http://localhost:8080/program-outcomes');
-        if (response.status !== 200) {
-          throw new Error('Program çıktıları getirilirken bir hata oluştu.');
-        }
-        const data = response.data;
-        // Sadece 'description' alanını kullanarak program çıktılarını al
-        const programOutcomes = data.map(item => item.description);
-        this.programs = programOutcomes;
-      } catch (error) {
-        console.error('Bir hata oluştu:', error);
       }
     },
     goToLoginPage() {
