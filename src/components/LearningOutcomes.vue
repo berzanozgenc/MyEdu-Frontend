@@ -21,8 +21,8 @@
         <div class="card-body">
           <h5 class="card-title">Menü</h5>
           <a href="#" class="card-link" @click="goToCoursePage">Derslerim </a><br />
-          <a href="#" class="card-link" @click="goToInstructorLearningOutcome">Öğrenim Çıktıları</a><br />
-          <a href="#" class="card-link" >Program Çıktıları</a><br />
+          <a href="#" class="card-link" @click="goToInstructorLearningOutcomePage">Öğrenim Çıktıları</a><br />
+          <a href="#" class="card-link" @click="goToCourseProgramOutcomePage">Program Çıktıları</a><br />
           <a href="#" class="card-link" @click="goToMatchMatrixPage">ÖÇ ve PÇ Eşleştirme</a>
         </div>
       </div>
@@ -307,7 +307,11 @@ export default {
     goToStudentInfoPage() {
       this.$router.push("/student-info");
     },
-    goToInstructorLearningOutcome() {
+    goToCourseProgramOutcomePage(){
+      const courseId = this.$route.params.courseId;
+      this.$router.push({ name: "CourseProgramOutcome", params: { courseId: courseId }});
+    },
+    goToInstructorLearningOutcomePage() {
       const courseId = this.$route.params.courseId;
       this.$router.push({ name: "InstructorLearningOutcome", params: { courseId: courseId }});
     },

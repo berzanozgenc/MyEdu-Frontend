@@ -19,8 +19,8 @@
         <div class="card-body">
           <h5 class="card-title">Menü</h5>
           <a href="#" class="card-link" @click="goToCoursePage">Derslerim</a><br />
-          <a href="#" class="card-link" @click="goToInstructorLearningOutcome">Öğrenim Çıktıları</a><br />
-          <a href="#" class="card-link">Program Çıktıları</a><br />
+          <a href="#" class="card-link" @click="goToInstructorLearningOutcomePage">Öğrenim Çıktıları</a><br />
+          <a href="#" class="card-link" @click="goToCourseProgramOutcomePage">Program Çıktıları</a><br />
           <a href="#" class="card-link" @click="goToMatchMatrixPage">ÖÇ ve PÇ Eşleştirme</a>
         </div>
       </div>
@@ -33,8 +33,8 @@
           <h2 style="margin-top: 12px; margin-left: 6px;">{{ course.code }} - {{ course.courseName }} - {{ course.semester }}</h2>
         </div>
         <div class="buttons-container">
-          <button style="margin-left: 16px;" class="btn btn-outline-primary" @click="goToInstructorLearningOutcome">Öğrenim Çıktıları</button>
-          <button style="margin-left: 16px;" class="btn btn-outline-primary" >Program Çıktıları</button>
+          <button style="margin-left: 16px;" class="btn btn-outline-primary" @click="goToInstructorLearningOutcomePage">Öğrenim Çıktıları</button>
+          <button style="margin-left: 16px;" class="btn btn-outline-primary" @click="goToCourseProgramOutcomePage">Program Çıktıları</button>
           <button style="margin-left: 16px;" class="btn btn-outline-primary" @click="goToMatchMatrixPage" >ÖÇ - PÇ Eşleştirme</button>
         </div>
         
@@ -245,10 +245,14 @@ export default {
     goToCoursePage() {
       this.$router.push("/instructor-home");
     },
-    goToInstructorLearningOutcome() {
-      const courseId = this.$route.params.courseId;
-      this.$router.push({ name: "InstructorLearningOutcome", params: { courseId: courseId }});
-},
+      goToInstructorLearningOutcomePage() {
+        const courseId = this.$route.params.courseId;
+        this.$router.push({ name: "InstructorLearningOutcome", params: { courseId: courseId }});
+    },
+    goToCourseProgramOutcomePage() {
+          const courseId = this.$route.params.courseId;
+          this.$router.push({ name: "CourseProgramOutcome", params: { courseId: courseId }});
+    },
     goToMatchMatrixPage() {
       const courseId = this.$route.params.courseId;
       this.$router.push({ name: "MatchMatrix", params: { courseId: courseId }});

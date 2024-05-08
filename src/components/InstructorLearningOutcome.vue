@@ -20,7 +20,7 @@
           <h5 class="card-title">Menü</h5>
           <a href="#" class="card-link" @click="goToCoursePage">Derslerim   </a><br /> 
           <a href="#" class="card-link">Öğrenim Çıktıları</a><br />
-          <a href="#" class="card-link">Program Çıktıları</a><br />
+          <a href="#" class="card-link" @click="goToCourseProgramOutcomePage">Program Çıktıları</a><br />
           <a href="#" class="card-link" @click="goToMatchMatrixPage">ÖÇ ve PÇ Eşleştirme</a>
         </div>
       </div>
@@ -112,6 +112,10 @@ export default {
     },
     goToCoursePage() {
       this.$router.push("/instructor-home");
+    },
+    goToCourseProgramOutcomePage(){
+      const courseId = this.$route.params.courseId;
+      this.$router.push({ name: "CourseProgramOutcome", params: { courseId: courseId }});
     },
     refreshPage() {
       this.$router.push("/instructor-home");

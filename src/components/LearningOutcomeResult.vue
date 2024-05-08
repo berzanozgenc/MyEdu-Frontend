@@ -27,7 +27,8 @@
           <h5 class="card-title">Menü</h5>
           <a href="#" class="card-link" @click="goToCoursePage">Derslerim</a><br />
           <a href="#" class="card-link" @click="goToStudentInfoPage">Not Girişi</a><br />    
-          <a href="#" class="card-link" @click="goToLearningOutcomePage">Öğrenim Çıktıları</a><br />
+          <a href="#" class="card-link" @click="goToInstructorLearningOutcomePage">Öğrenim Çıktıları</a><br />
+          <a href="#" class="card-link" @click="goToCourseProgramOutcomePage">Program Çıktıları</a><br />
           <a href="#" class="card-link" @click="goToMatchMatrixPage">ÖÇ ve PÇ Eşleştirme</a>
         </div>
       </div>
@@ -106,8 +107,13 @@ export default {
     goToMatchMatrixPage() {
       this.$router.push("/instructor-match-matrix");
     },
-    goToLearningOutcomePage() {
-      this.$router.push("/learning-outcome");
+    goToInstructorLearningOutcomePage() {
+      const courseId = this.$route.params.courseId;
+      this.$router.push({ name: "InstructorLearningOutcome", params: { courseId: courseId }});
+},
+    goToCourseProgramOutcomePage(){
+      const courseId = this.$route.params.courseId;
+      this.$router.push({ name: "CourseProgramOutcome", params: { courseId: courseId }});
     },
     goToInstructorLearningOutcome() {
       this.$router.push("/instructor-learning-outcome");

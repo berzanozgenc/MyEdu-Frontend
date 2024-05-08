@@ -86,8 +86,6 @@
             </li>
           </ul>
         </div>
-
-        
         </div>
       </div>
     </div>
@@ -98,9 +96,6 @@
         <div class="modal-content">
           <div class="modal-header">
             <h5 class="modal-title">Dersi Sil</h5>
-            
-             
-            
           </div>
           <div class="modal-body">
             <p>Bu dersi silmek istediğinizden emin misiniz?</p>

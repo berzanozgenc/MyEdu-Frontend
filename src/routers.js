@@ -18,6 +18,7 @@ import LearningOutcomeResult from "./components/LearningOutcomeResult.vue";
 import AddCourseDepartment from "./components/AddCourseDepartment.vue";
 import InstructorStudent from "./components/InstructorStudent.vue";
 import DepartmentAdminPage from "./components/DepartmentAdminPage.vue";
+import CourseProgramOutcome from "./components/CourseProgramOutcome.vue";
 
 const routes = [{
         name: "Login",
@@ -35,6 +36,12 @@ const routes = [{
         name: "InstructorLearningOutcome",
         component: InstructorLearningOutcome,
         path: "/instructor-learning-outcome/:courseId", // courseId parametresi için dinamik yol tanımı
+        meta: { requiresAuth: true }, // Oturum açma gerektiren sayfaları belirtin
+    },
+    {
+        name: "CourseProgramOutcome",
+        component: CourseProgramOutcome,
+        path: "/course-program-outcome/:courseId", // courseId parametresi için dinamik yol tanımı
         meta: { requiresAuth: true }, // Oturum açma gerektiren sayfaları belirtin
     },
     {
