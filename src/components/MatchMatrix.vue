@@ -55,13 +55,13 @@
                 <th scope="row">{{ program.description }}</th>
                 <td v-for="(outcome, outcomeIndex) in outcomes" :key="outcomeIndex">
                   <div>
-                    <input v-if="editMode" placeholder="%" type="text" v-model="program.outcomes[outcomeIndex]">
-                    <span v-else>{{ program.outcomes[outcomeIndex] }}</span>
+                    <input v-if="editMode" v-bind:placeholder="dummy(outcomeIndex, programIndex)" type="text" v-model="program.outcomes[outcomeIndex]">
+                    <span v-else>{{ dummy(outcomeIndex, programIndex) }}</span>
                   </div>
                 </td>
               </tr>
             </tbody>
-          </table>""
+          </table>
           <!-- End of matrix table -->
 
           <!-- Tümünü kaydet butonu -->
@@ -84,6 +84,7 @@ export default {
       editMode: false,
       outcomes: [],
       programs: [],
+      contributions: []
     };
   },
   created() {
@@ -93,6 +94,68 @@ export default {
     this.fetchProgramOutcomes();
   },
   methods: {
+    dummy(outcomeIndex, programIndex) {
+  
+      var learningId = this.outcomes[outcomeIndex].id 
+      var programId = this.programs[programIndex].id 
+      var contribution = 0;
+
+      console.log("dummy");
+      console.log(learningId)
+      console.log(programId);
+
+      for(var i = 0; i < this.contributions.length; i++) {
+        let cont = this.contributions[i]
+        if(cont.programId == programId && cont.learningId == learningId) {
+          contribution = cont.contribution;
+        }
+      
+      }
+      return contribution;
+    },
+
+    async fillTable(){
+      console.log("fill table")
+      console.log(this.outcomes[0].id)
+
+      let items = [];
+      for(var i= 0; i < this.outcomes.length; i++) {
+        for(var j = 0; j < this.programs.length; j++) {
+          console.log("outcomes:" + this.outcomes[i].id + "programs:" + this.programs[j].id)
+          let obj = {
+            learningId: this.outcomes[i].id,
+            programId: this.programs[j].id
+          } 
+          items.push(obj);
+        }
+      }
+      console.log(items);
+
+      const response = await axios.post('http://localhost:8080/learning-outcome-program-outcome/contribution', {
+        "learningOutcomeContributionDTOList": items
+        }, // async () => {
+          //await axios.get('http://localhost:8080/contribution/program/1/learning/2')
+        //}
+      );
+      if(response.status == 200) {
+
+        var tempList = [];
+        for(var i = 0; i < response.data.contributions.length; i++) {
+          console.log("girdi")
+          var obj = {
+            contribution: response.data.contributions[i].contribution,
+            learningId: response.data.contributions[i].learningOutcome.id,
+            programId: response.data.contributions[i].programOutcome.id
+          }
+          console.log(obj)
+          tempList.push(obj)
+        }
+        this.contributions = tempList;
+        console.log("***-----****-------")
+        console.log(this.contributions);
+      }
+
+    },
     // Functions for navigation
     goToLoginPage() {
       this.$router.push("/"); // Login page
@@ -127,6 +190,7 @@ export default {
         }
         this.$toast.success("Tüm değişiklikler başarıyla kaydedildi!");
         this.editMode = false; // Düzenleme modunu kapat
+        await this.fillTable();
       } catch (error) {
         console.error('Tüm değişiklikler kaydedilirken bir hata oluştu:', error);
         this.$toast.error("Tüm değişiklikler kaydedilirken bir hata oluştu!");
@@ -139,6 +203,7 @@ export default {
       this.$store.dispatch('logoutUser');
       await router.push("/");
     },
+
     async fetchLearningOutcomes(courseId) {
       try {
         const response = await fetch(`http://localhost:8080/learningOutcomes/course/${courseId}`);
@@ -147,10 +212,12 @@ export default {
         }
         const data = await response.json();
         this.outcomes = data;
+        this.fillTable();
       } catch (error) {
         console.error('Bir hata oluştu:', error);
       }
     },
+
     async fetchProgramOutcomes() {
       try {
         const response = await axios.get(`http://localhost:8080/program-outcomes`);
@@ -186,9 +253,12 @@ export default {
           learningOutcomeId,
           programOutcomeId,
           contribution
-        });
+        }, // async () => {
+          //await axios.get('http://localhost:8080/contribution/program/1/learning/2')
+        //}
+      );
 
-        if (response.status === 201) {
+        if (response.status === 201 || response.status === 200) {
           console.log('Başarıyla kaydedildi.');
           
         } else {

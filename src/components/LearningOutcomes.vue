@@ -1,27 +1,12 @@
 <template>
   <div>
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
-      <a
-        @click="refreshPage"
-        style="margin-left: 10px"
-        class="navbar-brand"
-        href="#"
-      >
-        <img
-          src="../assets/Baskent_University_Logo.png"
-          alt="Logo"
-          style="max-height: 50px"
-        />
-        myEdu</a
-      >
-      <a
-        @click="refreshPage"
-        style="margin-left: 10px"
-        class="navbar-brand"
-        href="#"
-        >Kişiselleştirilmiş Akademik Gelişim ve <br />
-        Değerlendirme Sistemi</a
-      >
+      <a @click="refreshPage" style="margin-left: 10px" class="navbar-brand" href="#">
+        <img src="../assets/Baskent_University_Logo.png" alt="Logo" style="max-height: 50px" />
+        myEdu</a>
+      <a @click="refreshPage" style="margin-left: 10px" class="navbar-brand" href="#">Kişiselleştirilmiş Akademik
+        Gelişim ve <br />
+        Değerlendirme Sistemi</a>
 
       <div class="collapse navbar-collapse" id="navbarSupportedContent">
         <ul class="navbar-nav mr-auto"></ul>
@@ -35,17 +20,10 @@
       <div class="card" style="width: 13rem; margin-left: 10px">
         <div class="card-body">
           <h5 class="card-title">Menü</h5>
-          <a href="#" class="card-link" @click="goToCoursePage">Derslerim </a
-          ><br />
-          <a href="#" class="card-link" @click="goToStudentInfoPage"
-            >Not Girişi</a
-          ><br />
-          <a href="#" class="card-link" @click="goToInstructorLearningOutcome"
-            >Öğrenim Çıktıları</a
-          ><br />
-          <a href="#" class="card-link" @click="goToMatchMatrixPage"
-            >ÖÇ ve PÇ Eşleştirme</a
-          >
+          <a href="#" class="card-link" @click="goToCoursePage">Derslerim </a><br />
+          <a href="#" class="card-link" @click="goToStudentInfoPage">Not Girişi</a><br />
+          <a href="#" class="card-link" @click="goToInstructorLearningOutcome">Öğrenim Çıktıları</a><br />
+          <a href="#" class="card-link" @click="goToMatchMatrixPage">ÖÇ ve PÇ Eşleştirme</a>
         </div>
       </div>
 
@@ -61,7 +39,7 @@
                     <th scope="col"></th>
                     <th v-for="(assessment, index) in assessments" :key="assessment.id" scope="col">
                       <div class="d-flex align-items-center justify-content-between">
-                        <span>{{!useCustomNames ?  assessment.name  : 'Soru'}} {{ index + 1 }}</span>
+                        <span>{{ !useCustomNames ? assessment.name : 'Soru' }} {{ index + 1 }}</span>
                         <button @click="deleteAssessment(assessment.assessmentId)" class="btn btn-sm btn-danger ml-2">
                           <i class="fa fa-trash" style="font-size: 12px;"></i> <!-- Silme ikonu -->
                         </button>
@@ -71,14 +49,10 @@
                 </thead>
                 <tbody>
                   <tr>
-                    <th scope="row">Katkı (%)</th>
+                    <th scope="row">Puan</th>
                     <td v-for="(assessment, index) in assessments" :key="assessment.id">
-                      <input
-                        type="number"
-                        v-model="assessment.contribution"
-                        @input="updateContribution(index, $event.target.value)"
-                        style="width: 60px;"
-                      />
+                      <input type="number" v-model="assessment.contribution"
+                        @input="updateContribution(index, $event.target.value)" style="width: 60px;" />
                     </td>
                   </tr>
                 </tbody>
@@ -86,28 +60,16 @@
 
               <div style="margin-bottom: 10px;">
                 <label for="contributionInput" style="margin-right: 10px;">Katkı Değeri:</label>
-                <input
-                  type="number"
-                  id="contributionInput"
-                  v-model="contributionValue"
-                  style="width: 100px;"
-                />
+                <input type="number" id="contributionInput" v-model="contributionValue" style="width: 100px;" />
               </div>
 
-              <button
-                type="button"
-                class="btn btn-success mb-2"
-                @click="addNewAssessment"
-              >
+              <button type="button" class="btn btn-success mb-2" @click="addNewAssessment">
                 Yeni Araç Ekle
               </button>
-              <input style="margin-left: 4px;" type="checkbox" v-model="useCustomNames" @change="toggleQuestionBased">Soru Bazlı Değerlendirme
+              <input style="margin-left: 4px;" type="checkbox" v-model="useCustomNames"
+                @change="toggleQuestionBased">Soru Bazlı Değerlendirme
               <br />
-              <button
-                type="button"
-                class="btn btn-outline-primary"
-                @click="saveContributions"
-              >
+              <button type="button" class="btn btn-outline-primary" @click="saveContributions">
                 Kaydet
               </button>
             </div>
@@ -118,47 +80,44 @@
           <h5 class="card-title">Öğrenim Çıktısı - Araç Eşleştirme</h5>
           <div style="max-width: 100%; overflow-x: auto">
             <div>
-  <button v-if="!isEditMode" @click="enableEditMode" class="btn btn-primary mb-2"><i class="fas fa-pencil-alt"></i> </button>
-  <button v-if="isEditMode" @click="saveLearningOutcomeContributions" class="btn btn-success mb-2">Kaydet</button>
-</div>
+              <button v-if="!isEditMode" @click="enableEditMode" class="btn btn-primary mb-2"><i
+                  class="fas fa-pencil-alt"></i> </button>
+              <button v-if="isEditMode" @click="saveLearningOutcomeContributions"
+                class="btn btn-success mb-2">Kaydet</button>
+            </div>
             <div style="max-height: 300px; overflow-y: auto">
               <table class="table table-stretched mt-3">
                 <thead>
                   <tr>
                     <th scope="col"></th>
                     <!-- Dinamik olarak eklenen sütunlar -->
-                    <th
-                      v-for="(assessment, index) in assessments"
-                      :key="'assessment-' + index"
-                      scope="col"
-                    >
+                    <th v-for="(assessment, index) in assessments" :key="'assessment-' + index" scope="col">
                       <div class="d-flex align-items-center">
-                        <span @click="selectColumn(index)">{{!useCustomNames ?  assessment.name  : 'Soru'}} {{ index + 1 }}</span>
+                        <span @click="selectColumn(index)">{{ !useCustomNames ? assessment.name : 'Soru' }} {{ index + 1
+                          }}</span>
                       </div>
                     </th>
                   </tr>
                 </thead>
                 <tbody>
-  <tr v-for="(outcome, outcomeIndex) in outcomes" :key="outcomeIndex">
-    <th scope="row">{{ outcome.description }}</th>
-    <td v-for="(assessment, assessmentIndex) in assessments" :key="'assessment-' + assessmentIndex" :contenteditable="isEditMode" contenteditable="true">
+                  <tr v-for="(outcome, outcomeIndex) in outcomes" :key="outcomeIndex">
+                    <th scope="row">{{ outcome.description }}</th>
+                    <td v-for="(assessment, assessmentIndex) in assessments" :key="'assessment-' + assessmentIndex"
+                      :contenteditable="isEditMode" contenteditable="true">
 
-      <!-- Her bir assessment için contenteditable hücresi -->
-      <div 
-      ref="assessmentCells"
-      :id="'cell-' + outcome.id + '-' + assessment.id"
-      @blur="updateRelationship(outcome.id, assessment.id, $event.target.innerText)"
-    ></div>
-    <div>
-      <input v-if="isEditMode" placeholder="%" type="number" v-model="editedOutcome">
-      <span v-else>{{ outcome.value }}</span>
-    </div>
-    </td>
-  </tr>
-</tbody>
+                      <!-- Her bir assessment için contenteditable hücresi -->
+                      <div ref="assessmentCells" :id="'cell-' + outcome.id + '-' + assessment.id"
+                        @blur="updateRelationship(outcome.id, assessment.id, $event.target.innerText)"></div>
+                      <div>
+                        <input v-if="isEditMode" placeholder="%" type="number" v-model="editedOutcome">
+                        <span v-else>{{ outcome.value }}</span>
+                      </div>
+                    </td>
+                  </tr>
+                </tbody>
 
               </table>
-              
+
             </div>
           </div>
         </div>
@@ -201,34 +160,34 @@ export default {
   },
   methods: {
     async saveAndDisableEditMode() {
-    await this.saveLearningOutcomeContributions(); // İlişkileri kaydet
-    this.disableEditMode(); // Düzenleme modunu kapat
-  },
+      await this.saveLearningOutcomeContributions(); // İlişkileri kaydet
+      this.disableEditMode(); // Düzenleme modunu kapat
+    },
     async toggleQuestionBased() {
       console.log("deneme");
-    try {
-      const generalAssessmentId = this.$route.params.generalAssessmentId;
-      await axios.put(`http://localhost:8080/generalAssesment/${generalAssessmentId}/toggleQuestionBased`);
-      console.log("Question based toggled successfully.");
-    } catch (error) {
-      console.error("Error toggling question based:", error);
-    }
-  },
-  enableEditMode() {
-    this.isEditMode = true;
-  },
-  disableEditMode() {
-    this.isEditMode = false;
-  },
+      try {
+        const generalAssessmentId = this.$route.params.generalAssessmentId;
+        await axios.put(`http://localhost:8080/generalAssesment/${generalAssessmentId}/toggleQuestionBased`);
+        console.log("Question based toggled successfully.");
+      } catch (error) {
+        console.error("Error toggling question based:", error);
+      }
+    },
+    enableEditMode() {
+      this.isEditMode = true;
+    },
+    disableEditMode() {
+      this.isEditMode = false;
+    },
     async fetchUseCustomNames() {
-    try {
-      const generalAssessmentId = this.$route.params.generalAssessmentId;
-      const response = await axios.get(`http://localhost:8080/generalAssesment/${generalAssessmentId}/isQuestionBased`);
-      this.useCustomNames = response.data; // Backend'den gelen veriyi useCustomNames değişkenine atar
-    } catch (error) {
-      console.error("Error fetching useCustomNames:", error);
-    }
-  },
+      try {
+        const generalAssessmentId = this.$route.params.generalAssessmentId;
+        const response = await axios.get(`http://localhost:8080/generalAssesment/${generalAssessmentId}/isQuestionBased`);
+        this.useCustomNames = response.data; // Backend'den gelen veriyi useCustomNames değişkenine atar
+      } catch (error) {
+        console.error("Error fetching useCustomNames:", error);
+      }
+    },
     async fetchLearningOutcomes() {
       try {
         const courseId = this.$route.params.courseId;
@@ -257,7 +216,7 @@ export default {
         for (const assessment of this.assessments) {
           const newContribution = parseFloat(assessment.contribution);
           console.log(assessment.contribution);
-          console.log("ASSESMENT",assessment);
+          console.log("ASSESMENT", assessment);
           await axios.put(`http://localhost:8080/assessments/update-assessment-contribution/${assessment.assessmentId}?newContribution=${newContribution}`);
           console.log(`Assessment contribution updated for assessmentId ${assessment.assessmentId} to ${newContribution}`);
         }
@@ -270,29 +229,29 @@ export default {
       }
     },
     async saveLearningOutcomeContributions() {
-  try {
-    const data = {
-      assessmentId: 1, // Assessment ID'yi güncelleyin, uygun bir değer ile değiştirin
-      learningOutcomeId: 1, // Learning Outcome ID'yi güncelleyin, uygun bir değer ile değiştirin
-      contribution: 100 // Contribution değerini güncelleyin, uygun bir değer ile değiştirin
-    };
+      try {
+        const data = {
+          assessmentId: 1, // Assessment ID'yi güncelleyin, uygun bir değer ile değiştirin
+          learningOutcomeId: 1, // Learning Outcome ID'yi güncelleyin, uygun bir değer ile değiştirin
+          contribution: 100 // Contribution değerini güncelleyin, uygun bir değer ile değiştirin
+        };
 
-    const response = await axios.post("http://localhost:8080/aloc", data);
-    console.log("Learning outcome contributions saved successfully:", response.data);
-    this.$toast.success("Öğrenim çıktısı katkıları başarıyla kaydedildi!");
-  } catch (error) {
-    console.error("Error saving learning outcome contributions:", error);
-    this.$toast.error("Öğrenim çıktısı katkıları kaydedilirken hata oluştu!");
-  }
-},
-updateRelationship(outcomeId, assessmentId, value) {
-    const relationship = parseFloat(value);
-    if (isNaN(relationship)) {
-      // Eğer değer girilmemişse veya geçersizse, varsayılan değer olan 0 atanır
-      return;
-    }
-    // İlişkiyi güncelleme veya başka bir işlem yapma
-  },
+        const response = await axios.post("http://localhost:8080/aloc", data);
+        console.log("Learning outcome contributions saved successfully:", response.data);
+        this.$toast.success("Öğrenim çıktısı katkıları başarıyla kaydedildi!");
+      } catch (error) {
+        console.error("Error saving learning outcome contributions:", error);
+        this.$toast.error("Öğrenim çıktısı katkıları kaydedilirken hata oluştu!");
+      }
+    },
+    updateRelationship(outcomeId, assessmentId, value) {
+      const relationship = parseFloat(value);
+      if (isNaN(relationship)) {
+        // Eğer değer girilmemişse veya geçersizse, varsayılan değer olan 0 atanır
+        return;
+      }
+      // İlişkiyi güncelleme veya başka bir işlem yapma
+    },
 
     updateContribution(index, value) {
       this.assessments[index].contribution = parseFloat(value);
@@ -377,5 +336,4 @@ updateRelationship(outcomeId, assessmentId, value) {
   margin-left: auto;
   margin-right: 20px;
 }
-
 </style>
