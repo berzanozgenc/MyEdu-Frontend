@@ -20,6 +20,7 @@
           <h5 class="card-title">Menü</h5>
           <a href="#" class="card-link" @click="goToCoursePage">Derslerim</a><br />
           <a href="#" class="card-link" @click="goToInstructorLearningOutcome">Öğrenim Çıktıları</a><br />
+          <a href="#" class="card-link">Program Çıktıları</a><br />
           <a href="#" class="card-link" @click="goToMatchMatrixPage">ÖÇ ve PÇ Eşleştirme</a>
         </div>
       </div>
@@ -33,7 +34,8 @@
         </div>
         <div class="buttons-container">
           <button style="margin-left: 16px;" class="btn btn-outline-primary" @click="goToInstructorLearningOutcome">Öğrenim Çıktıları</button>
-          
+          <button style="margin-left: 16px;" class="btn btn-outline-primary" >Program Çıktıları</button>
+          <button style="margin-left: 16px;" class="btn btn-outline-primary" @click="goToMatchMatrixPage" >ÖÇ - PÇ Eşleştirme</button>
         </div>
         
         <div class="card-body">
@@ -214,7 +216,7 @@ export default {
         })
         .catch(error => {
           console.error('GeneralAssessment eklenirken bir hata oluştu:', error);
-          this.$toast.error("Araç eklenemedi!");
+          this.$toast.error("Araç Adına ve Katkı Oranına Dikkat Ediniz!");
         });
     },
     editProgram(assessment) {
@@ -244,15 +246,12 @@ export default {
       this.$router.push("/instructor-home");
     },
     goToInstructorLearningOutcome() {
-  const courseId = this.$route.params.courseId;
-  console.log(courseId);
-  this.$router.push({ name: "InstructorLearningOutcome", params: { courseId: courseId }});
+      const courseId = this.$route.params.courseId;
+      this.$router.push({ name: "InstructorLearningOutcome", params: { courseId: courseId }});
 },
     goToMatchMatrixPage() {
       const courseId = this.$route.params.courseId;
-      console.log(courseId);
       this.$router.push({ name: "MatchMatrix", params: { courseId: courseId }});
-      
     },
     goToStudentInfoPage(assessmentId) {
       const courseId = this.$route.params.courseId;

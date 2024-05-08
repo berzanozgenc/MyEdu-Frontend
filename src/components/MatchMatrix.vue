@@ -25,10 +25,10 @@
       <div class="card" style="width: 13rem; margin-left: 10px;">
         <div class="card-body">
           <h5 class="card-title">Menü</h5>
-          <a href="#" class="card-link" @click="goToCoursePage">Derslerim</a><br />
-          <a href="#" class="card-link" @click="goToStudentInfoPage">Not Girişi</a><br />    
-          <a href="#" class="card-link">Öğrenim Çıktıları</a><br />
-          <a href="#" class="card-link" @click="goToMatchMatrixPage">ÖÇ ve PÇ Eşleştirme</a>
+          <a href="#" class="card-link" @click="goToCoursePage">Derslerim</a><br />  
+          <a href="#" class="card-link" @click="goToInstructorLearningOutcome">Öğrenim Çıktıları</a><br />
+          <a href="#" class="card-link">Program Çıktıları</a><br />
+          <a href="#" class="card-link">ÖÇ - PÇ Eşleştirme</a><br />
         </div>
       </div>
 
@@ -91,7 +91,7 @@ export default {
     const courseId = this.$route.params.courseId;
     console.log("Current Course ID : ", courseId);
     this.fetchLearningOutcomes(courseId);
-    this.fetchProgramOutcomes();
+    this.fetchProgramOutcomes(courseId);
   },
   methods: {
     dummy(outcomeIndex, programIndex) {
@@ -173,7 +173,8 @@ export default {
       this.$router.push("/learning-outcome");
     },
     goToInstructorLearningOutcome() {
-      this.$router.push("/instructor-learning-outcome");
+      const courseId = this.$route.params.courseId;
+      this.$router.push({ name: "InstructorLearningOutcome", params: { courseId: courseId }});
     },
     refreshPage() {
       this.$router.push("/instructor-home");
@@ -218,9 +219,9 @@ export default {
       }
     },
 
-    async fetchProgramOutcomes() {
+    async fetchProgramOutcomes(courseId) {
       try {
-        const response = await axios.get(`http://localhost:8080/program-outcomes`);
+        const response = await axios.get(`http://localhost:8080/program-outcomes/course/${courseId}`);
         if (response.status !== 200) {
           throw new Error('Program çıktıları getirilirken bir hata oluştu.');
         }
