@@ -51,9 +51,7 @@
                                         <th v-for="(assessment, index) in assessments" :key="'assessment-' + index"
                                             scope="col">
                                             <div class="d-flex align-items-center">
-                                                <span @click="selectColumn(index)">{{ !useCustomNames ? assessment.name
-                : 'Soru' }} {{ index + 1
-                                                    }}</span>
+                                                <span @click="selectColumn(index)">{{ !useCustomNames ? assessment.name: 'Soru' }} {{ index + 1 }}</span>
                                             </div>
                                         </th>
                                     </tr>
@@ -61,23 +59,14 @@
                                 <tbody>
                                     <tr v-for="(outcome, outcomeIndex) in outcomes" :key="outcomeIndex">
                                         <th scope="row">{{ outcome.description }}</th>
-                                        <td v-for="(assessment, assessmentIndex) in assessments"
-                                            :key="'assessment-' + assessmentIndex" :contenteditable="isEditMode"
-                                            contenteditable="true">
-                                            <div ref="assessmentCells" :id="'cell-' + outcome.id + '-' + assessment.id"
-                                                @blur="updateRelationship(outcome.id, assessment.id, $event.target.innerText)">
-                                            </div>
-                                            <div>
-                                                <input v-if="isEditMode" placeholder="%" type="number"
-                                                    v-model="editedOutcome">
-                                                <span v-else>{{ outcome.value }}</span>
-                                            </div>
+                                        <td :ref="`cell_${outcomeIndex}_${assessmentIndex}`" v-for="(assessment, assessmentIndex) in assessments" :key="'assessment-' + assessmentIndex" :contenteditable="isEditMode">
+                                            <span style="align-items: center; justify-content: center; display: flex;">
+                                                <input v-if="isEditMode" type="text" v-model="cellData[outcomeIndex][assessmentIndex]"/>
+                                            </span>
                                         </td>
                                     </tr>
                                 </tbody>
-
                             </table>
-
                         </div>
                     </div>
                 </div>
@@ -97,6 +86,7 @@ export default {
     data() {
         return {
             learningOutcomes: [],
+            cellData: [],
             assessments: [],
             isEditMode: false,
         };
@@ -114,6 +104,26 @@ export default {
         this.fetchUseCustomNames();
     },
     methods: {
+        async saveAllChanges() {
+            try {
+                const outcomeIds = this.outcomes.map(outcome => outcome.id);
+                const assessmentIds = this.assessments.map(assessment => assessment.assessmentId);
+                
+                for (let outcomeIndex = 0; outcomeIndex < outcomeIds.length; outcomeIndex++) {
+                    const outcomeId = outcomeIds[outcomeIndex];
+                    for (let assessmentIndex = 0; assessmentIndex < assessmentIds.length; assessmentIndex++) {
+                        const assessmentId = assessmentIds[assessmentIndex];
+                        const cellValue = this.cellData[outcomeIndex][assessmentIndex];
+                        console.log("assessmentId:", assessmentId);
+                        console.log("outcomeId:", outcomeId);
+                        console.log("cellValue:", cellValue);
+                        // Burada verileri kaydetmek için gerekli axios isteğini yapabilirsiniz
+                    }
+                }
+            } catch (error) {
+                console.error("Error saving changes:", error);
+            }
+        },
         enableEditMode() {
             this.isEditMode = true;
         },
@@ -136,6 +146,9 @@ export default {
                     `http://localhost:8080/learningOutcomes/course/${courseId}`
                 );
                 this.outcomes = response.data;
+                if (this.assessments && this.outcomes) {
+            this.cellData = new Array(this.outcomes.length).fill().map(() => new Array(this.assessments.length).fill(''));
+        }
             } catch (error) {
                 console.error("Error fetching learning outcomes:", error);
             }
@@ -148,6 +161,9 @@ export default {
                     `http://localhost:8080/assessments/generalAssessment/${generalAssessmentId}`
                 );
                 this.assessments = response.data;
+                if (this.assessments && this.outcomes) {
+            this.cellData = new Array(this.outcomes.length).fill().map(() => new Array(this.assessments.length).fill(''));
+        }
             } catch (error) {
                 console.error("Error fetching assessments:", error);
             }
