@@ -74,52 +74,7 @@
               </button>
             </div>
           </div>
-
-          <!-- Second table -->
           <br />
-          <h5 class="card-title">Öğrenim Çıktısı - Araç Eşleştirme</h5>
-          <div style="max-width: 100%; overflow-x: auto">
-            <div>
-              <button v-if="!isEditMode" @click="enableEditMode" class="btn btn-primary mb-2"><i
-                  class="fas fa-pencil-alt"></i> </button>
-              <button v-if="isEditMode" @click="saveLearningOutcomeContributions"
-                class="btn btn-success mb-2">Kaydet</button>
-            </div>
-            <div style="max-height: 300px; overflow-y: auto">
-              <table class="table table-stretched mt-3">
-                <thead>
-                  <tr>
-                    <th scope="col"></th>
-                    <!-- Dinamik olarak eklenen sütunlar -->
-                    <th v-for="(assessment, index) in assessments" :key="'assessment-' + index" scope="col">
-                      <div class="d-flex align-items-center">
-                        <span @click="selectColumn(index)">{{ !useCustomNames ? assessment.name : 'Soru' }} {{ index + 1
-                          }}</span>
-                      </div>
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr v-for="(outcome, outcomeIndex) in outcomes" :key="outcomeIndex">
-                    <th scope="row">{{ outcome.description }}</th>
-                    <td v-for="(assessment, assessmentIndex) in assessments" :key="'assessment-' + assessmentIndex"
-                      :contenteditable="isEditMode" contenteditable="true">
-
-                      <!-- Her bir assessment için contenteditable hücresi -->
-                      <div ref="assessmentCells" :id="'cell-' + outcome.id + '-' + assessment.id"
-                        @blur="updateRelationship(outcome.id, assessment.id, $event.target.innerText)"></div>
-                      <div>
-                        <input v-if="isEditMode" placeholder="%" type="number" v-model="editedOutcome">
-                        <span v-else>{{ outcome.value }}</span>
-                      </div>
-                    </td>
-                  </tr>
-                </tbody>
-
-              </table>
-
-            </div>
-          </div>
         </div>
       </div>
     </div>
@@ -138,8 +93,9 @@ export default {
     return {
       outcomes: [],
       assessments: [],
+      assessmentsTwo: [],
+      contributions: [],
       quizColumns: [1, 2, 3], // Başlangıçta üç sütun var
-      selectedColumn: null,
       contributionValue: 0.0, // Kullanıcı tarafından girilen katkı değeri
       useCustomNames: null,
       isEditMode: false,
@@ -160,7 +116,7 @@ export default {
   },
   methods: {
     async saveAndDisableEditMode() {
-      await this.saveLearningOutcomeContributions(); // İlişkileri kaydet
+      await this.saveLearningOutcomeContributions();
       this.disableEditMode(); // Düzenleme modunu kapat
     },
     async toggleQuestionBased() {
@@ -195,6 +151,7 @@ export default {
           `http://localhost:8080/learningOutcomes/course/${courseId}`
         );
         this.outcomes = response.data;
+        this.fillTable();
       } catch (error) {
         console.error("Error fetching learning outcomes:", error);
       }
@@ -207,6 +164,7 @@ export default {
           `http://localhost:8080/assessments/generalAssessment/${generalAssessmentId}`
         );
         this.assessments = response.data; // Backend'den assessment'ları al
+        this.assessmentsTwo = this.assessments;
       } catch (error) {
         console.error("Error fetching assessments:", error);
       }
@@ -227,34 +185,6 @@ export default {
         console.error("Error updating assessment contributions:", error);
         this.$toast.error("Katkı değeri kaydedilirken hata oluştu!");
       }
-    },
-    async saveLearningOutcomeContributions() {
-      try {
-        const data = {
-          assessmentId: 1, // Assessment ID'yi güncelleyin, uygun bir değer ile değiştirin
-          learningOutcomeId: 1, // Learning Outcome ID'yi güncelleyin, uygun bir değer ile değiştirin
-          contribution: 100 // Contribution değerini güncelleyin, uygun bir değer ile değiştirin
-        };
-
-        const response = await axios.post("http://localhost:8080/aloc", data);
-        console.log("Learning outcome contributions saved successfully:", response.data);
-        this.$toast.success("Öğrenim çıktısı katkıları başarıyla kaydedildi!");
-      } catch (error) {
-        console.error("Error saving learning outcome contributions:", error);
-        this.$toast.error("Öğrenim çıktısı katkıları kaydedilirken hata oluştu!");
-      }
-    },
-    updateRelationship(outcomeId, assessmentId, value) {
-      const relationship = parseFloat(value);
-      if (isNaN(relationship)) {
-        // Eğer değer girilmemişse veya geçersizse, varsayılan değer olan 0 atanır
-        return;
-      }
-      // İlişkiyi güncelleme veya başka bir işlem yapma
-    },
-
-    updateContribution(index, value) {
-      this.assessments[index].contribution = parseFloat(value);
     },
     async addNewAssessment() {
       const generalAssessmentId = this.$route.params.generalAssessmentId;
@@ -302,33 +232,21 @@ export default {
     },
     goToMatchMatrixPage() {
       const courseId = this.$route.params.courseId;
-      this.$router.push({ name: "MatchMatrix", params: { courseId: courseId }});
+      this.$router.push({ name: "MatchMatrix", params: { courseId: courseId } });
     },
     goToStudentInfoPage() {
       this.$router.push("/student-info");
     },
-    goToCourseProgramOutcomePage(){
+    goToCourseProgramOutcomePage() {
       const courseId = this.$route.params.courseId;
-      this.$router.push({ name: "CourseProgramOutcome", params: { courseId: courseId }});
+      this.$router.push({ name: "CourseProgramOutcome", params: { courseId: courseId } });
     },
     goToInstructorLearningOutcomePage() {
       const courseId = this.$route.params.courseId;
-      this.$router.push({ name: "InstructorLearningOutcome", params: { courseId: courseId }});
+      this.$router.push({ name: "InstructorLearningOutcome", params: { courseId: courseId } });
     },
     refreshPage() {
       this.$router.push("/instructor-home");
-    },
-    addNewQuiz() {
-      this.quizColumns.push(this.quizColumns.length + 1);
-    },
-    removeQuiz(index) {
-      if (this.quizColumns.length > 1) {
-        this.quizColumns.splice(index, 1);
-        this.selectedColumn = null;
-      }
-    },
-    selectColumn(index) {
-      this.selectedColumn = index;
     },
   },
 };

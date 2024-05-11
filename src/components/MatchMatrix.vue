@@ -41,6 +41,8 @@
           <button v-if="!editMode" @click="toggleEditMode" class="btn btn-primary mt-2 mr-2 float-right">
   <i class="fas fa-pencil-alt"></i> 
 </button>
+<br>
+<br>
 
           <!-- Matrix table -->
           <table class="table" style="min-width: 600px;">
@@ -65,7 +67,8 @@
           <!-- End of matrix table -->
 
           <!-- Tümünü kaydet butonu -->
-          <button v-if="editMode" @click="saveAllChanges" class="btn btn-primary mt-3">Tümünü Kaydet</button>
+          <button v-if="editMode" @click="saveAllChanges" class="btn btn-success mt-3">Tümünü Kaydet</button>
+          <button style="margin-left: 2px;" v-if="editMode" @click="disableEditMode" class="btn btn-danger mt-3">Vazgeç</button>
 
         </div>
       </div>
@@ -245,6 +248,9 @@ export default {
         const outcome = program.outcomes[outcomeIndex];
         const learningOutcomeId = this.outcomes[outcomeIndex].id;
         const programOutcomeId = program.id;
+        console.log("ççççççççççç................")
+        console.log(this.programs);
+        console.log(outcome);
         const contribution = parseFloat(outcome);
 
         if (isNaN(contribution) || contribution < 0 || contribution > 100 || outcome.trim() === '') {
@@ -277,6 +283,9 @@ export default {
     },
     toggleEditMode() {
       this.editMode = !this.editMode;
+    },
+    disableEditMode() {
+      this.editMode = false;
     },
   },
 };

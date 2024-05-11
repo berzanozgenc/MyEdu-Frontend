@@ -48,14 +48,16 @@
       <option value="contributionAsc">Katkıya Göre Artan</option>
       <option value="contributionDesc">Katkıya Göre Azalan</option>
     </select>
+    <br>
+    <br>
   </div>
   
           <table class="table">
             <thead>
               <tr>
-                <th scope="col">Araç Türü</th>
-                <th scope="col">Katkı</th>
-                <th scope="col">İşlemler</th>
+                <th style="width: 30%;" scope="col">Araç Türü</th>
+                <th style="width: 30%;" scope="col">Katkı</th>
+                <th style="width: 40%;" scope="col">İşlemler</th>
               </tr>
             </thead>
             <tbody>
@@ -68,13 +70,15 @@
                   {{ assessment.totalContribution }}
                 </td>
                 <td style="width: 350px;">
-                  <button class="btn btn-danger btn-sm" @click="deleteProgram(assessment.generalAssesmentId, index)">Sil</button>
+                  
                   <span style="margin-left: 2px;"></span>
-                  <button :class="{'btn-warning': !assessment.editMode, 'btn-success': assessment.editMode}" class="btn btn-sm text-white" @click="assessment.editMode ? saveChanges(assessment) : editProgram(assessment)">
+                  <button style="margin-left: 2px;" class="btn btn-info btn-sm text-white" @click="goToAssessmentPage(assessment.generalAssesmentId)">Araç Bilgilerini Gir</button>
+                  <button style="margin-left: 2px; height: 31px;" type="button" class="btn btn-sm btn-secondary text-white" @click="goToAlocPage(assessment.generalAssesmentId)">ÖÇ - Araç Eşleştir</button>
+                  <button style="margin-left: 2px; height: 31px;" type="button" class="btn btn-sm btn-primary" @click="goToStudentInfoPage(assessment.generalAssesmentId)">Not Gir</button>
+                  <button style="margin-left: 2px;" :class="{'btn-warning': !assessment.editMode, 'btn-success': assessment.editMode}" class="btn btn-sm text-white" @click="assessment.editMode ? saveChanges(assessment) : editProgram(assessment)">
                   {{ assessment.editMode ? 'Kaydet' : 'Düzenle' }}
                   </button>
-                  <button style="margin-left: 2px;" class="btn btn-info btn-sm text-white" @click="goToAssessmentPage(assessment.generalAssesmentId)">Bilgileri Gir</button>
-                  <button style="margin-left: 2px; height: 31px;" type="button" class="btn btn-sm btn-primary" @click="goToStudentInfoPage(assessment.generalAssesmentId)">Not Gir</button>
+                  <button style="margin-left: 2px;" class="btn btn-danger btn-sm" @click="deleteProgram(assessment.generalAssesmentId, index)">Sil</button>
                 </td>
               </tr>
             </tbody>
@@ -273,6 +277,10 @@ export default {
     goToAssessmentPage(assessmentId) {
       const courseId = this.$route.params.courseId;
       this.$router.push({ name: "LearningOutcome", params: { courseId: courseId ,generalAssessmentId: assessmentId }});
+},
+goToAlocPage(assessmentId) {
+      const courseId = this.$route.params.courseId;
+      this.$router.push({ name: "Aloc", params: { courseId: courseId ,generalAssessmentId: assessmentId }});
 },
 logoutUser() {
             const store = useStore();

@@ -19,6 +19,7 @@ import AddCourseDepartment from "./components/AddCourseDepartment.vue";
 import InstructorStudent from "./components/InstructorStudent.vue";
 import DepartmentAdminPage from "./components/DepartmentAdminPage.vue";
 import CourseProgramOutcome from "./components/CourseProgramOutcome.vue";
+import Aloc from "./components/Aloc.vue";
 
 const routes = [{
         name: "Login",
@@ -59,7 +60,13 @@ const routes = [{
     {
         name: "LearningOutcome",
         component: LearningOutcome,
-        path: "/learning-outcome/:courseId/:generalAssessmentId",
+        path: "/assessment/:courseId/:generalAssessmentId",
+        meta: { requiresAuth: true }, // Oturum açma gerektiren sayfaları belirtin
+    },
+    {
+        name: "Aloc",
+        component: Aloc,
+        path: "/aloc/:courseId/:generalAssessmentId",
         meta: { requiresAuth: true }, // Oturum açma gerektiren sayfaları belirtin
     },
     {
