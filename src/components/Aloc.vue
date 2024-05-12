@@ -51,7 +51,9 @@
                                         <th v-for="(assessment, index) in assessments" :key="'assessment-' + index"
                                             scope="col">
                                             <div class="d-flex align-items-center">
-                                                <span @click="selectColumn(index)">{{ !useCustomNames ? assessment.name: 'Soru' }} {{ index + 1 }}</span>
+                                                <span @click="selectColumn(index)">{{ !useCustomNames ? assessment.name
+                :
+                'Soru' }} {{ index + 1 }}</span>
                                             </div>
                                         </th>
                                     </tr>
@@ -59,9 +61,14 @@
                                 <tbody>
                                     <tr v-for="(outcome, outcomeIndex) in outcomes" :key="outcomeIndex">
                                         <th scope="row">{{ outcome.description }}</th>
-                                        <td :ref="`cell_${outcomeIndex}_${assessmentIndex}`" v-for="(assessment, assessmentIndex) in assessments" :key="'assessment-' + assessmentIndex" :contenteditable="isEditMode">
+                                        <td :ref="`cell_${outcomeIndex}_${assessmentIndex}`"
+                                            v-for="(assessment, assessmentIndex) in assessments"
+                                            :key="'assessment-' + assessmentIndex" :contenteditable="isEditMode">
                                             <span style="align-items: center; justify-content: center; display: flex;">
-                                                <input v-if="isEditMode" type="text" v-model="cellData[outcomeIndex][assessmentIndex]"/>
+                                                <input v-if="isEditMode" type="text" v-bind:placeholder="fillTable(outcomeIndex, assessmentIndex)"
+                                                    v-model="cellData[outcomeIndex][assessmentIndex]" /> <span
+                                                    v-else></span>
+                                                <span v-else>{{ fillTable(outcomeIndex, assessmentIndex) }}</span>
                                             </span>
                                         </td>
                                     </tr>
@@ -88,15 +95,12 @@ export default {
             learningOutcomes: [],
             cellData: [],
             assessments: [],
-            isEditMode: false,
+            contributions: [],
+            isEditMode: false
         };
     },
     created() {
-        console.log("Course ID:", this.$route.params.courseId);
-        console.log(
-            "General Assessment ID:",
-            this.$route.params.generalAssessmentId
-        );
+
     },
     mounted() {
         this.fetchLearningOutcomes();
@@ -104,25 +108,111 @@ export default {
         this.fetchUseCustomNames();
     },
     methods: {
+        fillTable(outcomeIndex, assessmentIndex) {
+            var learningId = this.learningOutcomes[outcomeIndex].id
+            var assessmentId = this.assessments[assessmentIndex].assessmentId
+            var contribution = 0;
+
+
+            for (var i = 0; i < this.contributions.length; i++) {
+                let cont = this.contributions[i]
+                if (cont.assessmentId == assessmentId && cont.learningOutcomeId == learningId) {
+                    contribution = cont.contribution;
+                }
+
+            }
+            return contribution;
+        },
         async saveAllChanges() {
             try {
                 const outcomeIds = this.outcomes.map(outcome => outcome.id);
                 const assessmentIds = this.assessments.map(assessment => assessment.assessmentId);
-                
+
+                let alocArr = [];
                 for (let outcomeIndex = 0; outcomeIndex < outcomeIds.length; outcomeIndex++) {
                     const outcomeId = outcomeIds[outcomeIndex];
                     for (let assessmentIndex = 0; assessmentIndex < assessmentIds.length; assessmentIndex++) {
                         const assessmentId = assessmentIds[assessmentIndex];
                         const cellValue = this.cellData[outcomeIndex][assessmentIndex];
-                        console.log("assessmentId:", assessmentId);
-                        console.log("outcomeId:", outcomeId);
-                        console.log("cellValue:", cellValue);
-                        // Burada verileri kaydetmek için gerekli axios isteğini yapabilirsiniz
+
+                        if (cellValue < 0 || cellValue > 100 || cellValue == NaN)
+                            this.$toast.error("Lütfen Geçerli Değer Giriniz!");
+
+                        if (isNaN(cellValue)) {
+                            this.$toast.error("Lütfen geçerli bir sayı giriniz!");
+                        }
+
+                        // dolu boş kontrolü
+                        if (cellValue == 0 || cellValue == undefined || cellValue == "" || cellValue == NaN || cellValue < 0 || cellValue > 100)
+                            continue;
+
+
+                        let obj = {
+                            "assessmentId": assessmentId,
+                            "learningOutcomeId": outcomeId,
+                            "contribution": parseFloat(cellValue)
+                        }
+
+                        alocArr.push(obj);
+
                     }
                 }
+
+                const response = await axios.post('http://localhost:8080/aloc', {
+                    "alocList": alocArr
+                })
+
+                if (response.status == 200) {
+                    this.$toast.success("Tüm değişiklikler başarıyla kaydedildi!");
+                    await this.fetchTable();
+                }
+
             } catch (error) {
                 console.error("Error saving changes:", error);
             }
+            this.isEditMode = false
+        },
+        async fetchTable() {
+            try {
+                const outcomeIds = this.outcomes.map(outcome => outcome.id);
+                const assessmentIds = this.assessments.map(assessment => assessment.assessmentId);
+
+                let alocArr = [];
+                for (let outcomeIndex = 0; outcomeIndex < outcomeIds.length; outcomeIndex++) {
+                    const outcomeId = outcomeIds[outcomeIndex];
+                    for (let assessmentIndex = 0; assessmentIndex < assessmentIds.length; assessmentIndex++) {
+                        const assessmentId = assessmentIds[assessmentIndex];
+                        let obj = {
+                            "assessmentId": assessmentId,
+                            "learningId": outcomeId,
+                        }
+                        alocArr.push(obj);
+                    }
+                }
+
+                const response = await axios.post('http://localhost:8080/aloc/contribution', {
+                    "assessmentContributionDTOList": alocArr
+                },
+                );
+                if (response.status == 200) {
+
+                    var tempList = [];
+                    for (var i = 0; i < response.data.contributions.length; i++) {
+                        var obj = {
+                            contribution: response.data.contributions[i].contribution,
+                            learningOutcomeId: response.data.contributions[i].learningOutcome.id,
+                            assessmentId: response.data.contributions[i].assessment.assessmentId
+                        }
+                        tempList.push(obj)
+                    }
+                    this.contributions = tempList;
+                    console.log(this.contributions);
+                }
+
+            } catch (error) {
+                console.error("Error filling table:", error);
+            }
+
         },
         enableEditMode() {
             this.isEditMode = true;
@@ -146,9 +236,10 @@ export default {
                     `http://localhost:8080/learningOutcomes/course/${courseId}`
                 );
                 this.outcomes = response.data;
+                this.learningOutcomes = response.data
                 if (this.assessments && this.outcomes) {
-            this.cellData = new Array(this.outcomes.length).fill().map(() => new Array(this.assessments.length).fill(''));
-        }
+                    this.cellData = new Array(this.outcomes.length).fill().map(() => new Array(this.assessments.length).fill(''));
+                }
             } catch (error) {
                 console.error("Error fetching learning outcomes:", error);
             }
@@ -156,14 +247,15 @@ export default {
         async fetchAssessments() {
             try {
                 const generalAssessmentId = this.$route.params.generalAssessmentId;
-                console.log(generalAssessmentId);
                 const response = await axios.get(
                     `http://localhost:8080/assessments/generalAssessment/${generalAssessmentId}`
                 );
                 this.assessments = response.data;
                 if (this.assessments && this.outcomes) {
-            this.cellData = new Array(this.outcomes.length).fill().map(() => new Array(this.assessments.length).fill(''));
-        }
+                    this.cellData = new Array(this.outcomes.length).fill().map(() => new Array(this.assessments.length).fill(''));
+                    console.log("asssess")
+                    this.fetchTable();
+                }
             } catch (error) {
                 console.error("Error fetching assessments:", error);
             }
