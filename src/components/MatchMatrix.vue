@@ -56,8 +56,8 @@
               <tr v-for="(program, programIndex) in programs" :key="programIndex">
                 <th scope="row">{{ program.description }}</th>
                 <td v-for="(outcome, outcomeIndex) in outcomes" :key="outcomeIndex">
-                  <div>
-                    <input v-if="editMode" v-bind:placeholder="dummy(outcomeIndex, programIndex)" type="text" v-model="program.outcomes[outcomeIndex]">
+                  <div style="align-items: center; justify-content: center; display: flex;">
+                    <input style="align-items: center; text-align: center" v-if="editMode" v-bind:placeholder="dummy(outcomeIndex, programIndex)" type="text" v-model="program.outcomes[outcomeIndex]">
                     <span v-else>{{ dummy(outcomeIndex, programIndex) }}</span>
                   </div>
                 </td>

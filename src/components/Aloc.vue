@@ -65,7 +65,7 @@
                                             v-for="(assessment, assessmentIndex) in assessments"
                                             :key="'assessment-' + assessmentIndex" :contenteditable="isEditMode">
                                             <span style="align-items: center; justify-content: center; display: flex;">
-                                                <input v-if="isEditMode" type="text" v-bind:placeholder="fillTable(outcomeIndex, assessmentIndex)"
+                                                <input style="text-align: center;" v-if="isEditMode" type="text" v-bind:placeholder="fillTable(outcomeIndex, assessmentIndex)"
                                                     v-model="cellData[outcomeIndex][assessmentIndex]" /> <span
                                                     v-else></span>
                                                 <span v-else>{{ fillTable(outcomeIndex, assessmentIndex) }}</span>
