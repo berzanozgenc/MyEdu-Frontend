@@ -20,6 +20,7 @@ import InstructorStudent from "./components/InstructorStudent.vue";
 import DepartmentAdminPage from "./components/DepartmentAdminPage.vue";
 import CourseProgramOutcome from "./components/CourseProgramOutcome.vue";
 import Aloc from "./components/Aloc.vue";
+import StudentList from "./components/StudentList.vue";
 
 const routes = [{
         name: "Login",
@@ -109,6 +110,12 @@ const routes = [{
         name: "AdminHome",
         component: AdminHome,
         path: "/admin-home",
+        meta: { requiresAuth: true }, // Oturum açma gerektiren sayfaları belirtin
+    },
+    {
+        name: "StudentList",
+        component: StudentList,
+        path: "/student-list/:courseId",
         meta: { requiresAuth: true }, // Oturum açma gerektiren sayfaları belirtin
     },
     {

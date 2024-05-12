@@ -21,7 +21,8 @@
           <a href="#" class="card-link" @click="goToCoursePage">Derslerim</a><br />
           <a href="#" class="card-link" @click="goToInstructorLearningOutcomePage">Öğrenim Çıktıları</a><br />
           <a href="#" class="card-link" @click="goToCourseProgramOutcomePage">Program Çıktıları</a><br />
-          <a href="#" class="card-link" @click="goToMatchMatrixPage">ÖÇ ve PÇ Eşleştirme</a>
+          <a href="#" class="card-link" @click="goToMatchMatrixPage">ÖÇ ve PÇ Eşleştirme</a><br />
+          <a href="#" class="card-link" @click="goToStudentListPage">Öğrenci Listesi</a><br />
         </div>
       </div>
 
@@ -36,6 +37,7 @@
           <button style="margin-left: 16px;" class="btn btn-outline-primary" @click="goToInstructorLearningOutcomePage">Öğrenim Çıktıları</button>
           <button style="margin-left: 16px;" class="btn btn-outline-primary" @click="goToCourseProgramOutcomePage">Program Çıktıları</button>
           <button style="margin-left: 16px;" class="btn btn-outline-primary" @click="goToMatchMatrixPage" >ÖÇ - PÇ Eşleştirme</button>
+          <button style="margin-left: 16px;" class="btn btn-outline-primary" @click="goToStudentListPage" >Öğrenci Listesi</button>
         </div>
         
         <div class="card-body">
@@ -260,6 +262,10 @@ export default {
     goToMatchMatrixPage() {
       const courseId = this.$route.params.courseId;
       this.$router.push({ name: "MatchMatrix", params: { courseId: courseId }});
+    },
+    goToStudentListPage() {
+      const courseId = this.$route.params.courseId;
+      this.$router.push({ name: "StudentList", params: { courseId: courseId }});
     },
     goToStudentInfoPage(assessmentId) {
       const courseId = this.$route.params.courseId;

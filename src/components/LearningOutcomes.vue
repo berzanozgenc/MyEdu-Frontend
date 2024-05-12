@@ -23,7 +23,8 @@
           <a href="#" class="card-link" @click="goToCoursePage">Derslerim </a><br />
           <a href="#" class="card-link" @click="goToInstructorLearningOutcomePage">Öğrenim Çıktıları</a><br />
           <a href="#" class="card-link" @click="goToCourseProgramOutcomePage">Program Çıktıları</a><br />
-          <a href="#" class="card-link" @click="goToMatchMatrixPage">ÖÇ ve PÇ Eşleştirme</a>
+          <a href="#" class="card-link" @click="goToMatchMatrixPage">ÖÇ ve PÇ Eşleştirme</a><br />
+          <a href="#" class="card-link" @click="goToStudentListPage">Öğrenci Listesi</a><br />
         </div>
       </div>
 
@@ -237,6 +238,10 @@ export default {
     goToStudentInfoPage() {
       this.$router.push("/student-info");
     },
+    goToStudentListPage() {
+        const courseId = this.$route.params.courseId;
+        this.$router.push({ name: "StudentList", params: { courseId: courseId }});
+        },
     goToCourseProgramOutcomePage() {
       const courseId = this.$route.params.courseId;
       this.$router.push({ name: "CourseProgramOutcome", params: { courseId: courseId } });

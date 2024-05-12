@@ -29,6 +29,7 @@
           <a href="#" class="card-link" @click="goToInstructorLearningOutcomePage">Öğrenim Çıktıları</a><br />
           <a href="#" class="card-link" @click="goToCourseProgramOutcomePage">Program Çıktıları</a><br />
           <a href="#" class="card-link">ÖÇ - PÇ Eşleştirme</a><br />
+          <a href="#" class="card-link" @click="goToStudentListPage">Öğrenci Listesi</a><br />
         </div>
       </div>
 
@@ -183,6 +184,10 @@ export default {
       const courseId = this.$route.params.courseId;
       this.$router.push({ name: "InstructorLearningOutcome", params: { courseId: courseId }});
     },
+    goToStudentListPage() {
+        const courseId = this.$route.params.courseId;
+        this.$router.push({ name: "StudentList", params: { courseId: courseId }});
+        },
     refreshPage() {
       this.$router.push("/instructor-home");
     },

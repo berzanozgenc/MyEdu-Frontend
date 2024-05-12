@@ -28,7 +28,8 @@
             <a href="#" class="card-link" @click="goToCoursePage">Derslerim</a><br />
             <a href="#" class="card-link" @click="goToStudentInfoPage">Not Girişi</a><br />    
             <a href="#" class="card-link">Öğrenim Çıktıları</a><br />
-            <a href="#" class="card-link" @click="goToMatchMatrixPage">ÖÇ ve PÇ Eşleştirme</a>
+            <a href="#" class="card-link" @click="goToMatchMatrixPage">ÖÇ ve PÇ Eşleştirme</a><br />
+            <a href="#" class="card-link" @click="goToStudentListPage">Öğrenci Listesi</a><br />
           </div>
         </div>
   
@@ -109,6 +110,10 @@
       goToMatchMatrixPage() {
         this.$router.push("/instructor-match-matrix");
       },
+      goToStudentListPage() {
+        const courseId = this.$route.params.courseId;
+        this.$router.push({ name: "StudentList", params: { courseId: courseId }});
+        },
       goToLearningOutcomePage() {
         this.$router.push("/learning-outcome");
       },

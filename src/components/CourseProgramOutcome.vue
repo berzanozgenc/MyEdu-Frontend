@@ -21,7 +21,8 @@
             <a href="#" class="card-link" @click="goToCoursePage">Derslerim   </a><br /> 
             <a href="#" class="card-link" @click="goToInstructorLearningOutcomePage">Öğrenim Çıktıları</a><br />
             <a href="#" class="card-link">Program Çıktıları</a><br />
-            <a href="#" class="card-link" @click="goToMatchMatrixPage">ÖÇ ve PÇ Eşleştirme</a>
+            <a href="#" class="card-link" @click="goToMatchMatrixPage">ÖÇ ve PÇ Eşleştirme</a><br />
+            <a href="#" class="card-link" @click="goToStudentListPage">Öğrenci Listesi</a><br />
           </div>
         </div>
         <div class="card" style="width: 75rem;">
@@ -69,7 +70,7 @@
   <script>
   import { useStore } from 'vuex';
   import { useRouter } from 'vue-router';
-  import axios from 'axios'; // axios'ı projenize dahil edin
+  import axios from 'axios'; 
   
   export default {
     name: "CourseProgramOutcome",
@@ -102,6 +103,10 @@
       goToStudentInfoPage() {
         this.$router.push("/student-info");
       },
+      goToStudentListPage() {
+        const courseId = this.$route.params.courseId;
+        this.$router.push({ name: "StudentList", params: { courseId: courseId }});
+        },
       goToCoursePage() {
         this.$router.push("/instructor-home");
       },
@@ -134,8 +139,6 @@ async updateProgram(program) {
         console.log("Hata:", error);
     }
 },
-
-
 
 async deleteProgram(programId, item) {
     try {
