@@ -254,7 +254,7 @@ export default {
                 const response = await axios.get(
                     `http://localhost:8080/assessments/generalAssessment/${generalAssessmentId}`
                 );
-                this.assessments = response.data;
+                this.assessments = response.data.sort((a, b) => a.assessmentId - b.assessmentId);
                 if (this.assessments && this.outcomes) {
                     this.cellData = new Array(this.outcomes.length).fill().map(() => new Array(this.assessments.length).fill(''));
                     console.log("asssess")

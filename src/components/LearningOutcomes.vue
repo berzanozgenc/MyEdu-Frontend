@@ -110,6 +110,7 @@ export default {
     this.fetchLearningOutcomes();
     this.fetchAssessments();
     this.fetchUseCustomNames();
+    console.log(this.assessments.contribution)
   },
   methods: {
     async saveAndDisableEditMode() {
@@ -159,14 +160,17 @@ export default {
         const response = await axios.get(
           `http://localhost:8080/assessments/generalAssessment/${generalAssessmentId}`
         );
-        this.assessments = response.data; // Backend'den assessment'ları al
+        // Assessmentları id'ye göre sırala
+        this.assessments = response.data.sort((a, b) => a.assessmentId - b.assessmentId);
       } catch (error) {
         console.error("Error fetching assessments:", error);
       }
-    },
+},
+
     async saveContributions() {
       this.assessments.forEach(assessment => {
       console.log(`assessment Id: ${assessment.assessmentId} - cellValue: ${assessment.contribution}`);
+      console.log( "Kaydet butonu:",assessment.contribution);
     });
       try {
         for (const assessment of this.assessments) {

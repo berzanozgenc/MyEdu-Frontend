@@ -43,8 +43,7 @@
                 <th scope="col"></th>
                 <th v-for="(assessment, index) in assessments" :key="'assessment-' + index" scope="col">
                   <div class="d-flex align-items-center">
-                    <span @click="selectColumn(index)">{{ !useCustomNames ? assessment.name : 'Soru' }} {{ index + 1
-                      }}</span>
+                    <span>{{ !useCustomNames ? assessment.name : 'Soru' }} {{ index + 1}}</span>
                   </div>
                 </th>
               </tr>
@@ -107,7 +106,7 @@ export default {
     // Genel değerlendirmeye ait soruları veya değerlendirmeleri getir
     axios.get(`http://localhost:8080/assessments/generalAssessment/${generalAssessmentId}`)
       .then(response => {
-        this.assessments = response.data; // Aldığımız veriyi assessments değişkenine atadık
+        this.assessments = response.data.sort((a, b) => a.assessmentId - b.assessmentId);
         if (this.assessments && this.students) {
           this.cellData = new Array(this.students.length).fill().map(() => new Array(this.assessments.length).fill(''));
           this.fetchTable();
