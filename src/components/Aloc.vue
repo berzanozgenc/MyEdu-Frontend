@@ -21,10 +21,11 @@
             <div class="card" style="width: 13rem; margin-left: 10px">
                 <div class="card-body">
                     <h5 class="card-title">Menü</h5>
-                    <button style="margin-left: 16px;" class="btn btn-outline-primary" @click="goToInstructorLearningOutcomePage">Öğrenim Çıktıları</button>
-                    <button style="margin-left: 16px;" class="btn btn-outline-primary" @click="goToCourseProgramOutcomePage">Program Çıktıları</button>
-                    <button style="margin-left: 16px;" class="btn btn-outline-primary" @click="goToMatchMatrixPage" >ÖÇ - PÇ Eşleştirme</button>
-                    <button style="margin-left: 16px;" class="btn btn-outline-primary" @click="goToStudentListPage" >Öğrenci Listesi</button>
+                    <a href="#" class="card-link" @click="goToCoursePage">Derslerim </a><br />
+          <a href="#" class="card-link" @click="goToInstructorLearningOutcomePage">Öğrenim Çıktıları</a><br />
+          <a href="#" class="card-link" @click="goToCourseProgramOutcomePage">Program Çıktıları</a><br />
+          <a href="#" class="card-link" @click="goToMatchMatrixPage">ÖÇ ve PÇ Eşleştirme</a><br />
+          <a href="#" class="card-link" @click="goToStudentListPage">Öğrenci Listesi</a><br />
                 </div>
             </div>
 
@@ -103,9 +104,12 @@ export default {
 
     },
     mounted() {
-        this.fetchLearningOutcomes();
-        this.fetchAssessments();
-        this.fetchUseCustomNames();
+        this.fetchLearningOutcomes()
+    .then(() => this.fetchAssessments())
+    .then(() => this.fetchUseCustomNames())
+    .catch(error => {
+      console.error('Fetch işlemi başarısız:', error);
+    });
     },
     methods: {
         fillTable(outcomeIndex, assessmentIndex) {

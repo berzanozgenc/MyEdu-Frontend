@@ -52,8 +52,7 @@
                   <tr>
                     <th scope="row">Puan</th>
                     <td v-for="(assessment, index) in assessments" :key="assessment.id">
-                      <input type="number" v-model="assessment.contribution"
-                        @input="updateContribution(index, $event.target.value)" style="width: 60px;" />
+                      <input type="number" v-model="assessment.contribution" style="width: 60px;" />
                     </td>
                   </tr>
                 </tbody>
@@ -92,11 +91,8 @@ export default {
   props: ["generalAssessmentId", "courseId"],
   data() {
     return {
-      outcomes: [],
       assessments: [],
-      assessmentsTwo: [],
       contributions: [],
-      quizColumns: [1, 2, 3], // Başlangıçta üç sütun var
       contributionValue: 0.0, // Kullanıcı tarafından girilen katkı değeri
       useCustomNames: null,
       isEditMode: false,
@@ -152,7 +148,6 @@ export default {
           `http://localhost:8080/learningOutcomes/course/${courseId}`
         );
         this.outcomes = response.data;
-        this.fillTable();
       } catch (error) {
         console.error("Error fetching learning outcomes:", error);
       }
@@ -165,21 +160,21 @@ export default {
           `http://localhost:8080/assessments/generalAssessment/${generalAssessmentId}`
         );
         this.assessments = response.data; // Backend'den assessment'ları al
-        this.assessmentsTwo = this.assessments;
       } catch (error) {
         console.error("Error fetching assessments:", error);
       }
     },
     async saveContributions() {
+      this.assessments.forEach(assessment => {
+      console.log(`assessment Id: ${assessment.assessmentId} - cellValue: ${assessment.contribution}`);
+    });
       try {
         for (const assessment of this.assessments) {
           const newContribution = parseFloat(assessment.contribution);
-          console.log(assessment.contribution);
-          console.log("ASSESMENT", assessment);
           await axios.put(`http://localhost:8080/assessments/update-assessment-contribution/${assessment.assessmentId}?newContribution=${newContribution}`);
           console.log(`Assessment contribution updated for assessmentId ${assessment.assessmentId} to ${newContribution}`);
         }
-        // Backend'deki veriler güncellendikten sonra frontend'deki verileri yeniden yükle
+
         this.fetchAssessments();
         this.$toast.success("Katkı değeri başarıyla kaydedildi!");
       } catch (error) {
@@ -207,6 +202,7 @@ export default {
       }
     },
     async deleteAssessment(assessmentId) {
+      console.log("Delete:",assessmentId)
       try {
         await axios.delete(`http://localhost:8080/assessments/delete-assessment/${assessmentId}`);
         console.log("Assessment silindi:", assessmentId);

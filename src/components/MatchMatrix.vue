@@ -243,6 +243,7 @@ export default {
             outcomes: Array(this.outcomes.length).fill(null)
           };
         });
+        this.fillTable();
       } catch (error) {
         console.error('Bir hata oluştu:', error);
       }
