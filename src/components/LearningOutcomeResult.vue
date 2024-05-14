@@ -26,46 +26,39 @@
         <div class="card-body">
           <h5 class="card-title">Menü</h5>
           <a href="#" class="card-link" @click="goToCoursePage">Derslerim</a><br />
-          <a href="#" class="card-link" @click="goToStudentInfoPage">Not Girişi</a><br />    
+          <a href="#" class="card-link" @click="goToStudentInfoPage">Not Girişi</a><br />
           <a href="#" class="card-link" @click="goToInstructorLearningOutcomePage">Öğrenim Çıktıları</a><br />
           <a href="#" class="card-link" @click="goToCourseProgramOutcomePage">Program Çıktıları</a><br />
           <a href="#" class="card-link" @click="goToMatchMatrixPage">ÖÇ ve PÇ Eşleştirme</a><br />
           <a href="#" class="card-link" @click="goToStudentListPage">Öğrenci Listesi</a><br />
         </div>
       </div>
-
-      <div class="row">
-
-        <!-- Learning Outcomes Table -->
-        <div class="col-md-12">
-          <div class="card" style="margin-top: 20px;">
-            <div class="card-body">
-              <h5 class="card-title">ÖĞRENİM ÇIKTILARI</h5>
-              <div class="table-responsive">
-                <table class="table table-sm">
-                  <thead>
-                    <tr>
-                      <th scope="col">Öğr. Çıktı</th>
-                      <th scope="col">ÖÇ'leri Sağlama Düzeyi</th>
-                      <th scope="col">HEDEFLER</th>
-                      <th scope="col">ARAÇLAR</th>
-                      <th scope="col">SKOR</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr v-for="(outcome, index) in outcomes" :key="index">
-                      <td>{{ outcome.description }}</td>
-                      <td>%{{ outcome.levelOfProvision.toFixed(2) }}</td>
-                      <td>{{ outcome.desiredTarget }}</td>
-                      <td>{{ outcome.assessmentSum }}</td>
-                      <td>{{ outcome.scoreSum }}</td>
-                    </tr>
-                    <!-- Son satır kontrolü -->
-
-                  </tbody>
-                </table>
-              </div>
-            </div>
+      <div class="card" style="width: auto; margin-left: 2%; overflow-x: auto;">
+        <div class="card-body">
+          <h5 class="card-title">ÖĞRENİM ÇIKTILARI</h5>
+          <table class="table table-sm">
+            <thead>
+              <tr>
+                <th scope="col">Öğr. Çıktı</th>
+                <th scope="col">ÖÇ'leri Sağlama Düzeyi</th>
+                <th scope="col">HEDEFLER</th>
+                <th scope="col">ARAÇLAR</th>
+                <th scope="col">SKOR</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="(outcome, index) in outcomes" :key="index">
+                <td style="text-align: center;">{{ outcome.description }}</td>
+                <td style="text-align: center;">%{{ outcome.levelOfProvision.toFixed(3) }}</td>
+                <td style="text-align: center;">{{ outcome.desiredTarget }}</td>
+                <td style="text-align: center;">{{ outcome.assessmentSum }}</td>
+                <td style="text-align: center;">{{ outcome.scoreSum }}</td>
+              </tr>
+            </tbody>
+          </table>
+          <!-- Grafik -->
+          <div>
+            <BarChart :course-id="courseId" />
           </div>
         </div>
       </div>
@@ -76,17 +69,31 @@
 <script>
 import { useRouter } from 'vue-router';
 import axios from 'axios';
+import BarChart from './BarChart.vue'
 
 export default {
+  components: { BarChart },
   data() {
     return {
       outcomes: [],
+      courseId: null,
     };
   },
   created() {
+    this.courseId = this.$route.params.courseId;
+    this.calculateValues();
     this.fetchLearningOutcomes();
   },
   methods: {
+    async calculateValues() {
+      try {
+        const courseId = this.$route.params.courseId;
+        await axios.get(`http://localhost:8080/learningOutcomes/course/${courseId}/calculate-and-set-assessment-sum`);
+        await axios.post(`http://localhost:8080/learningOutcomes/course/${courseId}/calculate-and-set-score-sum`);
+      } catch (error) {
+        console.error("Error calculate learning outcome values:", error);
+      }
+    },
     async fetchLearningOutcomes() {
       try {
         const courseId = this.$route.params.courseId;
@@ -110,19 +117,19 @@ export default {
     },
     goToInstructorLearningOutcomePage() {
       const courseId = this.$route.params.courseId;
-      this.$router.push({ name: "InstructorLearningOutcome", params: { courseId: courseId }});
-},
-    goToCourseProgramOutcomePage(){
+      this.$router.push({ name: "InstructorLearningOutcome", params: { courseId: courseId } });
+    },
+    goToCourseProgramOutcomePage() {
       const courseId = this.$route.params.courseId;
-      this.$router.push({ name: "CourseProgramOutcome", params: { courseId: courseId }});
+      this.$router.push({ name: "CourseProgramOutcome", params: { courseId: courseId } });
     },
     goToInstructorLearningOutcome() {
       this.$router.push("/instructor-learning-outcome");
     },
     goToStudentListPage() {
-        const courseId = this.$route.params.courseId;
-        this.$router.push({ name: "StudentList", params: { courseId: courseId }});
-        },
+      const courseId = this.$route.params.courseId;
+      this.$router.push({ name: "StudentList", params: { courseId: courseId } });
+    },
     refreshPage() {
       this.$router.push("/instructor-home");
     },
@@ -140,5 +147,6 @@ export default {
 .math-sum {
   font-weight: bold;
 }
-/* Your CSS styles */
+
+/* Your styles here */
 </style>

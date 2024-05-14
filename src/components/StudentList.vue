@@ -178,13 +178,7 @@ async addStudent(courseId) {
     async fetchStudents(courseId) {
     try {
         const response = await axios.get(`http://localhost:8080/student-course/${courseId}/students`);
-        console.log(response.data); // Verileri kontrol et
-        // Her öğenin bir id alanı olduğunu varsayarak, bu id değerini kullanarak öğrencileri oluşturun
-        this.students = response.data.map(item => ({
-            id: item.userId, // Her öğe için bir id alanı oluştur
-            studentNumber: item.studentNumber || '', // Öğrenci numarasını al
-            name: item.firstName + " " + item.lastName // İsim alanını oluştur
-        }));
+        this.students = response.data;
     } catch (error) {
         console.error(error);
         this.$toast.error("Öğrenciler alınırken bir hata oluştu.");

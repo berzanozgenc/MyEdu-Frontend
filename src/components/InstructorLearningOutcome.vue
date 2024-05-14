@@ -218,7 +218,7 @@ export default {
     async fetchLearningOutcomes(courseId) {
       try {
         const response = await axios.get(`http://localhost:8080/learningOutcomes/course/${courseId}`);
-        console.log(response.data);
+        this.programs = response.data.sort((a, b) => a.id - b.id);
         // Her öğenin bir id alanı olduğunu varsayarak, bu id değerini kullanarak programları oluşturun
         this.programs = response.data.map(item => ({
           id: item.id, // Her öğe için bir id alanı oluştur

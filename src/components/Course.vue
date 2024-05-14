@@ -23,6 +23,8 @@
           <a href="#" class="card-link" @click="goToCourseProgramOutcomePage">Program Çıktıları</a><br />
           <a href="#" class="card-link" @click="goToMatchMatrixPage">ÖÇ ve PÇ Eşleştirme</a><br />
           <a href="#" class="card-link" @click="goToStudentListPage">Öğrenci Listesi</a><br />
+          <a href="#" class="card-link" @click="goToLearningOutcomeResult">ÖÇ Sonuçları</a><br />
+          <a href="#" class="card-link" @click="goToProgramOutcomeResult">PÇ Sonuçları</a><br />
         </div>
       </div>
 
@@ -38,6 +40,8 @@
           <button style="margin-left: 16px;" class="btn btn-outline-primary" @click="goToCourseProgramOutcomePage">Program Çıktıları</button>
           <button style="margin-left: 16px;" class="btn btn-outline-primary" @click="goToMatchMatrixPage" >ÖÇ - PÇ Eşleştirme</button>
           <button style="margin-left: 16px;" class="btn btn-outline-primary" @click="goToStudentListPage" >Öğrenci Listesi</button>
+          <button style="margin-left: 16px;" class="btn btn-outline-primary" @click="goToLearningOutcomeResult" >ÖÇ Sonuçları</button>
+          <button style="margin-left: 16px;" class="btn btn-outline-primary" @click="goToProgramOutcomeResult" >PÇ Sonuçları</button>
         </div>
         
         <div class="card-body">
@@ -150,7 +154,8 @@ export default {
         if (!response.ok) {
           throw new Error('Failed to fetch general assessments');
         }
-        this.generalAssessments = await response.json();
+       
+        this.generalAssessments = await response.json()
         this.sortAssessments();
       } catch (error) {
         console.error(error);
@@ -258,6 +263,14 @@ export default {
     goToCourseProgramOutcomePage() {
           const courseId = this.$route.params.courseId;
           this.$router.push({ name: "CourseProgramOutcome", params: { courseId: courseId }});
+    },
+    goToLearningOutcomeResult(){
+      const courseId = this.$route.params.courseId;
+      this.$router.push({ name: "LearningOutcomeResult", params: { courseId: courseId }});
+    },
+    goToProgramOutcomeResult(){
+      const courseId = this.$route.params.courseId;
+      this.$router.push({ name: "ProgramOutcomeResult", params: { courseId: courseId }});
     },
     goToMatchMatrixPage() {
       const courseId = this.$route.params.courseId;

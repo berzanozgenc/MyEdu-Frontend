@@ -22,7 +22,7 @@
       <!-- Flex container -->
       <div class="flex-container mt-4">
         <!-- Menu -->
-        <div class="card" style="width: 13rem; margin-left: 10px;">
+        <div class="card" style="width: 20rem; margin-left: 10px;">
           <div class="card-body">
             <h5 class="card-title">Menü</h5>
             <a href="#" class="card-link" @click="goToCoursePage">Derslerim</a><br />
@@ -34,7 +34,7 @@
         </div>
   
         <!-- Matrix -->
-        <div class="card" style="width: auto; margin-left: 100px; overflow-x: auto;">
+        <div class="card" style="width: auto; margin-left: 2%; overflow-x: auto;">
           <div class="card-body">
             <h5 class="card-title">PROGRAM YETERLİLİKLERİ</h5>
             <table class="table">

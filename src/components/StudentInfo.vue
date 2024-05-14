@@ -146,7 +146,7 @@ export default {
             }
 
             // dolu boş kontrolü
-            if (cellValue == 0 || cellValue == undefined || cellValue == "" || cellValue == NaN || cellValue < 0)
+            if (cellValue == undefined || cellValue == "" || cellValue == NaN || cellValue < 0)
               continue;
 
             let obj = {
