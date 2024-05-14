@@ -79,16 +79,18 @@ export default {
   data() {
     return {
       assessments: [],
-      isQuestionBased: false,
       cellData: [],
       students: [], // Öğrenci listesini tutmak için yeni bir veri alanı
       grades: [],
-      isEditMode: false
+      isEditMode: false,
+      useCustomNames: false
     };
   },
   created() {
     const courseId = this.$route.params.courseId;
     const generalAssessmentId = this.$route.params.generalAssessmentId;
+
+    this.fetchUseCustomNames();
 
     // Dersi alan öğrencileri getir
     axios.get(`http://localhost:8080/student-course/${courseId}/students`)
@@ -126,6 +128,15 @@ export default {
       });
   },
   methods: {
+    async fetchUseCustomNames() {
+            try {
+                const generalAssessmentId = this.$route.params.generalAssessmentId;
+                const response = await axios.get(`http://localhost:8080/generalAssesment/${generalAssessmentId}/isQuestionBased`);
+                this.useCustomNames = response.data; // Backend'den gelen veriyi useCustomNames değişkenine atar
+            } catch (error) {
+                console.error("Error fetching useCustomNames:", error);
+            }
+        },
     async saveAllChanges() {
       try {
         const studentIds = this.students.map(student => student.userId);
