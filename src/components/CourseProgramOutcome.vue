@@ -41,7 +41,7 @@
                   <td>Program Çıktısı {{ index + 1 }}</td>
                   <td>
                     <input v-if="item.editable" type="text" class="form-control editable" v-model="item.description" style="width: 250px;">
-                    <div v-else>{{ item.description }}</div>
+                    <div class="descriptionField" v-else>{{ item.description }}</div>
                   </td>
                   <td>
                     <button class="btn btn-danger btn-sm" @click="deleteProgram(item.id, item)">Sil</button>
@@ -275,5 +275,9 @@ async addProgram() {
   select.editable {
     border-color: #007bff;
   }
+  .descriptionField {
+  max-width: 700px; /* Adjust the width as needed */
+  word-wrap: break-word;
+}
   </style>
   

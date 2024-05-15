@@ -30,7 +30,7 @@
             </div>
 
 
-            <div class="card mt-3" style="width: 1000px">
+            <div class="card mt-3" style="width: 80%">
                 <div class="card-body">
                     <br />
                     <h5 class="card-title">Öğrenim Çıktısı - Araç Eşleştirme</h5>
@@ -61,7 +61,7 @@
                                 </thead>
                                 <tbody>
                                     <tr v-for="(outcome, outcomeIndex) in outcomes" :key="outcomeIndex">
-                                        <th scope="row">{{ outcome.description }}</th>
+                                        <th class="loDescription" scope="row">{{ outcome.description }}</th>
                                         <td :ref="`cell_${outcomeIndex}_${assessmentIndex}`"
                                             v-for="(assessment, assessmentIndex) in assessments"
                                             :key="'assessment-' + assessmentIndex" :contenteditable="isEditMode">
@@ -310,5 +310,10 @@ export default {
 .logout {
     margin-left: auto;
     margin-right: 20px;
+}
+
+.loDescription{
+           max-width: 600px; /* Adjust the width as needed */
+  word-wrap: break-word;
 }
 </style>

@@ -53,7 +53,7 @@
               <tr v-for="(item, index) in students" :key="index">
                 <td>Öğrenci {{ index + 1 }}</td>
                 <td>{{ item.studentNumber }}</td>
-                <td>{{ item.name }}</td>
+                <td>{{ item.firstName }} {{ item.lastName }}</td>
                 <td>
                   <button class="btn btn-danger btn-sm" @click="deleteStudent(item.id, item)">Sil</button>
                 </td>

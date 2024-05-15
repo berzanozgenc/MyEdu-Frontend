@@ -1,91 +1,56 @@
 <template>
   <div>
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
-      <a
-        @click="refreshPage"
-        style="margin-left: 10px"
-        class="navbar-brand"
-        href="#"
-        > <img src="../assets/Baskent_University_Logo.png" alt="Logo" style="max-height: 50px;"></a
-      >
-      <a
-        @click="refreshPage"
-        style="margin-left: 10px"
-        class="navbar-brand"
-        href="#"
-        >Kişiselleştirilmiş Akademik Gelişim ve <br />Değerlendirme Sistemi</a
-      >
-
-      <div class="collapse navbar-collapse" id="navbarSupportedContent">
-        <ul class="navbar-nav mr-auto"></ul>
-        <span class="logout">
-          <button @click="logoutUser" class="btn btn-outline-danger my-2 my-sm-0" type="submit">Çıkış Yap</button>
+      <a @click="refreshPage" style="margin-left: 10px" class="navbar-brand" href="#">
+        <img src="../assets/Baskent_University_Logo.png" alt="Logo" style="max-height: 50px;">
+      </a>
+      <a @click="refreshPage" style="margin-left: 10px" class="navbar-brand" href="#">
+        Kişiselleştirilmiş Akademik Gelişim ve <br /> Değerlendirme Sistemi
+      </a>
+    
+      <div style="margin-left: auto; margin-right: 2%;" class="ml-auto d-flex align-items-center">
+        <span class="d-flex align-items-center">
+          <img style="margin-right: 2px;" class="icon" src="../assets/profile.png" />
+          <h6 class="mb-0 ml-2">{{ username }}</h6>
         </span>
+        <button style="margin-left: 8px;" @click="logoutUser" class="btn btn-outline-danger my-2 my-sm-0" type="submit">Çıkış Yap</button>
       </div>
     </nav>
     <div class="flex-container">
       <div class="card" style="width: 13rem; margin-left: 10px">
         <div class="card-body">
           <h5 class="card-title">Menü</h5>
-          <a href="#" class="card-link">Derslerim</a><br />
+          <a href="#">Derslerim</a><br />
         </div>
       </div>
-
-      <div
-        class="card"
-        style="
-          width: 75rem;
-          height: 40rem;
-          overflow-y: auto;
-          overflow-x: hidden;
-        "
-      >
-        <div class="container">
-          <img class="icon" src="../assets/Profile_Icon.png" />
-          <h2 style="margin-top: 12px; margin-left: 5px">{{ username }}</h2>
-        </div>
-<ul style="max-width: 73rem" class="list-group list-group-flush"></ul>
+  
+      <div class="card" style="width: 80%; overflow-y: auto; overflow-x: hidden;">
         <div class="form-inline">
           <div class="form-group mr-2">
-            <div style="margin-left: 5px;"> 
-            <h5 class="card-title">Ders Ekle</h5>
-            <label for="classDropdown">Ders Seç:</label>
-            <select
-              class="form-control"
-              id="classDropdown"
-              v-model="selectedClass"
-            >
-              <option
-                v-for="(course, index) in courses"
-                :key="index"
-                :value="course.courseId"
-              >
-                {{ course.code }} - {{ course.courseName }} -
-                {{ course.semester }}
-              </option>
-            </select>
+            <div style="margin-left: 5px;">
+              <h5 class="card-title">Ders Ekle</h5>
+              <label for="classDropdown">Ders Seç:</label>
+              <select class="form-control" id="classDropdown" v-model="selectedClass">
+                <option v-for="(course, index) in courses" :key="index" :value="course.courseId">
+                  {{ course.code }} - {{ course.courseName }} - {{ course.semester }}
+                </option>
+              </select>
+            </div>
+            <button style="margin-left: 6px; margin-top: 6px;" class="btn btn-primary" @click="editClass">Ekle</button>
           </div>
-          <br>
-          <button class="btn btn-primary" @click="editClass">Ekle</button>
-        </div>
-        <div class="card-body">
-          <h5 class="card-title">Derslerim</h5>
-          <ul style="max-width: 73rem" class="list-group">
-            <li
-              class="list-group-item"
-              v-for="(registration, index) in userCourses"
-              :key="index"
-            >
-              <a :href="'#'" @click="goToCoursePage(registration.course)">
-                {{ registration.course.code }} - {{ registration.course.courseName }} -
-                {{ registration.course.semester }}
-              </a>
-              <button class="btn btn-danger btn-sm ml-2" @click="openConfirmationModal(registration.registrationId)">
-                Sil
-              </button>
-            </li>
-          </ul>
-        </div>
+          <div class="card-body">
+            <h5 class="card-title">Derslerim</h5>
+            <ul style="max-width: 73rem" class="list-group">
+              <li class="list-group-item" v-for="(registration, index) in userCourses" :key="index">
+                <a :href="'#'" @click="goToCoursePage(registration.course)" class="course-link">
+                  {{ registration.course.code }} - {{ registration.course.courseName }} - {{ registration.course.semester }}
+                </a>
+                <button class="btn btn-danger btn-sm ml-2" @click="openConfirmationModal(registration.registrationId)">
+                  Sil
+                </button>
+              </li>
+            </ul>
+          </div>
         </div>
       </div>
     </div>
@@ -110,7 +75,6 @@
     <!-- End Confirmation Modal -->
 
     <!-- New card added here, moved outside flex-container div -->
-
   </div>
 </template>
 
@@ -143,23 +107,20 @@ export default {
     this.fetchUserCourses();
   },
   methods: {
-   goToCoursePage(registration) {
-    const courseId = registration.courseId;
-    this.$router.push({ name: 'Course', params: { courseId: courseId } });
-    console.log(registration);
-    this.selectedCourse = registration; // Seçilen dersin bilgilerini selectedCourse değişkenine atar
-  },
-
+    goToCoursePage(registration) {
+      const courseId = registration.courseId;
+      this.$router.push({ name: 'Course', params: { courseId: courseId } });
+      console.log(registration);
+      this.selectedCourse = registration; // Seçilen dersin bilgilerini selectedCourse değişkenine atar
+    },
     fetchUserCourses() {
       // Vuex'tan kullanıcı ID'sini alın
       const userId = this.getUser ? this.getUser.userId : null;
       console.log(userId);
-
+  
       // Kullanıcının derslerini getiren istek
       axios
-        .get(
-          `http://localhost:8080/user-course-registrations/user/${userId}/courses`
-        )
+        .get(`http://localhost:8080/user-course-registrations/user/${userId}/courses`)
         .then((response) => {
           this.userCourses = response.data; // Kullanıcıya ait dersleri listesini güncelle
           console.log(response.data);
@@ -189,16 +150,16 @@ export default {
       const courseId = this.selectedClass;
       // Vuex'tan kullanıcı ID'sini alın
       const userId = this.getUser ? this.getUser.userId : null;
-
+  
       // Backend'e istek yapmak için kullanılacak veri
       const requestData = {
         userId: userId,
         courseId: courseId,
       };
-
+  
       console.log(courseId);
       console.log(userId);
-
+  
       // Backend'e istek yapma
       axios
         .post("http://localhost:8080/user-course-registrations", requestData)
@@ -242,17 +203,17 @@ export default {
         });
     },
     logoutUser() {
-            const store = useStore();
-            const router = useRouter();
-            localStorage.removeItem('store');
-            this.$store.dispatch('logoutUser');
-            this.$router.push("/");
-        }
+      const store = useStore();
+      const router = useRouter();
+      localStorage.removeItem('store');
+      this.$store.dispatch('logoutUser');
+      this.$router.push("/");
+    }
   }
 };
 </script>
 
-<style>
+<style scoped>
 .container {
   display: flex;
 }
@@ -269,15 +230,8 @@ export default {
 }
 
 .icon {
-  width: 60px;
-}
-
-.list-group a {
-  text-decoration: none;
-  color: black;
-  font-family: "Calibri", sans-serif;
-  font-size: 17px;
-  font-weight: bold;
+  max-width: 24px;
+  max-height: 24px;
 }
 
 .modal {
@@ -300,5 +254,15 @@ export default {
 
 .modal-title {
   margin-bottom: 0;
+}
+
+.course-link {
+  text-decoration: none; /* Varsayılan link alt çizgisini kaldır */
+  color: blue; /* Varsayılan metin rengini uygula */
+}
+
+.course-link:hover {
+  text-decoration: underline; /* Hover durumunda alt çizgi ekle */
+  color: navy; /* Hover durumunda renk değiştir */
 }
 </style>

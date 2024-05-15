@@ -33,7 +33,7 @@
           <a href="#" class="card-link" @click="goToStudentListPage">Öğrenci Listesi</a><br />
         </div>
       </div>
-      <div class="card" style="width: auto; margin-left: 2%; overflow-x: auto;">
+      <div class="card" style="width: auto; margin-left: 0%; overflow-x: auto;">
         <div class="card-body">
           <h5 class="card-title">ÖĞRENİM ÇIKTILARI</h5>
           <table class="table table-sm">
@@ -48,22 +48,24 @@
             </thead>
             <tbody>
               <tr v-for="(outcome, index) in outcomes" :key="index">
-                <td style="text-align: center;">{{ outcome.description }}</td>
+                <td class="description-cell" style="text-align: center;">{{ outcome.description }}</td>
                 <td style="text-align: center;">%{{ outcome.levelOfProvision.toFixed(3) }}</td>
-                <td style="text-align: center;">{{ outcome.desiredTarget }}</td>
-                <td style="text-align: center;">{{ outcome.assessmentSum }}</td>
-                <td style="text-align: center;">{{ outcome.scoreSum }}</td>
+                <td style="text-align: center;">{{ outcome.desiredTarget.toFixed(2) }}</td>
+                <td style="text-align: center;">{{ outcome.assessmentSum.toFixed(2) }}</td>
+                <td style="text-align: center;">{{ outcome.scoreSum.toFixed(2) }}</td>
               </tr>
             </tbody>
           </table>
           <!-- Grafik -->
-          <div>
-            <BarChart :course-id="courseId" />
-          </div>
         </div>
       </div>
     </div>
   </div>
+  <div style="align-items: center">
+    <div class="card" style="width: 90%; margin-left: 2%; overflow-x: auto;">
+      <BarChart :course-id="courseId" /> 
+  </div>
+</div>
 </template>
 
 <script>
@@ -148,5 +150,9 @@ export default {
   font-weight: bold;
 }
 
-/* Your styles here */
+.description-cell {
+  max-width: 600px; /* Adjust the width as needed */
+  word-wrap: break-word;
+}
+
 </style>

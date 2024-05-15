@@ -42,7 +42,7 @@
                 <td>Öğrenim Çıktısı {{ index + 1 }}</td>
                 <td>
                   <input v-if="item.editable" type="text" class="form-control editable" v-model="item.description" style="width: 250px;">
-                  <div v-else>{{ item.description }}</div>
+                  <div class="loDescription" v-else>{{ item.description }}</div>
                 </td>
                 <td>
                   <div v-if="item.editable" class="form-group">
@@ -304,5 +304,10 @@ select {
 input.editable,
 select.editable {
   border-color: #007bff;
+}
+.loDescription
+{
+  max-width: 800px; /* Adjust the width as needed */
+  word-wrap: break-word;
 }
 </style>

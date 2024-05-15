@@ -50,12 +50,12 @@
             <thead>
               <tr>
                 <th scope="col"></th>
-                <th v-for="(outcome, index) in outcomes" :key="index" scope="col">{{ outcome.description }}</th>
+                <th class="loDescription" v-for="(outcome, index) in outcomes" :key="index" scope="col">{{ outcome.description }}</th>
               </tr>
             </thead>
             <tbody>
               <tr v-for="(program, programIndex) in programs" :key="programIndex">
-                <th scope="row">{{ program.description }}</th>
+                <th class="prDescription" scope="row">{{ program.description }}</th>
                 <td v-for="(outcome, outcomeIndex) in outcomes" :key="outcomeIndex">
                   <div style="align-items: center; justify-content: center; display: flex;">
                     <input style="align-items: center; text-align: center" v-if="editMode" v-bind:placeholder="dummy(outcomeIndex, programIndex)" type="text" v-model="program.outcomes[outcomeIndex]">
@@ -254,7 +254,6 @@ export default {
         const outcome = program.outcomes[outcomeIndex];
         const learningOutcomeId = this.outcomes[outcomeIndex].id;
         const programOutcomeId = program.id;
-        console.log("ççççççççççç................")
         console.log(this.programs);
         console.log(outcome);
         const contribution = parseFloat(outcome);
@@ -298,5 +297,16 @@ export default {
 </script>
 
 <style scoped>
-/* Your CSS styles */
+
+.prDescription {
+  max-width: 800px; /* Adjust the width as needed */
+  word-wrap: break-word;
+}
+
+.loDescription
+{
+  max-width: 700px; /* Adjust the width as needed */
+  word-wrap: break-word;
+}
+
 </style>

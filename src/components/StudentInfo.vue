@@ -190,16 +190,18 @@ export default {
             var studentId = this.students[studentIndex].userId
             var assessmentId = this.assessments[assessmentIndex].assessmentId
             var grade = 0;
+            var emptySt = "";
 
 
             for (var i = 0; i < this.grades.length; i++) {
                 let grad = this.grades[i]
                 if (grad.assessmentId == assessmentId && grad.studentId == studentId) {
                     grade = grad.grade;
+                    return grade;
                 }
 
             }
-            return grade;
+            return emptySt
         },
 
     async fetchTable() {
