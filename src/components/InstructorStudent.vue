@@ -16,62 +16,52 @@
         </div>
       </nav>
       <div class="flex-container">
-        <!-- Menu Card -->
-        <div class="card" style="width: 20%; margin-left: 10px">
-          <div class="card-body">
-            <h5 class="card-title">Menü</h5>
-            <a href="#" class="card-link">Derslerim</a><br />
-          </div>
+      <div class="card" style="width: 13rem; margin-left: 10px;">
+        <div class="card-body">
+          <h5 class="card-title">Menü</h5>
+          <a href="#" class="card-link" @click="goToCoursePage">Derslerim</a><br />
+          <a href="#" class="card-link" @click="goToInstructorLearningOutcomePage">Öğrenim Çıktıları</a><br />
+          <a href="#" class="card-link" @click="goToCourseProgramOutcomePage">Program Çıktıları</a><br />
+          <a href="#" class="card-link" @click="goToMatchMatrixPage">ÖÇ ve PÇ Eşleştirme</a><br />
+          <a href="#" class="card-link" @click="goToStudentListPage">Öğrenci Listesi</a><br />
         </div>
+      </div>
   
      <!-- Classes Card -->
 <div class="card" style="width: 50%; margin-left: 10px">
   <div class="card-body">
-    <h5 class="card-title">Öğrencinin Skor Tabloları</h5>
+    <h5 class="card-title">Öğrenci Sağlama Düzeyleri</h5>
 
     <!-- First Table: Pç1, Pç2, Pç3 -->
-    <table class="table">
-      <thead>
-        <tr>
-          <th scope="col">PÇ/Skor</th>
-          <th scope="col">Pç1</th>
-          <th scope="col">Pç2</th>
-          <th scope="col">Pç3</th>
-        </tr>
-      </thead>
-      <tbody>
-        <!-- Replace the dummy data with actual data -->
-        <tr>
-          <td>Skor </td>
-          <td>53,00</td>
-          <td>0.00</td>
-          <td>44,00</td>
-        </tr>
-        <!-- Add more rows if needed -->
-      </tbody>
-    </table>
-
-    <!-- Second Table: Öç1, Öç2, Öç3 -->
-    <table class="table">
-      <thead>
-        <tr>
-          <th scope="col">ÖÇ/Skor</th>
-          <th scope="col">Öç1</th>
-          <th scope="col">Öç2</th>
-          <th scope="col">Öç3</th>
-        </tr>
-      </thead>
-      <tbody>
-        <!-- Replace the dummy data with actual data -->
-        <tr>
-          <td>Skor </td>
-          <td>80.00</td>
-          <td>20.00</td>
-          <td>0.00</td>
-        </tr>
-        <!-- Add more rows if needed -->
-      </tbody>
-    </table>
+    <table class="table table-sm">
+            <thead>
+              <tr>
+                <th scope="col">Öğr. Çıktı</th>
+                <th scope="col">ÖÇ'leri Sağlama Düzeyi</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="(outcome, index) in outcomes" :key="index">
+                <td class="description-cell">{{ outcome.description }}</td>
+                <td style="text-align: center;">%{{ outcome.levelOfProvision.toFixed(3) }}</td>
+              </tr>
+            </tbody>
+          </table>
+          <table class="table table-sm">
+            <thead>
+              <tr>
+                <th scope="col">Prg. Çıktı</th>
+                <th scope="col">PÇ'leri Sağlama Düzeyi</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="(outcome, index) in programOutcomes" :key="index">
+                <td class="description-cell">{{ outcome.description }}</td>
+                <td style="text-align: center;">%{{ outcome.levelOfProvision.toFixed(3) }}</td>
+         
+              </tr>
+            </tbody>
+          </table>
   </div>
 </div>
 
@@ -79,11 +69,13 @@
         <div class="card" style="width: 20%; margin-left: 10px">
           <div class="card-body">
             <h5 class="card-title">Öğrenci Bilgileri</h5>
-            <img class="icon" src="../assets/Profile_Icon.png" />
-            <p class="card-text">Öğrenci Adı: {{ studentName }}</p>
-            <p class="card-text">Öğrenci no: 22094638</p>
-            <p class="card-text">Fakülte: Mühendislik</p>
-            <p class="card-text">Bölüm: Bilgisayar Mühendisliği</p>
+              <img class="icon" src="../assets/profile.png" />
+              <br>
+            <h7 class="card-text">Öğrenci Adı: {{ student.firstName }}</h7>
+            <br>
+            <h7 class="card-text">Öğrenci soyadı: {{ student.lastName }}</h7>
+            <br>
+            <h7 class="card-text">Öğrenci no:  {{ student.studentNumber }}</h7>
           </div>
         </div>
       </div>
@@ -91,33 +83,123 @@
   </template>
   
   <script>
+  import axios from 'axios';
+import { useStore } from 'vuex';
+import { useRouter } from 'vue-router';
+
   export default {
     name: "StudentPage",
     data() {
       return {
-        courses: [
-          { code: "VERI101", courseName: "Veri Madenciliği", semester: "2024 Spring", expanded: false, info: "This course covers data mining techniques." },
-          // Add more courses here if needed
-        ],
-        studentName: "John Doe", // Change this to display actual student name
-        studentInfo: "Öğrenci bilgisi buraya gelecek." // Change this to display actual student info
+        student: null,
+        outcomes: [],
+        programOutcomes: []
       };
     },
+    created(){
+      this.getStudentById();
+      this.courseId = this.$route.params.courseId;
+      this.calculateValues();
+      this.calculateValuesProgramOutcome();
+      this.fetchProgramOutcomes();
+      this.fetchLearningOutcomes();
+      this.calculateStudentValues();
+    },
     methods: {
-      toggleAccordion(course) {
-        // Toggle accordion for the clicked course
-        course.expanded = !course.expanded;
-      },
-      showExplanation(course) {
-        course.showExplanation = true;
-      },
-      hideExplanation(course) {
-        course.showExplanation = false;
-      },
-      logoutUser() {
-        // Implement logout functionality
-        console.log("Logging out...");
+      async calculateStudentValues() {
+    try {
+        const userId = this.$route.params.studentId;
+        const courseId = this.$route.params.courseId;
+        const response = await axios.get(`http://localhost:8080/learningOutcomes/course/${courseId}`);
+        const learningOutcomeList = response.data;
+        console.log(userId);
+        console.log(learningOutcomeList);
+        const requestBody = {
+            userId: userId,
+            learningOutcomeList: learningOutcomeList
+        };
+        await axios.post(`http://localhost:8080/student-learning-outcome`, requestBody);
+    } catch (error) {
+        console.error("Error calculate student calculation values:", error);
+    }
+},
+      async calculateValuesProgramOutcome() {
+      try {
+        const courseId = this.$route.params.courseId;
+        await axios.get(`http://localhost:8080/program-outcomes/course/${courseId}/calculate-and-set-target`);
+        await axios.put(`http://localhost:8080/program-outcomes/course/${courseId}/calculate-and-set-assessment-value`);
+        await axios.post(`http://localhost:8080/program-outcomes/course/${courseId}/calculate-and-set-score-and-level-of-provision`);
+      } catch (error) {
+        console.error("Error calculate program outcome values:", error);
       }
+    },
+    async fetchProgramOutcomes() {
+      try {
+        const courseId = this.$route.params.courseId;
+        const response = await axios.get(`http://localhost:8080/program-outcomes/course/${courseId}`);
+        this.programOutcomes = response.data;
+      } catch (error) {
+        console.error("Error fetching program outcomes:", error);
+      }
+    },
+      async calculateValues() {
+      try {
+        const courseId = this.$route.params.courseId;
+        await axios.get(`http://localhost:8080/learningOutcomes/course/${courseId}/calculate-and-set-assessment-sum`);
+        await axios.post(`http://localhost:8080/learningOutcomes/course/${courseId}/calculate-and-set-score-sum`);
+      } catch (error) {
+        console.error("Error calculate learning outcome values:", error);
+      }
+    },
+    async fetchLearningOutcomes() {
+      try {
+        const courseId = this.$route.params.courseId;
+        const response = await axios.get(`http://localhost:8080/learningOutcomes/course/${courseId}`);
+        this.outcomes = response.data;
+      } catch (error) {
+        console.error("Error fetching learning outcomes:", error);
+      }
+    },
+      async getStudentById(){
+        const studentId = this.$route.params.studentId;
+        const response = await axios.get(`http://localhost:8080/students/${studentId}`)
+        this.student = response.data;
+      },
+      goToLoginPage() {
+      this.$router.push("/");
+    },
+    goToInstructorLearningOutcomePage() {
+      const courseId = this.$route.params.courseId;
+      this.$router.push({ name: "InstructorLearningOutcome", params: { courseId: courseId } });
+    },
+    goToMatchMatrixPage() {
+      const courseId = this.$route.params.courseId;
+      this.$router.push({ name: "MatchMatrix", params: { courseId: courseId } });
+    },
+    goToStudentInfoPage() {
+      this.$router.push("/student-info");
+    },
+    goToStudentListPage() {
+        const courseId = this.$route.params.courseId;
+        this.$router.push({ name: "StudentList", params: { courseId: courseId }});
+        },
+    goToCourseProgramOutcomePage() {
+      const courseId = this.$route.params.courseId;
+      this.$router.push({ name: "CourseProgramOutcome", params: { courseId: courseId } });
+    },
+    goToCoursePage() {
+      this.$router.push("/instructor-home");
+    },
+    refreshPage() {
+      this.$router.push("/instructor-home");
+    },
+    logoutUser() {
+      const store = useStore();
+      const router = useRouter();
+      localStorage.removeItem('store');
+      this.$store.dispatch('logoutUser');
+      this.$router.push("/");
+    },
     }
   };
   </script>

@@ -145,7 +145,7 @@ const routes = [{
     {
         name: "InstructorStudent",
         component: InstructorStudent,
-        path: "/Instructor-Student",
+        path: "/Instructor-Student/:courseId/:studentId",
         meta: { requiresAuth: true }, // Oturum açma gerektiren sayfaları belirtin
     },
 
