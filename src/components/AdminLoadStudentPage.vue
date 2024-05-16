@@ -1,111 +1,151 @@
 <template>
-    <div>
-      <nav class="navbar navbar-expand-lg navbar-light" style="background-color: #98bdff;">
-        <a @click="refreshPage" style="margin-left: 10px" class="navbar-brand" href="#"> <img src="../assets/Baskent_University_Logo.png" alt="Logo" style="max-height: 50px;"></a>
-        <a @click="refreshPage" style="margin-left: 10px" class="navbar-brand" href="#">Kişiselleştirilmiş Akademik Gelişim ve <br /> Değerlendirme Sistemi</a>
-  
-        <div class="collapse navbar-collapse" id="navbarSupportedContent">
-          <ul class="navbar-nav mr-auto"></ul>
-          <span class="logout">
-            <button @click="logoutUser" class="btn btn-outline-danger my-2 my-sm-0" type="submit">Çıkış Yap</button>
-          </span>
+  <div>
+    <nav class="navbar navbar-expand-lg navbar-light" style="background-color: #98bdff;">
+      <a @click="refreshPage" style="margin-left: 10px" class="navbar-brand" href="#">
+        <img src="../assets/Baskent_University_Logo.png" alt="Logo" style="max-height: 50px;">
+      </a>
+      <a @click="refreshPage" style="margin-left: 10px" class="navbar-brand" href="#">
+        Kişiselleştirilmiş Akademik Gelişim ve <br /> Değerlendirme Sistemi
+      </a>
+
+      <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav mr-auto"></ul>
+        <span class="logout">
+          <button @click="logoutUser" class="btn btn-outline-danger my-2 my-sm-0" type="submit">Çıkış Yap</button>
+        </span>
+      </div>
+    </nav>
+
+    <div class="flex-container">
+      <div class="card" style="width: 13rem; margin-left: 10px;">
+        <div class="card-body">
+          <h5 class="card-title">Menü</h5>
+          <a href="#" class="card-link" @click="goToAddCoursePage">Ders Sayfası</a><br />
+          <a href="#" class="card-link" @click="goToProgramOutputPage">Program Çıktıları Sayfası</a><br />
+          <a href="#" class="card-link" @click="loadStudents">Öğrenci Yükleme Sayfası</a><br />
         </div>
-      </nav>
-  
-      <div class="flex-container">
-        <div class="card" style="width: 13rem; margin-left: 10px;">
-          <div class="card-body">
-            <h5 class="card-title">Menü</h5>
-            <a href="#" class="card-link" @click="goToAddCoursePage">Ders Sayfası</a><br />
-            <a href="#" class="card-link" @click="goToProgramOutputPage">Program Çıktıları Sayfası</a><br />
-            <a href="#" class="card-link">Öğrenci Yükleme Sayfası</a><br />
-          </div>
-        </div>
-  
-        <div class="card" style="width: 75rem; height: 40rem; overflow-y: auto; overflow-x: hidden">
-          <div class="card-body">
-            <h5 class="card-title">Öğrenci Yükleme Sayfası</h5>
-            <table class="table mt-4">
-              <thead>
-                <tr>
-                  <th scope="col">Adı</th>
-                  <th scope="col">Soyadı</th>
-                  <th scope="col">Numarası</th>
-                  <th scope="col">E-Posta</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr v-for="(student, index) in students" :key="index">
-                  <td>{{ student.name }}</td>
-                  <td>{{ student.surname }}</td>
-                  <td>{{ student.studentNumber }}</td>
-                  <td>{{ student.studentMail }}</td>
-                </tr>
-              </tbody>
-            </table>
-  
-            <button class="btn btn-primary" style="position: absolute; bottom: 10px; left: 10px;" @click="loadStudents">
-              Öğrencileri Yükle
-            </button>
-          </div>
+      </div>
+
+      <div class="card" style="width: 75rem; height: 40rem; overflow-y: auto; overflow-x: hidden">
+        <div class="card-body">
+          <h5 class="card-title">Öğrenci Yükleme Sayfası</h5>
+          <input id="fileInput" type="file" @change="onFileChange" accept=".xlsx, .xls">
+          <table class="table mt-4">
+            <thead>
+              <tr>
+                <th scope="col">Adı</th>
+                <th scope="col">Soyadı</th>
+                <th scope="col">Numarası</th>
+                <th scope="col">E-Posta</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="(student, index) in students" :key="index">
+                <td>{{ student.name }}</td>
+                <td>{{ student.surname }}</td>
+                <td>{{ student.studentNumber }}</td>
+                <td>{{ student.studentMail }}</td>
+              </tr>
+            </tbody>
+          </table>
+          <button class="btn btn-primary" style="position: absolute; bottom: 10px; left: 10px;" @click="sendDataToServer">
+            Verileri Sisteme Aktar
+          </button>
         </div>
       </div>
     </div>
-  </template>
-  
-  <script>
-  import { useStore } from 'vuex';
-import { useRouter } from 'vue-router';
-  export default {
-    name: "AdminLoadStudentPage",
-    data() {
-      return {
-        students: [],
-      };
-    },
-    methods: {
-    goToLoginPage(){
+  </div>
+</template>
+
+<script>
+import ExcelJS from 'exceljs';
+import axios from 'axios';
+
+export default {
+  name: "AdminLoadStudentPage",
+  data() {
+    return {
+      students: [],
+    };
+  },
+  methods: {
+    goToLoginPage() {
       this.$router.push("/");
     },
-    goToProgramOutputPage(){
+    goToProgramOutputPage() {
       this.$router.push("/program-output");
-    },   
-    goToAddCoursePage(){
+    },
+    goToAddCoursePage() {
       this.$router.push("/add-course");
     },
-    goToLoadStudentPage(){
-      this.$router.push("/admin-load-student");
-    },
     refreshPage() {
-      //window.location.reload();
       this.$router.push("/admin-home");
     },
     logoutUser() {
-            const store = useStore();
-            const router = useRouter();
-            localStorage.removeItem('store');
-            this.$store.dispatch('logoutUser');
-            this.$router.push("/");
-        },
-   
-      loadStudents() {
-        const fakeStudentData = [
-          { name: "Ahmet", surname: "Yılmaz", studentNumber: "12345976", studentMail:"ayilmaz@mail.baskent.edu.tr" },
-          { name: "Ayşe", surname: "Kara", studentNumber: "67890798", studentMail:"akara@mail.baskent.edu.tr" },
-          { name: "Hüseyin", surname: "Öztürk", studentNumber: "43434456", studentMail:"hozturk@mail.baskent.edu.tr" },
-          { name: "Mehmet", surname: "Gün", studentNumber: "76876223", studentMail:"mgun@mail.baskent.edu.tr" },
-          { name: "Beril", surname: "Öz", studentNumber: "53544635", studentMail:"boz@mail.baskent.edu.tr" },
-          { name: "Cemile", surname: "Can", studentNumber: "34244434", studentMail:"ccan@mail.baskent.edu.tr" },
-          
-        ];
-  
-        this.students = fakeStudentData;
-      },
+      localStorage.removeItem('store');
+      this.$store.dispatch('logoutUser');
+      this.$router.push("/");
     },
-  };
-  </script>
-  
-  <style>
+    onFileChange(event) {
+      const file = event.target.files[0];
+      this.readExcelFile(file);
+    },
+    readExcelFile(file) {
+      const workbook = new ExcelJS.Workbook();
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        const arrayBuffer = event.target.result;
+        workbook.xlsx.load(arrayBuffer).then((workbook) => {
+          const worksheet = workbook.getWorksheet(1);
+          const rows = [];
+          worksheet.eachRow((row, rowNumber) => {
+            if (rowNumber !== 1) { // Skip header row
+              rows.push({
+                name: row.getCell(1).value,
+                surname: row.getCell(2).value,
+                studentNumber: row.getCell(3).value,
+                studentMail: row.getCell(4).value.text // Sadece metin kısmını al
+              });
+            }
+          });
+          this.students = rows;
+        });
+      };
+      reader.readAsArrayBuffer(file);
+    },
+    sendDataToServer() {
+      if (this.students.length === 0) {
+        console.error("Öğrenci verisi bulunamadı!");
+        return;
+      }
+
+      this.students.forEach(student => {
+        const studentData = {
+          firstName: student.name,
+          lastName: student.surname,
+          statusCode: "1",
+          email: student.studentMail,
+          password: "deneme",
+          studentNumber: student.studentNumber
+        };
+
+        axios.post('http://localhost:8080/students', studentData)
+          .then(response => {
+            console.log("Öğrenci bilgileri başarıyla gönderildi:", studentData);
+          })
+          .catch(error => {
+            console.error("Öğrenci bilgileri gönderme hatası:", error);
+          });
+      });
+    },
+    loadStudents() {
+      document.getElementById('fileInput').click();
+    }
+  },
+};
+</script>
+
+<style>
 .container {
   display: flex;
 }
