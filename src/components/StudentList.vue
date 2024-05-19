@@ -55,7 +55,8 @@
                 <td>{{ item.studentNumber }}</td>
                 <td>{{ item.firstName }} {{ item.lastName }}</td>
                 <td>
-                  <button class="btn btn-danger btn-sm" @click="deleteStudent(item.id, item)">Sil</button>
+                  <button class="btn btn-primary btn-sm" @click="goToInstructorStudent(item.userId)">Bilgileri Görüntüle</button>
+                  <button style="margin-left: 2px;" class="btn btn-danger btn-sm" @click="deleteStudent(item.id, item)" >Sil</button>
                 </td>
               </tr>
             </tbody>
@@ -90,7 +91,18 @@ export default {
   methods: {
     goToLoginPage() {
       this.$router.push("/");
-    },
+    }, 
+    goToInstructorStudent(studentId) {
+      const courseId = this.$route.params.courseId;
+      console.log(studentId)
+      this.$router.push({
+        name: 'InstructorStudent',
+        params: {
+          courseId: courseId,
+          studentId: studentId
+        }
+      });
+  },
     goToMatchMatrixPage() {
       const courseId = this.$route.params.courseId;
       this.$router.push({ name: "MatchMatrix", params: { courseId: courseId }});

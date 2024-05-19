@@ -41,8 +41,8 @@
               </tr>
             </thead>
             <tbody>
-              <tr v-for="(outcome, index) in outcomes" :key="index">
-                <td class="description-cell">{{ outcome.description }}</td>
+              <tr v-for="(outcome, index) in learningOutcomeResults" :key="index">
+                <td class="description-cell">{{ outcome.learningOutcome.description }}</td>
                 <td style="text-align: center;">%{{ outcome.levelOfProvision.toFixed(3) }}</td>
               </tr>
             </tbody>
@@ -55,8 +55,8 @@
               </tr>
             </thead>
             <tbody>
-              <tr v-for="(outcome, index) in programOutcomes" :key="index">
-                <td class="description-cell">{{ outcome.description }}</td>
+              <tr v-for="(outcome, index) in programOutcomeResults" :key="index">
+                <td class="description-cell">{{ outcome.programOutcome.description }}</td>
                 <td style="text-align: center;">%{{ outcome.levelOfProvision.toFixed(3) }}</td>
          
               </tr>
@@ -66,17 +66,23 @@
 </div>
 
         <!-- Student Info Card -->
-        <div class="card" style="width: 20%; margin-left: 10px">
+        <div class="card" style="width: 20%; height: 50%; margin-left: 10px">
           <div class="card-body">
-            <h5 class="card-title">Öğrenci Bilgileri</h5>
-              <img class="icon" src="../assets/profile.png" />
-              <br>
-            <h7 class="card-text">Öğrenci Adı: {{ student.firstName }}</h7>
-            <br>
-            <h7 class="card-text">Öğrenci soyadı: {{ student.lastName }}</h7>
-            <br>
-            <h7 class="card-text">Öğrenci no:  {{ student.studentNumber }}</h7>
-          </div>
+  <h5 class="card-title">Öğrenci Bilgileri</h5>
+  <img class="icon" src="../assets/profile.png" />
+  <br>
+  <template v-if="student">
+    <h7 class="card-text">Öğrenci Adı: {{ student.firstName }}</h7>
+    <br>
+    <h7 class="card-text">Öğrenci soyadı: {{ student.lastName }}</h7>
+    <br>
+    <h7 class="card-text">Öğrenci no:  {{ student.studentNumber }}</h7>
+  </template>
+  <template v-else>
+    <p>Bilgiler yükleniyor...</p>
+  </template>
+</div>
+
         </div>
       </div>
     </div>
@@ -93,7 +99,9 @@ import { useRouter } from 'vue-router';
       return {
         student: null,
         outcomes: [],
-        programOutcomes: []
+        programOutcomes: [],
+        programOutcomeResults: [],
+        learningOutcomeResults: [],
       };
     },
     created(){
@@ -113,16 +121,82 @@ import { useRouter } from 'vue-router';
         const response = await axios.get(`http://localhost:8080/learningOutcomes/course/${courseId}`);
         const learningOutcomeList = response.data;
         console.log(userId);
-        console.log(learningOutcomeList);
+        console.log("lolist",learningOutcomeList);
         const requestBody = {
             userId: userId,
             learningOutcomeList: learningOutcomeList
         };
         await axios.post(`http://localhost:8080/student-learning-outcome`, requestBody);
+        this.calculateStudentValuesPO(learningOutcomeList);
     } catch (error) {
         console.error("Error calculate student calculation values:", error);
     }
 },
+      async calculateStudentValuesPO(learningOutcomeList){
+        try {
+        const userId = this.$route.params.studentId;
+        const courseId = this.$route.params.courseId;
+        const response = await axios.get(`http://localhost:8080/program-outcomes/course/${courseId}`);
+        const programOutcomeList = response.data;
+        const requestBody = {
+            userId: userId,
+            programOutcomeList: programOutcomeList
+        };
+        await axios.post(`http://localhost:8080/student-program-outcome`, requestBody);
+        this.getProgramOutcomeResults(programOutcomeList);
+        this.getLearningOutcomeResults(learningOutcomeList);
+    } catch (error) {
+        console.error("Error calculate student calculation values:", error);
+    }
+},
+
+async getProgramOutcomeResults(programOutcomeList) {
+    try {
+        const userId = this.$route.params.studentId;
+        const programOutcomeIds = programOutcomeList.map(outcome => outcome.id);
+
+        // Kullanıcının program outcome'larına göre sonuçları alma
+        const userProgramOutcomeResponse = await axios.post(`http://localhost:8080/student-program-outcome/user/${userId}/program-outcome`, programOutcomeIds);
+        
+        // Gelen verileri kullanabilirsiniz
+        let programOutcomeResults = userProgramOutcomeResponse.data;
+        
+        // Program outcome'ları idsine göre sırala
+        programOutcomeResults.sort((a, b) => {
+            return a.programOutcome.id - b.programOutcome.id;
+        });
+
+        this.programOutcomeResults = programOutcomeResults;
+    } catch (error) {
+        console.error("Error fetching program outcome results:", error);
+    }
+},
+
+async getLearningOutcomeResults(learningOutcomeList) {
+    try {
+        const userId = this.$route.params.studentId;
+        const learningOutcomeIds = learningOutcomeList.map(outcome => outcome.id);
+
+        // Kullanıcının program outcome'larına göre sonuçları alma
+        const userLearningOutcomeResponse = await axios.post(`http://localhost:8080/student-learning-outcome/user/${userId}/learning-outcome`, learningOutcomeIds);
+        
+        // Gelen verileri kullanabilirsiniz
+        let learningOutcomeResults = userLearningOutcomeResponse.data;
+        
+        // Program outcome'ları idsine göre sırala
+        learningOutcomeResults.sort((a, b) => {
+            return a.learningOutcome.id - b.learningOutcome.id;
+        });
+
+        console.log(learningOutcomeResults);
+
+        this.learningOutcomeResults = learningOutcomeResults;
+    } catch (error) {
+        console.error("Error fetching learning outcome results:", error);
+    }
+},
+
+
       async calculateValuesProgramOutcome() {
       try {
         const courseId = this.$route.params.courseId;
