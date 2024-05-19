@@ -56,7 +56,7 @@
               </tr>
             </tbody>
           </table>
-          <!-- Grafik -->
+          <button @click="downloadExcel" class="btn btn-outline-primary mt-3">Sonuçları İndir</button>
         </div>
       </div>
     </div>
@@ -64,14 +64,14 @@
   <div style="align-items: center">
     <div class="card" style="width: 90%; margin-left: 2%; overflow-x: auto;">
       <BarChart :course-id="courseId" /> 
+    </div>
   </div>
-</div>
 </template>
-
 <script>
 import { useRouter } from 'vue-router';
 import axios from 'axios';
-import BarChart from './BarChart.vue'
+import BarChart from './BarChart.vue';
+import ExcelJS from 'exceljs';
 
 export default {
   components: { BarChart },
@@ -141,9 +141,47 @@ export default {
       await this.$store.dispatch('logoutUser');
       await router.push("/");
     },
+    async downloadExcel() {
+      const workbook = new ExcelJS.Workbook();
+      const worksheet = workbook.addWorksheet('Öğrenim Çıktıları Sonuçları');
+
+      // Başlıkları ekleyin
+      worksheet.columns = [
+        { header: 'Öğr. Çıktı', key: 'description', width: 30 },
+        { header: 'ÖÇ\'leri Sağlama Düzeyi', key: 'levelOfProvision', width: 20 },
+        { header: 'HEDEFLER', key: 'desiredTarget', width: 15 },
+        { header: 'ARAÇLAR', key: 'assessmentSum', width: 15 },
+        { header: 'SKOR', key: 'scoreSum', width: 15 },
+      ];
+
+      // Verileri ekleyin
+      this.outcomes.forEach(outcome => {
+        worksheet.addRow({
+          description: outcome.description,
+          levelOfProvision: `%${outcome.levelOfProvision.toFixed(3)}`,
+          desiredTarget: outcome.desiredTarget.toFixed(2),
+          assessmentSum: outcome.assessmentSum.toFixed(2),
+          scoreSum: outcome.scoreSum.toFixed(2),
+        });
+      });
+
+      // Excel dosyasını oluşturun
+      const buffer = await workbook.xlsx.writeBuffer();
+      const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+      
+      // Dosyayı indirin
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', 'OgrenimCiktilariSonuclari.xlsx');
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    },
   },
 };
 </script>
+
 
 <style scoped>
 .math-sum {
@@ -154,5 +192,4 @@ export default {
   max-width: 600px; /* Adjust the width as needed */
   word-wrap: break-word;
 }
-
 </style>

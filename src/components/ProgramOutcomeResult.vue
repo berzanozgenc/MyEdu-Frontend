@@ -56,27 +56,23 @@
               </tr>
             </tbody>
           </table>
-          <div>
-            
-          </div>
+          <button @click="downloadExcel" class="btn btn-outline-primary mt-3">Sonuçları İndir</button>
         </div>
-        
       </div>
-    
     </div>
   </div>
   <div style="align-items: center">
     <div class="card" style="width: 90%; margin-left: 2%; overflow-x: auto;">
-    <BarChartTwo :course-id="courseId" />  
+      <BarChartTwo :course-id="courseId" />  
+    </div>
   </div>
-  </div>
- 
 </template>
 
 <script>
 import { useRouter } from 'vue-router';
 import axios from 'axios';
 import BarChartTwo from './BarChartTwo.vue';
+import ExcelJS from 'exceljs';
 
 export default {
   components: { BarChartTwo },
@@ -153,9 +149,47 @@ export default {
       await this.$store.dispatch('logoutUser');
       await router.push("/");
     },
+    async downloadExcel() {
+      const workbook = new ExcelJS.Workbook();
+      const worksheet = workbook.addWorksheet('Program Çıktıları');
+
+      // Başlıkları ekleyin
+      worksheet.columns = [
+        { header: 'Prg. Çıktı', key: 'description', width: 30 },
+        { header: 'PÇ\'leri Sağlama Düzeyi', key: 'levelOfProvision', width: 20 },
+        { header: 'HEDEFLER', key: 'target', width: 15 },
+        { header: 'ARAÇLAR', key: 'assessmentValue', width: 15 },
+        { header: 'SKOR', key: 'score', width: 15 },
+      ];
+
+      // Verileri ekleyin
+      this.outcomes.forEach(outcome => {
+        worksheet.addRow({
+          description: outcome.description,
+          levelOfProvision: `%${outcome.levelOfProvision.toFixed(3)}`,
+          target: outcome.target.toFixed(2),
+          assessmentValue: outcome.assessmentValue.toFixed(2),
+          score: outcome.score.toFixed(2),
+        });
+      });
+
+      // Excel dosyasını oluşturun
+      const buffer = await workbook.xlsx.writeBuffer();
+      const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+      
+      // Dosyayı indirin
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', 'ProgramCiktilariSonuclari.xlsx');
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    },
   },
 };
 </script>
+
 
 <style scoped>
 .description-cell {
