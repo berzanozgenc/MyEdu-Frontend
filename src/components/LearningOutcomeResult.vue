@@ -60,18 +60,20 @@
         </div>
       </div>
     </div>
-  </div>
-  <div style="align-items: center">
-    <div class="card" style="width: 90%; margin-left: 2%; overflow-x: auto;">
-      <BarChart :course-id="courseId" /> 
+    <div style="align-items: center">
+      <div id="chart-container" class="card" style="width: 90%; margin-left: 2%; overflow-x: auto;">
+        <BarChart :course-id="courseId" /> 
+      </div>
     </div>
   </div>
 </template>
+
 <script>
 import { useRouter } from 'vue-router';
 import axios from 'axios';
 import BarChart from './BarChart.vue';
 import ExcelJS from 'exceljs';
+import html2canvas from 'html2canvas';
 
 export default {
   components: { BarChart },
@@ -168,10 +170,27 @@ export default {
         });
       });
 
+      // Grafiği yakalayın
+      const chartElement = document.getElementById('chart-container');
+      const canvas = await html2canvas(chartElement);
+      const imageData = canvas.toDataURL('image/png');
+
+      // Yeni bir çalışma sayfası ekleyin ve grafiği ekleyin
+      const chartWorksheet = workbook.addWorksheet('Grafik');
+      const imageId = workbook.addImage({
+        base64: imageData,
+        extension: 'png',
+      });
+
+      chartWorksheet.addImage(imageId, {
+        tl: { col: 0, row: 0 },
+        ext: { width: canvas.width / 7.5, height: canvas.height / 7.5 },
+      });
+
       // Excel dosyasını oluşturun
       const buffer = await workbook.xlsx.writeBuffer();
       const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
-      
+
       // Dosyayı indirin
       const url = window.URL.createObjectURL(blob);
       const link = document.createElement('a');
@@ -184,7 +203,6 @@ export default {
   },
 };
 </script>
-
 
 <style scoped>
 .math-sum {

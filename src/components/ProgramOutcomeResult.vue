@@ -62,7 +62,7 @@
     </div>
   </div>
   <div style="align-items: center">
-    <div class="card" style="width: 90%; margin-left: 2%; overflow-x: auto;">
+    <div id="chart-container" class="card" style="width: 90%; margin-left: 2%; overflow-x: auto;">
       <BarChartTwo :course-id="courseId" />  
     </div>
   </div>
@@ -73,6 +73,7 @@ import { useRouter } from 'vue-router';
 import axios from 'axios';
 import BarChartTwo from './BarChartTwo.vue';
 import ExcelJS from 'exceljs';
+import html2canvas from 'html2canvas';
 
 export default {
   components: { BarChartTwo },
@@ -175,7 +176,23 @@ export default {
           score: outcome.score.toFixed(2),
         });
       });
+      // Grafiği yakalayın
+  const chartElement = document.getElementById('chart-container');
+  const canvas = await html2canvas(chartElement, { scale: 5 }); // Resmi yüksek çözünürlükte yakalamak için scale değerini artırdık
+  const imageData = canvas.toDataURL('image/png');
 
+
+      // Yeni bir çalışma sayfası ekleyin ve grafiği ekleyin
+      const chartWorksheet = workbook.addWorksheet('Grafik');
+      const imageId = workbook.addImage({
+        base64: imageData,
+        extension: 'png',
+      });
+
+      chartWorksheet.addImage(imageId, {
+        tl: { col: 0, row: 0 },
+        ext: { width: canvas.width / 7.5, height: canvas.height / 7.5 },
+      });
       // Excel dosyasını oluşturun
       const buffer = await workbook.xlsx.writeBuffer();
       const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
