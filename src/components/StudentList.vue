@@ -38,6 +38,11 @@
             </div>
               <button class="btn btn-outline-primary" type="submit">Öğrenci Ekle</button>
             </form>
+            <div>
+        <h5 class="card-title">Excelden Öğrenci Ekle</h5>
+        <input type="file" @change="handleFileUpload" accept=".xlsx, .xls" />
+        <button class="btn btn-outline-primary" @click="uploadExcelStudents">Excelden Öğrenci Ekle</button>
+      </div>
           </div>
           <h5 class="card-title">Dersin Öğrencileri</h5>
           <table class="table">
@@ -88,13 +93,15 @@
 <script>
 import { useStore } from 'vuex';
 import { useRouter } from 'vue-router';
-import axios from 'axios'; // axios'ı projenize dahil edin
+import axios from 'axios';
+import ExcelJS from 'exceljs'
 
 export default {
   name: "StudentList",
   data() {
     return {
       students: [],
+      excelStudents: [],
       selectedStudentId: null,
       showModal: false,
       newStudent: {
@@ -172,12 +179,102 @@ export default {
     closeModal() {
       this.showModal = false;
     },
+    async handleFileUpload(event) {
+  console.log("Excel dosyası yükleniyor...");
+  const file = event.target.files[0];
+  const data = await file.arrayBuffer();
+  const workbook = new ExcelJS.Workbook(); // ExcelJS ile Workbook oluştur
+  await workbook.xlsx.load(data); // Verileri yükle
+  const firstSheet = workbook.worksheets[0]; // İlk çalışma sayfasını al
+
+  // Sütun başlıklarını al
+  const columnHeaders = firstSheet.getRow(1).values;
+
+  // "Öğrenci Numarası" ve "Öğrenci Adı-Soyadı" sütunlarının indekslerini bul
+  const studentNumberIndex = columnHeaders.indexOf("Öğrenci Numarası");
+  const studentNameIndex = columnHeaders.indexOf("Öğrenci Adı-Soyadı");
+
+  // Verileri saklamak için boş bir dizi oluştur
+  const studentsData = [];
+
+  // Her satırı döngüye alarak sütun verilerini al
+  firstSheet.eachRow((row, rowIndex) => {
+    // İlk satırı atla (sütun başlıkları)
+    if (rowIndex === 1) return;
+
+    // Öğrenci numarasını ve adı-soyadını al
+    const studentNumber = row.getCell(studentNumberIndex).value;
+    const studentName = row.getCell(studentNameIndex).value;
+
+    // Verileri nesne olarak oluşturup diziye ekle
+    studentsData.push({
+      studentNumber,
+      studentName
+    });
+  });
+
+  // Excel dosyasından okunan öğrenci verilerini göster
+  console.log("Excel dosyasından okunan öğrenci verileri:", studentsData);
+
+  // Okunan verileri bir değişkende sakla
+  this.excelStudents = studentsData;
+
+  console.log("Excel dosyası başarıyla yüklendi.");
+},
+
+async uploadExcelStudents() {
+  console.log("Excelden öğrenciler yükleniyor...");
+  const courseId = this.$route.params.courseId;
+  const studentsData = this.excelStudents; // handleFileUpload tarafından ayarlanan verileri kullan
+  console.log("Excelden öğrenciler:", studentsData);
+
+  // Öğrencileri dersle ilişkilendirme
+  for (let student of studentsData) {
+    const studentNumber = student.studentNumber;
+    const studentName = student.studentName;
+    
+    let studentId = null;
+    try {
+      // Öğrenci kimliğini bul
+      console.log(studentNumber);
+      const response = await axios.get(`http://localhost:8080/students/getStudentIdByNumber/${studentNumber}`);
+      console.log(response);
+      studentId = response.data;
+      console.log(studentId);
+
+      // Eğer öğrenci ID'si bulunduysa
+      if (studentId) {
+        // Öğrenciyi derse ekle
+        await this.addStudentToCourse(courseId, studentId);
+        console.log(`Öğrenci ${studentName} başarıyla ${courseId} numaralı derse eklendi.`);
+      } else {
+        console.warn(`Öğrenci ${studentName} bulunurken bir hata oluştu, öğrenci sistemde mevcut olmayabilir.`);
+      }
+    } catch (error) {
+      console.warn(`Öğrenci ${studentName} bulunurken bir hata oluştu, öğrenci sistemde mevcut olmayabilir. Hata:`, error.message);
+    }
+  }
+  console.log("Excelden öğrenciler başarıyla yüklendi.");
+  this.fetchStudents(courseId);
+},
 
 
+async addStudentToCourse(courseId, studentId) {
+  try {
+    const data = {
+      studentId: studentId,
+      courseId: courseId
+    };
+    console.log(studentId, courseId);
+    const response = await axios.post(`http://localhost:8080/student-course/create`, data);
+    console.log("Öğrenci derse başarıyla eklendi:", response.data);
+    this.fetchStudents(courseId);
+  } catch (error) {
+    console.error("Öğrenci derse eklenirken bir hata oluştu:", error);
+  }
+},
 async addStudent(courseId) {
   console.log("Öğrenci Ekle butonuna tıklandı");
-
-  // Seçilen öğrenci ve dersin kimlik numaralarını al
   const studentId = this.selectedStudent;
   const data = {
     studentId: studentId,
