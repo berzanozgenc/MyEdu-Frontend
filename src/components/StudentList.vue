@@ -25,7 +25,7 @@
           <a href="#" class="card-link" >Öğrenci Listesi</a><br />
         </div>
       </div>
-      <div class="card" style="width: 75rem;margin-left: 10px;"> <!-- Kartın sol kenara yakın olmasını sağlayacak olan stil değişikliği -->
+      <div class="card" style="width: 80%;margin-left: 10px;"> <!-- Kartın sol kenara yakın olmasını sağlayacak olan stil değişikliği -->
         <div class="card-body" style="overflow-x: auto;">
           <div class="card-body">
             <h5 class="card-title">Öğrenci Ekle</h5>
@@ -56,7 +56,7 @@
                 <td>{{ item.firstName }} {{ item.lastName }}</td>
                 <td>
                   <button class="btn btn-primary btn-sm" @click="goToInstructorStudent(item.userId)">Bilgileri Görüntüle</button>
-                  <button style="margin-left: 2px;" class="btn btn-danger btn-sm" @click="deleteStudent(item.id, item)" >Sil</button>
+                  <button style="margin-left: 2px;" class="btn btn-danger btn-sm" @click="deleteStudent(item.userId)" >Sil</button>
                 </td>
               </tr>
             </tbody>
@@ -64,7 +64,26 @@
         </div>
       </div>
     </div>
+        <!-- Confirmation Modal -->
+        <div v-if="showModal" class="modal" tabindex="-1" role="dialog" style="display: block;">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Öğrenciyi Dersten Sil</h5>
+          </div>
+          <div class="modal-body">
+            <p>Bu öğrenciyi dersten silmek istediğinizden emin misiniz?</p>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" @click="closeModal">İptal</button>
+            <button type="button" class="btn btn-danger" @click="confirmDelete">Sil</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- End Confirmation Modal -->
   </div>
+
 </template>
 <script>
 import { useStore } from 'vuex';
@@ -76,9 +95,11 @@ export default {
   data() {
     return {
       students: [],
+      selectedStudentId: null,
+      showModal: false,
       newStudent: {
         output: '',
-        description: ''
+        description: '',
       }
     };
   },
@@ -129,29 +150,28 @@ export default {
       console.log("Düzenle butonuna tıklandı");
     },
 
-    async deleteStudent(studentId, item) {
-  try {
-    // item parametresini kontrol et
-    if (!item) {
-      console.error("Öğrenci bilgileri bulunamadı.");
-      return;
-    }
-    // Öğrenci-ders ilişkisini silmek için DELETE isteği gönder
-    await axios.delete(`http://localhost:8080/student-course/${item.id}`);
-    // Öğrenciyi listeden filtrele
-    this.students = this.students.filter(student => student.id !== studentId);
-    // Güncellenmiş öğrenci listesini almak için fetchStudents fonksiyonunu çağır
-    this.fetchStudents(this.$route.params.courseId);
-    // Konsola bilgi yazdır
-    console.log("Sil butonuna tıklandı");
-    // Toast mesajı göster
+    deleteStudent(studentId) {
+      this.selectedStudentId = studentId; // Silinecek öğrencinin ID'sini sakla
+      this.showModal = true; // Modal'ı göster
+    },
+
+    async confirmDelete() {
+      try {
+    const courseId = this.$route.params.courseId
+    const studentId = this.selectedStudentId
+   
+    await axios.delete(`http://localhost:8080/student-course/student/${studentId}/course/${courseId}`);
     this.$toast.success("Öğrenci başarıyla silindi.");
+    this.fetchStudents(this.$route.params.courseId);
   } catch (error) {
-    // Hata durumunda konsola ve toast mesajına hata yazdır
-    console.error(error);
     this.$toast.error("Öğrenci silinirken bir hata oluştu.");
   }
-},
+      this.showModal = false;
+    },
+
+    closeModal() {
+      this.showModal = false;
+    },
 
 
 async addStudent(courseId) {

@@ -22,7 +22,7 @@
     <!-- Flex container -->
     <div class="flex-container mt-4">
       <!-- Menu -->
-      <div class="card" style="width: 13rem; margin-left: 10px;">
+      <div class="card" style="width: 16%; margin-left: 10px;">
         <div class="card-body">
           <h5 class="card-title">Menü</h5>
           <a href="#" class="card-link" @click="goToCoursePage">Derslerim</a><br />
@@ -33,7 +33,7 @@
           <a href="#" class="card-link" @click="goToStudentListPage">Öğrenci Listesi</a><br />
         </div>
       </div>
-      <div class="card" style="width: auto; margin-left: 2%; overflow-x: auto;">
+      <div class="card" style="width: 80%; margin-left: 2%; overflow-x: auto;">
         <div class="card-body">
           <h5 class="card-title">PROGRAM ÇIKTILARI</h5>
           <table class="table table-sm">
@@ -109,6 +109,9 @@ export default {
         const courseId = this.$route.params.courseId;
         const response = await axios.get(`http://localhost:8080/program-outcomes/course/${courseId}`);
         this.outcomes = response.data;
+        this.outcomes.sort((a, b) => {
+            return a.id - b.id;
+        });
       } catch (error) {
         console.error("Error fetching program outcomes:", error);
       }

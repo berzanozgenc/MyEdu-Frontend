@@ -22,7 +22,7 @@
     <!-- Flex container -->
     <div class="flex-container mt-4">
       <!-- Menu -->
-      <div class="card" style="width: 13rem; margin-left: 10px;">
+      <div class="card" style="width: 16%; margin-left: 10px;">
         <div class="card-body">
           <h5 class="card-title">Menü</h5>
           <a href="#" class="card-link" @click="goToCoursePage">Derslerim</a><br />
@@ -101,6 +101,9 @@ export default {
         const courseId = this.$route.params.courseId;
         const response = await axios.get(`http://localhost:8080/learningOutcomes/course/${courseId}`);
         this.outcomes = response.data;
+        this.outcomes.sort((a, b) => {
+            return a.id - b.id;
+        });
       } catch (error) {
         console.error("Error fetching learning outcomes:", error);
       }

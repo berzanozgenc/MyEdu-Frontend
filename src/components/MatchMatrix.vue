@@ -34,7 +34,7 @@
       </div>
 
       <!-- Matrix -->
-      <div class="card" style="width: auto; margin-left: 100px; overflow-x: auto;">
+      <div class="card" style="width: 80%;  overflow-x: auto;">
         <div class="card-body">
           <h5 class="card-title">PROGRAM YETERLİLİKLERİ (P) / DERSİN ÖĞRENME KAZANIMLARI (Ö) MATRİSİ</h5>
 
@@ -225,6 +225,9 @@ export default {
         }
         const data = await response.json();
         this.outcomes = data;
+        this.outcomes.sort((a, b) => {
+            return a.id - b.id;
+        });
         this.fillTable();
       } catch (error) {
         console.error('Bir hata oluştu:', error);
@@ -242,6 +245,9 @@ export default {
             ...program,
             outcomes: Array(this.outcomes.length).fill(null)
           };
+        });
+        this.programs.sort((a, b) => {
+            return a.id - b.id;
         });
         this.fillTable();
       } catch (error) {

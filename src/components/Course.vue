@@ -15,7 +15,7 @@
 
     <div class="flex-container">
       <!-- Side Menu -->
-      <div class="card menu" style="width: 13rem; margin-left: 10px;">
+      <div class="card menu" style="width: 16%; margin-left: 10px;">
         <div class="card-body">
           <h5 class="card-title">Menü</h5>
           <a href="#" class="card-link" @click="goToCoursePage">Derslerim</a><br />
@@ -30,7 +30,7 @@
 
       <!-- Course Details and Assessments -->
       
-      <div class="card course-details" style="width: calc(100% - 14rem); height: 40rem; overflow-y: auto; overflow-x: hidden; margin-left: 60px;">
+      <div class="card course-details" style="width: 75%; overflow-y: auto; overflow-x: hidden;">
         <div style="display: flex; margin-left: 14px;">
           <img class="icon" src="../assets/Books_Icon.png" />
           <h2 style="margin-top: 12px; margin-left: 6px;">{{ course.code }} - {{ course.courseName }} - {{ course.semester }}</h2>
@@ -62,8 +62,8 @@
             <thead>
               <tr>
                 <th style="width: 30%;" scope="col">Araç Türü</th>
-                <th style="width: 30%;" scope="col">Katkı</th>
-                <th style="width: 40%;" scope="col">İşlemler</th>
+                <th style="width: 25%;" scope="col">Katkı</th>
+                <th style="width: 45%;" scope="col">İşlemler</th>
               </tr>
             </thead>
             <tbody>
@@ -106,6 +106,24 @@
         </div>
       </div>
     </div>
+     <!-- Confirmation Modal -->
+     <div v-if="showModal" class="modal" tabindex="-1" role="dialog" style="display: block;">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Program Çıktısını Sil</h5>
+          </div>
+          <div class="modal-body">
+            <p>Bu program çıktısını silmek istediğinizden emin misiniz?</p>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" @click="closeModal">İptal</button>
+            <button type="button" class="btn btn-danger" @click="confirmDelete">Sil</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- End Confirmation Modal -->
   </div>
 </template>
 
@@ -123,6 +141,8 @@ export default {
   data() {
     return {
       courseId: null,
+      selectedGeneralAssessmentId: null,
+      showModal: false,
       generalAssessments: [],
       course: {},
       assessmentName: "",
@@ -233,14 +253,20 @@ export default {
     editProgram(assessment) {
       assessment.editMode = true;
     },
+
     deleteProgram(generalAssesmentId, index) {
+      this.selectedGeneralAssessmentId = generalAssesmentId; // Silinecek öğrencinin ID'sini sakla
+      this.showModal = true; // Modal'ı göster
+    },
+    async confirmDelete() {
+      const courseId = this.$route.params.courseId;
+      const generalAssesmentId = this.selectedGeneralAssessmentId;
       try {
         axios.delete(`http://localhost:8080/generalAssesment/delete-generalAssesment/${generalAssesmentId}`)
           .then(response => {
             
             console.log("Araç başarıyla silindi.");
-            // Silme işlemi başarılı olduğunda sayfanın yenilenmesi
-            this.generalAssessments.splice(index, 1);
+            this.fetchGeneralAssessments(courseId)
             
           })
           .catch(error => {
@@ -249,6 +275,10 @@ export default {
       } catch (error) {
         console.error("Araç silinirken bir hata oluştu:", error);
       }
+      this.showModal = false;
+    },
+    closeModal() {
+      this.showModal = false;
     },
     goToLoginPage() {
       this.$router.push("/");

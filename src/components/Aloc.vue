@@ -240,7 +240,13 @@ export default {
                     `http://localhost:8080/learningOutcomes/course/${courseId}`
                 );
                 this.outcomes = response.data;
+                this.outcomes.sort((a, b) => {
+            return a.id - b.id;
+        });
                 this.learningOutcomes = response.data
+                this.learningOutcomes.sort((a, b) => {
+            return a.id - b.id;
+        });
                 if (this.assessments && this.outcomes) {
                     this.cellData = new Array(this.outcomes.length).fill().map(() => new Array(this.assessments.length).fill(''));
                 }

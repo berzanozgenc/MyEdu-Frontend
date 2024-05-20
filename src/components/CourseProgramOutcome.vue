@@ -15,7 +15,7 @@
         </div>
       </nav>
       <div class="flex-container">
-        <div class="card" style="width: 13rem;margin-left: 10px;">
+        <div class="card" style="width: 16%;margin-left: 10px;">
           <div class="card-body">
             <h5 class="card-title">Menü</h5>
             <a href="#" class="card-link" @click="goToCoursePage">Derslerim   </a><br /> 
@@ -25,9 +25,9 @@
             <a href="#" class="card-link" @click="goToStudentListPage">Öğrenci Listesi</a><br />
           </div>
         </div>
-        <div class="card" style="width: 75rem;">
+        <div class="card" style="width: 80%;">
           <div class="card-body" style="overflow-x: auto;">
-            <h5 class="card-title">Dersin Program Çıktıları</h5>
+            <h5 class="card-title">Program Çıktıları</h5>
             <table class="table">
               <thead>
                 <tr>
@@ -64,6 +64,24 @@
           </div>
         </div>
       </div>
+       <!-- Confirmation Modal -->
+       <div v-if="showModal" class="modal" tabindex="-1" role="dialog" style="display: block;">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Program Çıktısını Sil</h5>
+          </div>
+          <div class="modal-body">
+            <p>Bu program çıktısını silmek istediğinizden emin misiniz?</p>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" @click="closeModal">İptal</button>
+            <button type="button" class="btn btn-danger" @click="confirmDelete">Sil</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- End Confirmation Modal -->
     </div>
   </template>
   
@@ -77,6 +95,8 @@
     data() {
       return {
         programs: [],
+        showModal: false,
+        selectedProgramOutcomeId: null,
         newProgram: {
           output: '',
           description: ''
@@ -141,7 +161,12 @@ async updateProgram(program) {
 },
 
 async deleteProgram(programId, item) {
-    try {
+  this.selectedProgramOutcomeId = programId; // Silinecek öğrencinin ID'sini sakla
+  this.showModal = true; // Modal'ı göster
+},
+async confirmDelete() {
+  try {
+    const programId = this.selectedProgramOutcomeId;
         await axios.delete(`http://localhost:8080/program-outcomes/${programId}`);
         this.programs = this.programs.filter(program => program.id !== programId);
         this.fetchProgramOutcomes(this.$route.params.courseId);
@@ -151,7 +176,12 @@ async deleteProgram(programId, item) {
         console.error(error);
         this.$toast.error("Program çıktısı silinirken bir hata oluştu.");
     }
-},
+      this.showModal = false;
+    },
+
+    closeModal() {
+      this.showModal = false;
+    },
 async addProgram() {
     const courseId = this.$route.params.courseId;
     console.log("PÇ Ekle butonuna tıklandı");

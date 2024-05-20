@@ -15,7 +15,7 @@
       </div>
     </nav>
     <div class="flex-container">
-      <div class="card" style="width: 13rem;margin-left: 10px;">
+      <div class="card" style="width: 16%;margin-left: 10px;">
         <div class="card-body">
           <h5 class="card-title">Menü</h5>
           <a href="#" class="card-link" @click="goToCoursePage">Derslerim   </a><br /> 
@@ -25,7 +25,7 @@
           <a href="#" class="card-link" @click="goToStudentListPage">Öğrenci Listesi</a><br />
         </div>
       </div>
-      <div class="card" style="width: 75rem;">
+      <div class="card" style="width: 80%;">
         <div class="card-body" style="overflow-x: auto;">
           <h5 class="card-title">Dersin Öğrenim Çıktıları</h5>
           <table class="table">
@@ -75,6 +75,24 @@
         </div>
       </div>
     </div>
+     <!-- Confirmation Modal -->
+     <div v-if="showModal" class="modal" tabindex="-1" role="dialog" style="display: block;">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Öğrenim Çıktısını Sil</h5>
+          </div>
+          <div class="modal-body">
+            <p>Bu öğrenim çıktısını silmek istediğinizden emin misiniz?</p>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" @click="closeModal">İptal</button>
+            <button type="button" class="btn btn-danger" @click="confirmDelete">Sil</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- End Confirmation Modal -->
   </div>
 </template>
 
@@ -88,6 +106,8 @@ export default {
   data() {
     return {
       programs: [],
+      showModal: false,
+      selectedLearningOutcomeId: null,
       newProgram: {
         output: '',
         description: '',
@@ -162,6 +182,11 @@ export default {
       }
     },
     async deleteProgram(programId, item) {
+      this.selectedProgramOutcomeId = programId;
+      this.showModal = true; // Modal'ı göster
+    },
+    async confirmDelete() {
+      const programId = this.selectedProgramOutcomeId;
       try {
         await axios.delete(`http://localhost:8080/learningOutcomes/${programId}`);
         this.programs = this.programs.filter(program => program.id !== programId);
@@ -171,6 +196,11 @@ export default {
         console.error(error);
         this.$toast.error("Öğrenim çıktısı silinirken bir hata oluştu.");
       }
+      this.showModal = false;
+    },
+
+    closeModal() {
+      this.showModal = false;
     },
     async addProgram() {
       if (!this.newProgram.description.trim() || !this.newProgram.target.trim()) {
