@@ -25,62 +25,54 @@
       </div>
 
       <!-- Program Çıktıları -->
-      <div class="card" style="width: 80rem; height: 40rem; overflow-y: auto; overflow-x: hidden">
-        <div class="card-body">
-          <h5 class="card-title">Program Çıktıları Sayfası</h5>
+      <div class="card" style="width: 80%; height: 100%">
+        <div class="card-body" style="overflow-x: auto;">
+          <h5 class="card-title">Program Çıktıları</h5>
           <table class="table">
             <thead>
               <tr>
-                <th scope="col">Program Çıktısı</th>
-                <th scope="col">Program Çıktısı Açıklaması</th>
-                <th scope="col">Bölüm Adı</th>
-                <th scope="col">İşlemler</th>
+                <th scope="col" style="width: 15%;">Program Çıktısı No.</th>
+                <th scope="col" style="width: 70%;">Açıklama</th>
+                <th scope="col" style="width: 15%;">İşlemler</th>
               </tr>
             </thead>
             <tbody>
-              <tr v-for="(item, index) in programs" :key="item.id">
-                <td>{{ 'PÇ ' + (index + 1) }}</td>
+              <tr v-for="(item, index) in programs" :key="index">
                 <td>
-                  <span v-if="!item.editable">{{ item.description }}</span>
-                  <input v-else type="text" class="form-control" id="description" v-model="item.description" style="width: 250px;" @blur="saveProgram(index)" />
+                  <input v-if="item.editable" type="number" class="form-control editable" v-model="item.number"
+                    style="width: 100%;">
+                  <div v-else>{{ item.number }}</div>
+                </td>
+
+                <td>
+                  <input v-if="item.editable" type="text" class="form-control editable" v-model="item.description"
+                    style="width: 250px;">
+                  <div class="descriptionField" v-else>{{ item.description }}</div>
                 </td>
                 <td>
-                  <span v-if="!item.editable">{{ item.department }}</span>
-                  <select v-else class="form-control" id="department" v-model="item.department" style="width: 250px;" @blur="saveProgram(index)">
-                    <option disabled selected value="">Bölüm Seçiniz</option>
-                    <option value="Bilgisayar Mühendisliği">Bilgisayar Mühendisliği</option>
-                    <option value="Elektrik Elektronik Mühendisliği">Elektrik Elektronik Mühendisliği</option>
-                    <option value="Endüstri Mühendisliği">Endüstri Mühendisliği</option>
-                    <option value="Makine Mühendisliği">Makine Mühendisliği</option>
-                    <option value="Biyomedikal Mühendisliği">Biyomedikal Mühendisliği</option>
-                  </select>
-                </td>
-                <td>
-                  <button class="btn btn-danger btn-sm" @click="deleteProgram(item.id, index)">Sil</button>
-                  <button v-if="!item.editable" class="btn btn-warning btn-sm ml-2 text-white" @click="editProgram(item)">Düzenle</button>
-                  <button v-else class="btn btn-success btn-sm ml-2" @click="saveProgram(index)">Kaydet</button>
+                  <button class="btn btn-danger btn-sm" @click="deleteProgram(item.id, item)">Sil</button>
+                  <button v-if="item.editable" class="btn btn-success btn-sm text-white"
+                    @click="updateProgram(item)">Kaydet</button>
+                  <button style="margin-left: 2px;" v-else class="btn btn-warning btn-sm text-white"
+                    @click="editProgram(item)">Düzenle</button>
                 </td>
               </tr>
             </tbody>
           </table>
-          <!-- Ekle Butonu ve Alanlar -->
           <div class="card-body">
+            <h5 class="card-title">Program Çıktısı Ekle</h5>
             <div class="form-group">
-              <label for="newProgramOutput">Program Çıktısı Açıklaması:</label>
-              <input type="text" class="form-control" id="newProgramOutput" v-model="newProgramOutput" style="width: 250px;">
+              <label for="no">PÇ Numarası:</label>
+              <input type="number" class="form-control" id="no" v-model="newProgram.number" style="width: 10%;">
+              <label for="description">Açıklama:</label>
+              <textarea class="form-control" id="description" v-model="newProgram.description"
+                style="width: 25%; height: 100px;"></textarea>
             </div>
-            <div class="form-group">
-              <label for="newProgramDepartment">Bölüm Adı:</label>
-              <select class="form-control" id="newProgramDepartment" v-model="newProgramDepartment" style="width: 250px;">
-                <option disabled selected value="">Bölüm Seçiniz</option>
-                <option value="Bilgisayar Mühendisliği">Bilgisayar Mühendisliği</option>
-                <option value="Elektrik Elektronik Mühendisliği">Elektrik Elektronik Mühendisliği</option>
-                <option value="Endüstri Mühendisliği">Endüstri Mühendisliği</option>
-                <option value="Makine Mühendisliği">Makine Mühendisliği</option>
-                <option value="Biyomedikal Mühendisliği">Biyomedikal Mühendisliği</option>
-              </select>
-            </div>
-            <button class="btn btn-outline-primary my-2 my-sm-0" style="width: 150px; height: 35px" type="submit" @click="addProgram">PÇ Ekle</button>
+            <br>
+            <button class="btn btn-outline-primary my-2 my-sm-0" style="width: 150px; height: 35px" type="submit"
+              @click="addProgram($route.params.courseId)">
+              PÇ Ekle
+            </button>
           </div>
         </div>
       </div>
@@ -98,8 +90,12 @@ export default {
   data() {
     return {
       programs: [],
-      newProgramOutput: "",
-      newProgramDepartment: "",
+      selectedProgramOutcomeId: null,
+      newProgram: {
+        output: '',
+        description: '',
+        number: ''
+      }
     };
   },
   methods: {

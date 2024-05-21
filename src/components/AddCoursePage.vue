@@ -121,7 +121,7 @@ export default {
   methods: {
     
     goToProgramOutputPage(){
-      this.$router.push("/program-output");
+      this.$router.push("/program-output-admin");
     }, 
     goToLoadStudentPage(){
       this.$router.push("/admin-load-student");

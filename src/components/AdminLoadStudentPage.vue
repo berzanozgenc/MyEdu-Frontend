@@ -73,7 +73,7 @@ export default {
       this.$router.push("/");
     },
     goToProgramOutputPage() {
-      this.$router.push("/program-output");
+      this.$router.push("/program-output-admin");
     },
     goToAddCoursePage() {
       this.$router.push("/add-course");

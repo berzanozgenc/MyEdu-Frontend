@@ -95,6 +95,7 @@ export default {
   },
   data() {
     return {
+      userDepartment: null,
       userCourses: [], // Kullanıcıya ait derslerin listesi
       courses: [],
       selectedClass: null,
@@ -103,7 +104,7 @@ export default {
     };
   },
   mounted() {
-    this.fetchCourses();
+    this.getDepartment();
     this.fetchUserCourses();
   },
   methods: {
@@ -112,6 +113,11 @@ export default {
       this.$router.push({ name: 'Course', params: { courseId: courseId } });
       console.log(registration);
       this.selectedCourse = registration; // Seçilen dersin bilgilerini selectedCourse değişkenine atar
+    },
+    getDepartment(){
+      const user = this.getUser
+      this.userDepartment = user.department;
+      this.fetchCourses(this.userDepartment);
     },
     fetchUserCourses() {
       // Vuex'tan kullanıcı ID'sini alın
@@ -129,9 +135,11 @@ export default {
           console.error("Hata:", error);
         });
     },
-    fetchCourses() {
+    fetchCourses(userDepartment) {
+      const departmentId = this.userDepartment.id;
+      console.log("aaa",departmentId)
       axios
-        .get("http://localhost:8080/course/get-courses")
+        .get(`http://localhost:8080/course/get-courses/department/${departmentId}`)
         .then((response) => {
           // Backend'den gelen veriyi uygun formata dönüştür
           this.courses = response.data.map((course) => ({

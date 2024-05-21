@@ -32,7 +32,6 @@
           <a href="#" class="card-link" @click="goToProgramOutcomeResult">PÇ Sonuçları</a><br />
         </div>
       </div>
-
       <!-- Course Details and Assessments -->
       
       <div class="card course-details" style="width: 78%; overflow-y: auto; overflow-x: hidden;">
@@ -41,8 +40,8 @@
         </div>
         <br>
         <div class="buttons-container">
-          <button style="margin-left: 16px;" class="btn btn-outline-primary" @click="goToInstructorLearningOutcomePage">Öğrenim Çıktıları</button>
           <button style="margin-left: 16px;" class="btn btn-outline-primary" @click="goToCourseProgramOutcomePage">Program Çıktıları</button>
+          <button style="margin-left: 16px;" class="btn btn-outline-primary" @click="goToInstructorLearningOutcomePage">Öğrenim Çıktıları</button>
           <button style="margin-left: 16px;" class="btn btn-outline-primary" @click="goToMatchMatrixPage" >ÖÇ - PÇ Eşleştirme</button>
           <button style="margin-left: 16px;" class="btn btn-outline-primary" @click="goToStudentListPage" >Öğrenci Listesi</button>
           <button style="margin-left: 16px;" class="btn btn-outline-primary" @click="goToLearningOutcomeResult" >ÖÇ Sonuçları</button>
@@ -164,6 +163,7 @@ export default {
     };
   },
   created() {
+    console.log(this.username);
     const courseId = this.$route.params.courseId;
     this.fetchCourse(courseId);
     this.fetchGeneralAssessments(courseId);

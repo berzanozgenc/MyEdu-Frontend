@@ -85,7 +85,7 @@ const routes = [{
     {
         name: "AdminPage",
         component: AdminPageVue,
-        path: "/program-output",
+        path: "/program-output-admin",
         meta: { requiresAuth: true }, // Oturum açma gerektiren sayfaları belirtin
     },
     {
@@ -156,18 +156,27 @@ const router = createRouter({
     routes,
 });
 
-// Navigation guard tanımlayın
-router.beforeEach((to, from, next) => {
-    // Kullanıcının oturum durumunu kontrol edin
-    const isAuthenticated = store.getters.getUser !== null;
-
-    // Rota giriş yapma gerektiriyorsa ve kullanıcı giriş yapmamışsa, Login sayfasına yönlendirin
+const adminAllowedRoutes = [
+    '/add-course', 
+    '/admin-home',
+    '/admin-load-student',
+    '/program-output-admin'
+  ];
+  
+  router.beforeEach((to, from, next) => {
+    const isAuthenticated = store.getters['getUser'] !== null; // Kullanıcının oturum açıp açmadığını kontrol edin
+    const user = store.getters['getUser']; // Kullanıcı bilgilerini alın
+  
     if (to.meta.requiresAuth && !isAuthenticated) {
-        next({ name: 'Login' });
+      next('/login'); // Kullanıcı oturum açmamışsa ve sayfa giriş gerektiriyorsa, giriş yapma sayfasına yönlendirin
+    } else if (isAuthenticated && user.statusCode === 3 && !adminAllowedRoutes.includes(to.path)) {
+      next('/add-course'); // Kullanıcı admin ise ve izin verilen sayfalar dışında bir yere gitmeye çalışıyorsa, /add-course sayfasına yönlendirin
     } else {
-        next(); // Diğer durumlarda rota değişikliğine izin verin
+      next(); // Diğer durumlarda rota değişikliğine izin verin
     }
-});
+  });
+  
+  
 
 
 export default router;
