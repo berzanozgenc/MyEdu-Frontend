@@ -189,6 +189,9 @@ export default {
         }
        
         this.generalAssessments = await response.json()
+        this.generalAssessments.sort((a, b) => {
+            return a.generalAssesmentId - b.generalAssesmentId;
+        });
         this.sortAssessments();
       } catch (error) {
         console.error(error);
