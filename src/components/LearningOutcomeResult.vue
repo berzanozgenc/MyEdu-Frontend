@@ -48,7 +48,7 @@
             </thead>
             <tbody>
               <tr v-for="(outcome, index) in outcomes" :key="index">
-                <td class="description-cell" style="text-align: center;">{{ outcome.description }}</td>
+                <td class="description-cell">{{ outcome.description }}</td>
                 <td style="text-align: center;">%{{ outcome.levelOfProvision.toFixed(3) }}</td>
                 <td style="text-align: center;">{{ outcome.desiredTarget.toFixed(2) }}</td>
                 <td style="text-align: center;">{{ outcome.assessmentSum.toFixed(2) }}</td>
