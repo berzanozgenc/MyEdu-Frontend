@@ -16,38 +16,58 @@
     components: { Bar },
     props: ['courseId'],
     data() {
-      return {
-        loaded: false,
-        outcomes: [],
-        chartData: {
-          labels: [],
-          datasets: [{
-            data: [],
-            label: 'Program Çıktısı Sağlanma Düzeyi (%)' 
-          }]
+    return {
+      loaded: false,
+      outcomes: [],
+      chartData: {
+        labels: [],
+        datasets: [{
+          data: [],
+          label: 'Öğrenim Çıktısı Sağlanma Düzeyi (%)',
+          backgroundColor: 'rgba(1, 148, 233, 0.2)', // Barların arka plan rengini kırmızı yap
+          borderColor: 'blue', // Barların kenar rengini kırmızı yap
+          borderWidth: 1 // Barların kenar kalınlığını ayarlama
+        }]
+      },
+      chartOptions: {
+        responsive: true,
+        scales: {
+          x: {
+            ticks: {
+              display: false, // X ekseni etiketlerini gizle
+              color: 'blue' // X ekseni etiket rengini kırmızı yap
+            },
+          
+          },
+          y: {
+            max: 100,
+            ticks: {
+              color:'rgba(1, 148, 233)' // Y ekseni etiket rengini kırmızı yap
+            },
+          }
         },
-        chartOptions: {
-          responsive: true,
-          scales: {
-            y: {
-              max: 100
+        plugins: {
+          legend: {
+            display: true,
+            labels: {
+              font: {
+                size: 14 // Yazı boyutunu ayarlama
+              },
+              color: '#000' // Yazı rengini ayarlama
             }
           },
-          plugins: {
-            legend: {
-              display: true,
-              labels: {
-                // Burada legend ayarlarını yapabilirsiniz
-                font: {
-                  size: 14 // Yazı boyutunu ayarlama
-                },
-                color: '#000' // Yazı rengini ayarlama
+          tooltip: {
+            callbacks: {
+              title: (context) => {
+                const index = context[0].dataIndex;
+                return this.outcomes[index].description; // Tooltip başlığı olarak outcome description göster
               }
             }
           }
         }
-      };
-    },
+      }
+    };
+  },
     async mounted() {
       this.loaded = false;
       const id = this.courseId;

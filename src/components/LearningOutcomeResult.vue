@@ -61,7 +61,7 @@
       </div>
     </div>
     <div style="align-items: center">
-      <div id="chart-container" class="card" style="width: 90%; margin-left: 2%; overflow-x: auto;">
+      <div id="chart-container" class="card" style="width: 90%; height: 80%; margin-left: 2%; overflow-x: auto;">
         <BarChart :course-id="courseId" /> 
       </div>
     </div>

@@ -23,25 +23,45 @@ export default {
         labels: [],
         datasets: [{
           data: [],
-          label: 'Öğrenim Çıktısı Sağlanma Düzeyi (%)' 
+          label: 'Öğrenim Çıktısı Sağlanma Düzeyi (%)',
+          backgroundColor: 'rgba(255, 99, 132, 0.2)', // Barların arka plan rengini kırmızı yap
+          borderColor: 'red', // Barların kenar rengini kırmızı yap
+          borderWidth: 1 // Barların kenar kalınlığını ayarlama
         }]
       },
       chartOptions: {
         responsive: true,
         scales: {
+          x: {
+            ticks: {
+              display: false, // X ekseni etiketlerini gizle
+              color: 'red' // X ekseni etiket rengini kırmızı yap
+            },
+          
+          },
           y: {
-            max: 100
+            max: 100,
+            ticks: {
+              color:'rgba(255, 99, 132)' // Y ekseni etiket rengini kırmızı yap
+            },
           }
         },
         plugins: {
           legend: {
             display: true,
             labels: {
-              // Burada legend ayarlarını yapabilirsiniz
               font: {
                 size: 14 // Yazı boyutunu ayarlama
               },
               color: '#000' // Yazı rengini ayarlama
+            }
+          },
+          tooltip: {
+            callbacks: {
+              title: (context) => {
+                const index = context[0].dataIndex;
+                return this.outcomes[index].description; // Tooltip başlığı olarak outcome description göster
+              }
             }
           }
         }
