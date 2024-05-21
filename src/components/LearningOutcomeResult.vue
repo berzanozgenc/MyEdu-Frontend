@@ -2,22 +2,22 @@
   <div>
     <!-- Navbar -->
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
-      <!-- Logo -->
       <a @click="refreshPage" style="margin-left: 10px" class="navbar-brand" href="#">
         <img src="../assets/Baskent_University_Logo.png" alt="Logo" style="max-height: 50px;">
       </a>
-      <!-- Title -->
       <a @click="refreshPage" style="margin-left: 10px" class="navbar-brand" href="#">
         Kişiselleştirilmiş Akademik Gelişim ve <br /> Değerlendirme Sistemi
       </a>
-      <!-- Logout Button -->
-      <div class="collapse navbar-collapse" id="navbarSupportedContent">
-        <ul class="navbar-nav mr-auto"></ul>
-        <span class="logout">
-          <button @click="logoutUser" class="btn btn-outline-danger my-2 my-sm-0" type="button">Çıkış Yap</button>
+    
+      <div style="margin-left: auto; margin-right: 2%;" class="ml-auto d-flex align-items-center">
+        <span class="d-flex align-items-center">
+          <img style="margin-right: 2px;" class="icon" src="../assets/profile.png" />
+          <h6 class="mb-0 ml-2">{{ username }}</h6>
         </span>
+        <button style="margin-left: 8px;" @click="logoutUser" class="btn btn-outline-danger my-2 my-sm-0" type="submit">Çıkış Yap</button>
       </div>
     </nav>
+
 
     <!-- Flex container -->
     <div class="flex-container mt-4">
@@ -74,6 +74,7 @@ import axios from 'axios';
 import BarChart from './BarChart.vue';
 import ExcelJS from 'exceljs';
 import html2canvas from 'html2canvas';
+import { mapGetters } from 'vuex';
 
 export default {
   components: { BarChart },
@@ -82,6 +83,13 @@ export default {
       outcomes: [],
       courseId: null,
     };
+  },
+  computed: {
+    ...mapGetters(["getUser"]),
+    username() {
+      const user = this.getUser;
+      return user ? `${user.firstName} ${user.lastName}` : "";
+    },
   },
   created() {
     this.courseId = this.$route.params.courseId;
@@ -212,5 +220,10 @@ export default {
 .description-cell {
   max-width: 600px; /* Adjust the width as needed */
   word-wrap: break-word;
+}
+
+.icon {
+  max-width: 24px;
+  max-height: 24px;
 }
 </style>

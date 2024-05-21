@@ -1,17 +1,19 @@
 <template>
   <div>
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
       <a @click="refreshPage" style="margin-left: 10px" class="navbar-brand" href="#">
         <img src="../assets/Baskent_University_Logo.png" alt="Logo" style="max-height: 50px;">
       </a>
       <a @click="refreshPage" style="margin-left: 10px" class="navbar-brand" href="#">
         Kişiselleştirilmiş Akademik Gelişim ve <br /> Değerlendirme Sistemi
       </a>
-      <div class="collapse navbar-collapse" id="navbarSupportedContent">
-        <ul class="navbar-nav mr-auto"></ul>
-        <span class="logout">
-          <button @click="logoutUser" class="btn btn-outline-danger my-2 my-sm-0" type="submit">Çıkış Yap</button>
+    
+      <div style="margin-left: auto; margin-right: 2%;" class="ml-auto d-flex align-items-center">
+        <span class="d-flex align-items-center">
+          <img style="margin-right: 2px;" class="icon" src="../assets/profile.png" />
+          <h6 class="mb-0 ml-2">{{ username }}</h6>
         </span>
+        <button style="margin-left: 8px;" @click="logoutUser" class="btn btn-outline-danger my-2 my-sm-0" type="submit">Çıkış Yap</button>
       </div>
     </nav>
     <div class="flex-container">
@@ -101,6 +103,7 @@
 <script>
 import { useStore } from 'vuex';
 import { useRouter } from 'vue-router';
+import { mapGetters } from "vuex";
 import axios from 'axios'; // axios'ı projenize dahil edin
 
 export default {
@@ -116,6 +119,13 @@ export default {
         target:''
       }
     };
+  },
+  computed: {
+    ...mapGetters(["getUser"]),
+    username() {
+      const user = this.getUser;
+      return user ? `${user.firstName} ${user.lastName}` : "";
+    },
   },
   created() {
     const courseId = this.$route.params.courseId;
@@ -342,4 +352,10 @@ select.editable {
   max-width: 800px; /* Adjust the width as needed */
   word-wrap: break-word;
 }
+
+.icon {
+  max-width: 24px;
+  max-height: 24px;
+}
+
 </style>
