@@ -123,7 +123,7 @@ export default {
         const studentData = {
           firstName: student.name,
           lastName: student.surname,
-          statusCode: "1",
+          statusCode: 2,
           email: student.studentMail,
           password: "deneme",
           studentNumber: student.studentNumber
