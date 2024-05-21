@@ -29,7 +29,7 @@
       </div>
 
       <!-- Both tables in the same card -->
-      <div class="card mt-3" style="width: 1000px">
+      <div class="card mt-3" style="width: 80%">
         <div class="card-body">
           <h5 class="card-title">Araç Puanlarını Belirleme</h5>
           <div style="max-width: 100%; overflow-x: auto">

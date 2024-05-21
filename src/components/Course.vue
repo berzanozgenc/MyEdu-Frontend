@@ -30,11 +30,12 @@
 
       <!-- Course Details and Assessments -->
       
-      <div class="card course-details" style="width: 75%; overflow-y: auto; overflow-x: hidden;">
+      <div class="card course-details" style="width: 78%; overflow-y: auto; overflow-x: hidden;">
         <div style="display: flex; margin-left: 14px;">
           <img class="icon" src="../assets/Books_Icon.png" />
-          <h2 style="margin-top: 12px; margin-left: 6px;">{{ course.code }} - {{ course.courseName }} - {{ course.semester }}</h2>
+          <h3 style="margin-top: 12px; margin-left: 6px;">{{ course.code }} - {{ course.courseName }} - {{ course.semester }}</h3>
         </div>
+        <br>
         <div class="buttons-container">
           <button style="margin-left: 16px;" class="btn btn-outline-primary" @click="goToInstructorLearningOutcomePage">Öğrenim Çıktıları</button>
           <button style="margin-left: 16px;" class="btn btn-outline-primary" @click="goToCourseProgramOutcomePage">Program Çıktıları</button>

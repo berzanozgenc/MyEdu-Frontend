@@ -25,20 +25,24 @@
             <a href="#" class="card-link" @click="goToStudentListPage">Öğrenci Listesi</a><br />
           </div>
         </div>
-        <div class="card" style="width: 80%;">
+        <div class="card" style="width: 80%; height: 100%">
           <div class="card-body" style="overflow-x: auto;">
             <h5 class="card-title">Program Çıktıları</h5>
             <table class="table">
               <thead>
                 <tr>
-                  <th scope="col" style="width: 150px;">Program Çıktısı</th>
-                  <th scope="col" style="width: 400px;">Açıklama</th>
-                  <th scope="col" style="width: 150px;">İşlemler</th>
+                  <th scope="col" style="width: 15%;">Program Çıktısı No.</th>
+                  <th scope="col" style="width: 70%;">Açıklama</th>
+                  <th scope="col" style="width: 15%;">İşlemler</th>
                 </tr>
               </thead>
               <tbody>
                 <tr v-for="(item, index) in programs" :key="index">
-                  <td>Program Çıktısı {{ index + 1 }}</td>
+                  <td>
+  <input v-if="item.editable" type="number" class="form-control editable" v-model="item.number" style="width: 100%;">
+  <div v-else>{{ item.number }}</div>
+</td>
+
                   <td>
                     <input v-if="item.editable" type="text" class="form-control editable" v-model="item.description" style="width: 250px;">
                     <div class="descriptionField" v-else>{{ item.description }}</div>
@@ -52,11 +56,14 @@
               </tbody>
             </table>
             <div class="card-body">
-              <h5 class="card-title">PÇ Ekle</h5>
+              <h5 class="card-title">Program Çıktısı Ekle</h5>
               <div class="form-group">
-                <label for="description">Açıklama:</label>
-                <input type="text" class="form-control" id="description" v-model="newProgram.description" style="width: 250px;">
-              </div>
+    <label for="no">PÇ Numarası:</label>
+    <input type="number" class="form-control" id="no" v-model="newProgram.number" style="width: 10%;">
+    <label for="description">Açıklama:</label>
+    <textarea class="form-control" id="description" v-model="newProgram.description" style="width: 25%; height: 100px;"></textarea>
+</div>
+<br>
               <button class="btn btn-outline-primary my-2 my-sm-0" style="width: 150px; height: 35px" type="submit" @click="addProgram($route.params.courseId)">
                 PÇ Ekle
               </button>
@@ -99,7 +106,8 @@
         selectedProgramOutcomeId: null,
         newProgram: {
           output: '',
-          description: ''
+          description: '',
+          number: ''
         }
       };
     },
@@ -142,7 +150,8 @@ async updateProgram(program) {
     console.log("Güncellenen program:", program);
     try {
         const response = await axios.put(`http://localhost:8080/program-outcomes/${program.id}`, {
-            description: program.description
+            description: program.description,
+            number: program.number
         });
         console.log("Güncelleme isteği yanıtı:", response);
         
@@ -187,12 +196,13 @@ async addProgram() {
     console.log("PÇ Ekle butonuna tıklandı");
 
     if (!this.newProgram.description.trim()) {
-        this.$toast.error("Lütfen açıklama girin.");
+        this.$toast.error("Lütfen tüm boşlukları uygun olarak doldurun!");
         return;
     }
 
     const data = {
         description: this.newProgram.description,
+        number: this.newProgram.number,
         courseId: courseId
     };
     try {
@@ -220,11 +230,8 @@ async addProgram() {
           const response = await axios.get(`http://localhost:8080/program-outcomes/course/${courseId}`);
           console.log(response.data);
           // Her öğenin bir id alanı olduğunu varsayarak, bu id değerini kullanarak programları oluşturun
-          this. programs = response.data.sort((a, b) => a.id - b.id);
-          this.programs = response.data.map(item => ({
-            id: item.id, // Her öğe için bir id alanı oluştur
-            description: item.description
-          }));
+          this.programs = response.data.sort((a, b) => a.id - b.id);
+          console.log(this.programs)
         } catch (error) {
           console.error(error);
           this.$toast.error("Program çıktıları alınırken bir hata oluştu.");

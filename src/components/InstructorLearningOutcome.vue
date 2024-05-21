@@ -61,13 +61,15 @@
           <div class="card-body">
             <h5 class="card-title">ÖÇ Ekle</h5>
             <div class="form-group">
-              <label for="description">Açıklama:</label>
-              <input type="text" class="form-control" id="description" v-model="newProgram.description" style="width: 250px;">
-            </div>
+    <label for="description">Açıklama:</label>
+    <textarea class="form-control" id="description" v-model="newProgram.description" style="width: 250px; height: 100px;"></textarea>
+</div>
+
             <div class="form-group">
               <label for="target">Hedef:</label>
               <input type="text" class="form-control" id="target" v-model="newProgram.target" style="width: 150px;">
             </div>
+            <br>
             <button class="btn btn-outline-primary my-2 my-sm-0" style="width: 150px; height: 35px; margin-top: 2px" type="submit" @click="addProgram">
               ÖÇ Ekle
             </button>
