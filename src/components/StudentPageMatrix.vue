@@ -1,16 +1,13 @@
 <template>
   <div>
-    <!-- Navbar -->
-    <nav class="navbar navbar-expand-lg navbar-light bg-light custom-navbar">
-      <!-- Logo -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
       <a @click="refreshPage" style="margin-left: 10px" class="navbar-brand" href="#">
         <img src="../assets/Baskent_University_Logo.png" alt="Logo" style="max-height: 50px;">
       </a>
-      <!-- Title -->
       <a @click="refreshPage" style="margin-left: 10px" class="navbar-brand" href="#">
-        Kişiselleştirilmiş Akademik Gelişim ve <br /> Değerlendirme Sistemi
+        Kişiselleştirilmiş Akademik Gelişim ve <br />Değerlendirme Sistemi
       </a>
-      <!-- Logout Button -->
+
       <div class="collapse navbar-collapse" id="navbarSupportedContent">
         <ul class="navbar-nav mr-auto"></ul>
         <span class="logout">
@@ -18,224 +15,265 @@
         </span>
       </div>
     </nav>
-
-    <!-- Flex container -->
-    <div class="flex-container mt-4">
-      <!-- Menu -->
-      <div class="card" style="width: 13rem; margin-left: 10px;">
-        <div class="card-body">
-          <h5 class="card-title">Menü</h5>
-          <a href="#" class="card-link" @click="goToCoursePage">Derslerim</a><br />
-        </div>
+    <div class="flex-container">
+    <div class="card" style="width: 13rem; margin-left: 10px;">
+      <div class="card-body">
+        <h5 class="card-title">Menü</h5>
+        <a href="#" class="card-link" @click="goToStudentHome">Derslerim</a><br />
       </div>
+    </div>
 
-      <!-- Matrix -->
-      <div class="card" style="width: auto; margin-left: 100px; overflow-x: auto;">
-        <div class="card-body">
-          <h5 class="card-title">ÖĞRENİM ÇIKTISI (ÖÇ) / ÖĞRENCİNİN ÖÇ SAĞLAMA DÜZEYİ MATRİSİ</h5>
+   <!-- Classes Card -->
+<div class="card" style="width: 50%; margin-left: 10px">
+<div class="card-body">
+  <h5 class="card-title">Öğrenci Sağlama Düzeyleri</h5>
 
-          <!-- Matrix table -->
-<table class="table matrix-table" style="min-width: 900px;">
-  <thead>
-    <tr>
-      <th scope="col"></th> <!-- Empty cell for row labels -->
-      <th v-for="(outcome, index) in outcomes" :key="index" scope="col">ÖÇ{{ index + 1 }}</th> <!-- Column headers named ÖÇ1, ÖÇ2, ÖÇ3, ÖÇ4, ÖÇ5 -->
-    </tr>
-  </thead>
-  <tbody>
-    <tr v-for="(row, rowIndex) in rows" :key="rowIndex">
-      <th scope="row">{{ row }}</th> <!-- Row labels -->
-      <td v-for="(outcome, outcomeIndex) in outcomes" :key="outcomeIndex">
-        <input v-if="programs[rowIndex].editMode[outcomeIndex]" placeholder="%" type="text" v-model="programs[rowIndex].outcomes[outcomeIndex]">
-        <span v-else>{{ programs[rowIndex].outcomes[outcomeIndex] }}</span>
-        <button @click="toggleEditMode(rowIndex, outcomeIndex)" class="btn btn-sm btn-primary ml-1">
-          {{ programs[rowIndex].editMode[outcomeIndex] ? 'Vazgeç' : 'Düzenle' }}
-        </button>
-        <button v-if="programs[rowIndex].editMode[outcomeIndex]" @click="saveChanges(rowIndex, outcomeIndex)" class="btn btn-sm btn-success ml-1">Kaydet</button>
-      </td>
-    </tr>
-  </tbody>
-</table>
-<!-- End of matrix table -->
-
-
-
-
-          <button @click="saveAllChanges" class="btn btn-primary custom-button mt-3">Tümünü Kaydet</button>
-
-        </div>
-      </div>
+  <!-- First Table: Pç1, Pç2, Pç3 -->
+  <table class="table table-sm">
+          <thead>
+            <tr>
+              <th scope="col">Öğr. Çıktı</th>
+              <th scope="col">ÖÇ'leri Sağlama Düzeyi</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="(outcome, index) in learningOutcomeResults" :key="index">
+              <td class="description-cell">{{ outcome.learningOutcome.description }}</td>
+              <td style="text-align: center;">%{{ outcome.levelOfProvision.toFixed(3) }}</td>
+            </tr>
+          </tbody>
+        </table>
+        <table class="table table-sm">
+          <thead>
+            <tr>
+              <th scope="col">Prg. Çıktı</th>
+              <th scope="col">PÇ'leri Sağlama Düzeyi</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="(outcome, index) in programOutcomeResults" :key="index">
+              <td class="description-cell">{{ outcome.programOutcome.description }}</td>
+              <td style="text-align: center;">%{{ outcome.levelOfProvision.toFixed(3) }}</td>
+       
+            </tr>
+          </tbody>
+        </table>
+</div>
+</div>
     </div>
   </div>
 </template>
 
 <script>
+import axios from 'axios';
 import { useStore } from 'vuex';
 import { useRouter } from 'vue-router';
-import axios from 'axios';
 
 export default {
+  name: "StudentPageMatrix",
   data() {
     return {
-      rowCount: 4,
-      colCount: 3,
+      student: null,
       outcomes: [],
-      programs: [],
-      rows: ['Lab', 'Quiz', 'Ara Sınav', 'Final'],
-      columns: ['ÖÇ1','ÖÇ2','ÖÇ3','ÖÇ4']
+      programOutcomes: [],
+      programOutcomeResults: [],
+      learningOutcomeResults: []
     };
   },
-  created() {
-    const courseId = this.$route.params.courseId;
-    console.log("Current Course ID : ", courseId);
-    this.fetchLearningOutcomes(courseId);
-    this.fetchProgramOutcomes();
-  },
-  watch: {
-    rowCount: 'generateMatrix',
-    colCount: 'generateMatrix',
-  },
-  mounted() {
-    this.generateMatrix();
+  created(){
+    this.getStudentById();
+    this.courseId = this.$route.params.courseId;
+    this.calculateStudentValues();
   },
   methods: {
+    async calculateStudentValues() {
+    try {
+        const store = useStore(); // Vuex store'u al
+        const student = store.getters.getUser;
+        const userId = student.userId;
+        const courseId = this.$route.params.courseId;
+        const response = await axios.get(`http://localhost:8080/learningOutcomes/course/${courseId}`);
+        const learningOutcomeList = response.data;
+        console.log(userId);
+        console.log("lolist",learningOutcomeList);
+        const requestBody = {
+            userId: userId,
+            learningOutcomeList: learningOutcomeList
+        };
+        await axios.post(`http://localhost:8080/student-learning-outcome`, requestBody);
+        this.calculateStudentValuesPO(learningOutcomeList, userId);
+    } catch (error) {
+        console.error("Error calculate student calculation values:", error);
+    }
+},
+      async calculateStudentValuesPO(learningOutcomeList, userId){
+        try {
+        const courseId = this.$route.params.courseId;
+        const response = await axios.get(`http://localhost:8080/program-outcomes/course/${courseId}`);
+        const programOutcomeList = response.data;
+        const requestBody = {
+            userId: userId,
+            programOutcomeList: programOutcomeList
+        };
+        await axios.post(`http://localhost:8080/student-program-outcome`, requestBody);
+        this.getProgramOutcomeResults(programOutcomeList, userId);
+        this.getLearningOutcomeResults(learningOutcomeList, userId);
+    } catch (error) {
+        console.error("Error calculate student calculation values:", error);
+    }
+},
+async getProgramOutcomeResults(programOutcomeList, userId) {
+    try {
+        const programOutcomeIds = programOutcomeList.map(outcome => outcome.id);
+
+        // Kullanıcının program outcome'larına göre sonuçları alma
+        const userProgramOutcomeResponse = await axios.post(`http://localhost:8080/student-program-outcome/user/${userId}/program-outcome`, programOutcomeIds);
+        
+        // Gelen verileri kullanabilirsiniz
+        let programOutcomeResults = userProgramOutcomeResponse.data;
+        
+        // Program outcome'ları idsine göre sırala
+        programOutcomeResults.sort((a, b) => {
+            return a.programOutcome.id - b.programOutcome.id;
+        });
+
+        this.programOutcomeResults = programOutcomeResults;
+    } catch (error) {
+        console.error("Error fetching program outcome results:", error);
+    }
+},
+
+async getLearningOutcomeResults(learningOutcomeList, userId) {
+    try {
+        const learningOutcomeIds = learningOutcomeList.map(outcome => outcome.id);
+
+        // Kullanıcının program outcome'larına göre sonuçları alma
+        const userLearningOutcomeResponse = await axios.post(`http://localhost:8080/student-learning-outcome/user/${userId}/learning-outcome`, learningOutcomeIds);
+        
+        // Gelen verileri kullanabilirsiniz
+        let learningOutcomeResults = userLearningOutcomeResponse.data;
+        
+        // Program outcome'ları idsine göre sırala
+        learningOutcomeResults.sort((a, b) => {
+            return a.learningOutcome.id - b.learningOutcome.id;
+        });
+
+        console.log(learningOutcomeResults);
+
+        this.learningOutcomeResults = learningOutcomeResults;
+    } catch (error) {
+        console.error("Error fetching learning outcome results:", error);
+    }
+},  
+
+    async getStudentById(){
+      const store = useStore(); // Vuex store'u al
+      this.student = store.getters.getUser.userId;
+    },
     goToLoginPage() {
-      this.$router.push("/");
-    },
-    goToCoursePage() {
-      this.$router.push("/instructor-home");
-    },
-    goToStudentInfoPage() {
-      this.$router.push("/student-info");
-    },
-    goToMatchMatrixPage() {
-      this.$router.push("/instructor-match-matrix");
-    },
-    goToLearningOutcomePage() {
-      this.$router.push("/learning-outcome");
-    },
-    goToInstructorLearningOutcome() {
-      this.$router.push("/instructor-learning-outcome");
-    },
-    refreshPage() {
-      this.$router.push("/instructor-home");
-    },
-    async saveAllChanges() {
-      try {
-        for (let i = 0; i < this.programs.length; i++) {
-          const program = this.programs[i];
-          for (let j = 0; j < program.outcomes.length; j++) {
-            if (program.editMode[j]) {
-              await this.saveChanges(i, j);
-            }
-          }
-        }
-        this.$toast.success("Tüm değişiklikler başarıyla kaydedildi!");
-      } catch (error) {
-        console.error('Tüm değişiklikler kaydedilirken bir hata oluştu:', error);
-        this.$toast.error("Tüm değişiklikler kaydedilirken bir hata oluştu!");
-      }
-    },
-    async logoutUser() {
-      const store = useStore();
-      const router = useRouter();
-      localStorage.removeItem('store');
-      this.$store.dispatch('logoutUser');
-      await router.push("/");
-    },
-    async fetchLearningOutcomes(courseId) {
-      try {
-        const response = await fetch(`http://localhost:8080/learningOutcomes/course/${courseId}`);
-        if (!response.ok) {
-          throw new Error('Öğrenim çıktıları getirilirken bir hata oluştu.');
-        }
-        const data = await response.json();
-        this.matrix = data.map(item => item.description);
-        this.outcomes = data;
-        this.colCount = data.length;
-      } catch (error) {
-        console.error('Bir hata oluştu:', error);
-      }
-    },
-    async fetchProgramOutcomes() {
-      try {
-        const response = await axios.get(`http://localhost:8080/program-outcomes`);
-        if (response.status !== 200) {
-          throw new Error('Program çıktıları getirilirken bir hata oluştu.');
-        }
-        const data = response.data;
-        this.programs = data.map(program => {
-          return {
-            ...program,
-            outcomes: Array(this.outcomes.length).fill(false),
-            editMode: Array(this.outcomes.length).fill(false)
-          };
-        });
-      } catch (error) {
-        console.error('Bir hata oluştu:', error);
-      }
-    },
-    toggleEditMode(programIndex, outcomeIndex) {
-      this.programs[programIndex].editMode[outcomeIndex] = !this.programs[programIndex].editMode[outcomeIndex];
-    },
-    async saveChanges(programIndex, outcomeIndex) {
-      try {
-        const program = this.programs[programIndex];
-        const outcome = program.outcomes[outcomeIndex];
-        const learningOutcomeId = this.outcomes[outcomeIndex].id;
-        const programOutcomeId = program.id;
-        const contribution = parseFloat(outcome);
-
-        if (isNaN(contribution) || contribution < 0 || contribution > 100 || outcome.trim() === '') {
-          this.$toast.error("Lütfen geçerli bir değer giriniz.");
-          return;
-        }
-
-        console.log('Kaydedilen Learning Outcome ID:', learningOutcomeId, 'Kaydedilen Program Outcome ID:', programOutcomeId);
-        const response = await axios.post('http://localhost:8080/learning-outcome-program-outcome', {
-          learningOutcomeId,
-          programOutcomeId,
-          contribution
-        });
-
-        if (response.status === 201) {
-          console.log('Başarıyla kaydedildi.');
-          this.$toast.success("Başarıyla kaydedildi!");
-        } else {
-          console.error('Kaydedilirken bir hata oluştu:', response.data);
-          this.$toast.error("Kaydedilirken bir hata oluştu!");
-        }
-        this.programs[programIndex].editMode[outcomeIndex] = false;
-      } catch (error) {
-        console.error('Kaydedilirken bir hata oluştu:', error);
-        this.$toast.error("Kaydedilirken bir hata oluştu!");
-      }
-    },
-    generateMatrix() {
-      this.matrix = Array.from({ length: this.rowCount }, () => Array(this.colCount).fill(false));
-    },
+    this.$router.push("/");
   },
+  goToInstructorLearningOutcomePage() {
+    const courseId = this.$route.params.courseId;
+    this.$router.push({ name: "InstructorLearningOutcome", params: { courseId: courseId } });
+  },
+  goToMatchMatrixPage() {
+    const courseId = this.$route.params.courseId;
+    this.$router.push({ name: "MatchMatrix", params: { courseId: courseId } });
+  },
+  goToStudentInfoPage() {
+    this.$router.push("/student-info");
+  },
+  goToStudentListPage() {
+      const courseId = this.$route.params.courseId;
+      this.$router.push({ name: "StudentList", params: { courseId: courseId }});
+      },
+  goToCourseProgramOutcomePage() {
+    const courseId = this.$route.params.courseId;
+    this.$router.push({ name: "CourseProgramOutcome", params: { courseId: courseId } });
+  },
+
+  goToStudentHome() {
+    this.$router.push({ name: "StudentHome" });
+  },
+  refreshPage() {
+    this.$router.push("/instructor-home");
+  },
+  logoutUser() {
+    const store = useStore();
+    const router = useRouter();
+    localStorage.removeItem('store');
+    this.$store.dispatch('logoutUser');
+    this.$router.push("/");
+  },
+  }
 };
 </script>
 
 <style>
+.container {
+  display: flex;
+}
+
+.logout {
+  margin-left: auto;
+  margin-right: 20px;
+}
+
+.card {
+  margin-top: 3%;
+}
+
+.icon {
+  width: 60px;
+}
+
+.list-group a {
+  text-decoration: none;
+  color: black;
+  font-family: "Calibri", sans-serif;
+  font-size: 17px;
+  font-weight: bold;
+}
+
+.accordion-content {
+  margin-left: 20px; /* Adjust as needed */
+}
+
+.info-icon {
+  font-size: 0.8em;
+  cursor: pointer;
+  margin-right: 5px;
+}
+
+.explanation {
+  font-size: 0.8em;
+  margin-bottom: 5px;
+}
+
+.modal {
+  background: rgba(0, 0, 0, 0.5); /* Background rengi ve saydamlık */
+  position: fixed; /* Sayfanın üzerinde sabit kalacak */
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex; /* İçerik merkezi konumlandırma için */
+  align-items: center;
+  justify-content: center;
+}
+
+.modal-dialog {
+  background: white;
+  padding: 20px;
+  border-radius: 5px;
+}
+
+.modal-title {
+  margin-bottom: 0;
+}
+
 .custom-navbar {
   background-color: skyblue !important;
 }
-.custom-button {
-  background-color: skyblue; 
-  border-color: skyblue; 
-}
-.custom-button:hover {
-  background-color: steelblue;
-  border-color: steelblue;
-}
-.matrix-table th {
-  font-weight: normal;
-}
-.matrix-table td {
-  padding: 0.5rem;
-  text-align: center;
-}
 </style>
-

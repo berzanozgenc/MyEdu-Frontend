@@ -21,6 +21,7 @@ import DepartmentAdminPage from "./components/DepartmentAdminPage.vue";
 import CourseProgramOutcome from "./components/CourseProgramOutcome.vue";
 import Aloc from "./components/Aloc.vue";
 import StudentList from "./components/StudentList.vue";
+import StudentHome from "./components/StudentHome.vue";
 
 const routes = [{
         name: "Login",
@@ -119,6 +120,12 @@ const routes = [{
         meta: { requiresAuth: true }, // Oturum açma gerektiren sayfaları belirtin
     },
     {
+        name: "StudentHome",
+        component: StudentHome,
+        path: "/student-home",
+        meta: { requiresAuth: true }, // Oturum açma gerektiren sayfaları belirtin
+    },
+    {
         name: "StudentPage",
         component: StudentPage,
         path: "/student-page",
@@ -127,7 +134,7 @@ const routes = [{
     {
         name: "StudentPageMatrix",
         component: StudentPageMatrix,
-        path: "/student-pageMatrix",
+        path: "/student-pageMatrix/:courseId",
         meta: { requiresAuth: true }, // Oturum açma gerektiren sayfaları belirtin
     },
     {
