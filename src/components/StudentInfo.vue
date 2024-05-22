@@ -54,7 +54,7 @@
             </thead>
             <tbody>
               <tr v-for="(student, studentIndex) in students" :key="studentIndex">
-                <th scope="row">{{ student.firstName }} {{ student.lastName }} {{ student.studentNumber }}</th>
+                <th scope="row">{{ student.studentNumber }}{{ student.firstName }} {{ student.lastName }} </th>
                 <td :ref="`cell_${studentIndex}_${assessmentIndex}`"
   v-for="(assessment, assessmentIndex) in assessments" :key="'assessment-' + assessmentIndex"
   :contenteditable="isEditMode"

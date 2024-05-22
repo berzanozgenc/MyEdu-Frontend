@@ -60,13 +60,21 @@
 <script>
 import ExcelJS from 'exceljs';
 import axios from 'axios';
+import { mapGetters } from 'vuex';
 
 export default {
   name: "AdminLoadStudentPage",
   data() {
     return {
       students: [],
+      userDepartment: null
     };
+  },
+  computed: {
+    ...mapGetters(["getUser"])
+  },
+  mounted() {
+    this.getDepartment();
   },
   methods: {
     goToLoginPage() {
@@ -80,6 +88,15 @@ export default {
     },
     refreshPage() {
       this.$router.push("/admin-home");
+    },
+    getDepartment() {
+      const user = this.getUser;
+      if (user && user.department) {
+        this.userDepartment = user.department;
+        console.log('Kullanıcı departmanı:', this.userDepartment);
+      } else {
+        console.error("Kullanıcı departmanı bulunamadı!");
+      }
     },
     logoutUser() {
       localStorage.removeItem('store');
@@ -114,6 +131,10 @@ export default {
       reader.readAsArrayBuffer(file);
     },
     sendDataToServer() {
+      if (!this.userDepartment) {
+        console.error("Kullanıcı departmanı bulunamadı!");
+        return;
+      }
       if (this.students.length === 0) {
         console.error("Öğrenci verisi bulunamadı!");
         return;
@@ -123,9 +144,15 @@ export default {
         const studentData = {
           firstName: student.name,
           lastName: student.surname,
-          statusCode: 2,
+          statusCode: "2",
           email: student.studentMail,
           password: "deneme",
+          department: {
+            id: this.userDepartment.id,
+            name: this.userDepartment.name,
+            courses: null,
+            users: null
+          },
           studentNumber: student.studentNumber
         };
 
@@ -141,7 +168,7 @@ export default {
     loadStudents() {
       document.getElementById('fileInput').click();
     }
-  },
+  }
 };
 </script>
 
