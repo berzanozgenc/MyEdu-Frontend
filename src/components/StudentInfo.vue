@@ -261,7 +261,7 @@ export default {
 
     },
     handleTab(event) {
-    if (event.key === 'Tab') {
+    if (event.key === 'Tab' || event.key === 'Enter') {
       event.preventDefault();
       const focusable = this.$el.querySelectorAll('input[tabindex]');
       const index = Array.prototype.indexOf.call(focusable, event.target);

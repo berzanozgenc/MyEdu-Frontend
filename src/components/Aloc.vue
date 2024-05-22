@@ -237,7 +237,7 @@ export default {
 
         },
         handleTab(event) {
-      if (event.key === 'Tab') {
+      if (event.key === 'Tab' || event.key === 'Enter') {
         event.preventDefault();
         const inputs = this.$el.querySelectorAll('input');
         const currentIndex = Array.from(inputs).indexOf(document.activeElement);
