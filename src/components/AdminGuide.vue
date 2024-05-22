@@ -41,8 +41,8 @@
     data() {
       return {
         steps: [
-          { title: "Program Çıktısı Ekleme", description: "Program çıktılarını görüntüleyin ve yönetin.", route: "/instructor-home" },
           { title: "Ders Ekleme", description: "Bölüme ders ekleyin." },
+          { title: "Program Çıktısı Ekleme", description: "Program çıktılarını görüntüleyin ve yönetin.", route: "/instructor-home" },
           { title: "Öğrenci Yükleme", description: "Sisteme öğrenci yükleyin." }
         ]
       };
