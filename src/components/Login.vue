@@ -44,7 +44,7 @@ export default {
                 console.log(response.data); // Yanıtın içeriğini konsola yazdır
                 
                 // Bu kısmı düzenleyin
-                this.goToInstructorHomePage();
+                this.$router.push("/guidance");
             } catch (error) {
                 // İstek başarısız olduğunda yapılacak işlemler
                 console.error('Hata:', error);

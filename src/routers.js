@@ -22,6 +22,8 @@ import CourseProgramOutcome from "./components/CourseProgramOutcome.vue";
 import Aloc from "./components/Aloc.vue";
 import StudentList from "./components/StudentList.vue";
 import StudentHome from "./components/StudentHome.vue";
+import GuidePage from "./components/GuidePage.vue";
+import AdminGuide from "./components/AdminGuide.vue";
 
 const routes = [{
         name: "Login",
@@ -33,6 +35,18 @@ const routes = [{
         name: "InstructorHome",
         component: InstructorHome,
         path: "/instructor-home",
+        meta: { requiresAuth: true }, // Oturum açma gerektiren sayfaları belirtin
+    },
+    {
+        name: "AdminGuide",
+        component: AdminGuide,
+        path: "/admin-guide",
+        meta: { requiresAuth: true }, // Oturum açma gerektiren sayfaları belirtin
+    },
+    {
+        name: "GuidePage",
+        component: GuidePage,
+        path: "/guidance",
         meta: { requiresAuth: true }, // Oturum açma gerektiren sayfaları belirtin
     },
     {
@@ -167,7 +181,8 @@ const adminAllowedRoutes = [
     '/add-course', 
     '/admin-home',
     '/admin-load-student',
-    '/program-output-admin'
+    '/program-output-admin',
+    '/admin-guide'
   ];
 
   const studentAllowedRoutes = [
@@ -198,7 +213,7 @@ const adminAllowedRoutes = [
             if (adminAllowedRoutes.includes(to.matched[0].path)) {
                 next(); // İzin verilen rotaya yönlendir
             } else {
-                next('/add-course'); // Admin izin verilen rotalardan birine gitmeye çalışmıyorsa, varsayılan olarak /add-course sayfasına yönlendir
+                next('/admin-guide'); // Admin izin verilen rotalardan birine gitmeye çalışmıyorsa, varsayılan olarak /add-course sayfasına yönlendir
             }
         }
     } else {
