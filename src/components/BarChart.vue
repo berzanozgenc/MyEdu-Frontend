@@ -21,13 +21,29 @@ export default {
       outcomes: [],
       chartData: {
         labels: [],
-        datasets: [{
-          data: [],
-          label: 'Öğrenim Çıktısı Sağlanma Düzeyi (%)',
-          backgroundColor: 'rgba(255, 99, 132, 0.2)', // Barların arka plan rengini kırmızı yap
-          borderColor: 'red', // Barların kenar rengini kırmızı yap
-          borderWidth: 1 // Barların kenar kalınlığını ayarlama
-        }]
+        datasets: [
+          {
+            data: [],
+            label: 'Öğrenim Çıktısı Sağlanma Düzeyi (%)',
+            backgroundColor: 'rgba(255, 99, 132, 0.2)', // Barların arka plan rengini kırmızı yap
+            borderColor: 'red', // Barların kenar rengini kırmızı yap
+            borderWidth: 1 // Barların kenar kalınlığını ayarlama
+          },
+          {
+            data: [],
+            label: 'Skor',
+            backgroundColor: 'rgba(54, 162, 235, 0.2)', // Barların arka plan rengini mavi yap
+            borderColor: 'blue', // Barların kenar rengini mavi yap
+            borderWidth: 1 // Barların kenar kalınlığını ayarlama
+          },
+          {
+            data: [],
+            label: 'Araç',
+            backgroundColor: 'rgba(75, 192, 192, 0.2)', // Barların arka plan rengini yeşil yap
+            borderColor: 'green', // Barların kenar rengini yeşil yap
+            borderWidth: 1 // Barların kenar kalınlığını ayarlama
+          }
+        ]
       },
       chartOptions: {
         responsive: true,
@@ -37,7 +53,6 @@ export default {
               display: false, // X ekseni etiketlerini gizle
               color: 'red' // X ekseni etiket rengini kırmızı yap
             },
-          
           },
           y: {
             max: 100,
@@ -76,6 +91,8 @@ export default {
       this.outcomes = response.data;
       this.chartData.labels = this.outcomes.map(outcome => outcome.description);
       this.chartData.datasets[0].data = this.outcomes.map(outcome => outcome.levelOfProvision);
+      this.chartData.datasets[1].data = this.outcomes.map(outcome => outcome.scoreSum);
+      this.chartData.datasets[2].data = this.outcomes.map(outcome => outcome.assessmentSum);
       this.loaded = true;
     } catch (error) {
       console.error('Error fetching outcomes:', error);
