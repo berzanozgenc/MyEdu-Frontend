@@ -1,21 +1,22 @@
 <template>
     <div>
         <nav class="navbar navbar-expand-lg navbar-light bg-light">
-      <a @click="refreshPage" style="margin-left: 10px" class="navbar-brand" href="#">
-        <img src="../assets/Baskent_University_Logo.png" alt="Logo" style="max-height: 50px;">
-      </a>
-      <a @click="refreshPage" style="margin-left: 10px" class="navbar-brand" href="#">
-        Kişiselleştirilmiş Akademik Gelişim ve <br /> Değerlendirme Sistemi
-      </a>
-    
-      <div style="margin-left: auto; margin-right: 2%;" class="ml-auto d-flex align-items-center">
-        <span class="d-flex align-items-center">
-          <img style="margin-right: 2px;" class="icon" src="../assets/profile.png" />
-          <h6 class="mb-0 ml-2">{{ username }}</h6>
-        </span>
-        <button style="margin-left: 8px;" @click="logoutUser" class="btn btn-outline-danger my-2 my-sm-0" type="submit">Çıkış Yap</button>
-      </div>
-    </nav>
+            <a @click="refreshPage" style="margin-left: 10px" class="navbar-brand" href="#">
+                <img src="../assets/Baskent_University_Logo.png" alt="Logo" style="max-height: 50px;">
+            </a>
+            <a @click="refreshPage" style="margin-left: 10px" class="navbar-brand" href="#">
+                Kişiselleştirilmiş Akademik Gelişim ve <br /> Değerlendirme Sistemi
+            </a>
+
+            <div style="margin-left: auto; margin-right: 2%;" class="ml-auto d-flex align-items-center">
+                <span class="d-flex align-items-center">
+                    <img style="margin-right: 2px;" class="icon" src="../assets/profile.png" />
+                    <h6 class="mb-0 ml-2">{{ username }}</h6>
+                </span>
+                <button style="margin-left: 8px;" @click="logoutUser" class="btn btn-outline-danger my-2 my-sm-0"
+                    type="submit">Çıkış Yap</button>
+            </div>
+        </nav>
 
 
         <div class="flex-container">
@@ -23,10 +24,10 @@
                 <div class="card-body">
                     <h5 class="card-title">Menü</h5>
                     <a href="#" class="card-link" @click="goToCoursePage">Derslerim </a><br />
-          <a href="#" class="card-link" @click="goToInstructorLearningOutcomePage">Öğrenim Çıktıları</a><br />
-          <a href="#" class="card-link" @click="goToCourseProgramOutcomePage">Program Çıktıları</a><br />
-          <a href="#" class="card-link" @click="goToMatchMatrixPage">ÖÇ ve PÇ Eşleştirme</a><br />
-          <a href="#" class="card-link" @click="goToStudentListPage">Öğrenci Listesi</a><br />
+                    <a href="#" class="card-link" @click="goToInstructorLearningOutcomePage">Öğrenim Çıktıları</a><br />
+                    <a href="#" class="card-link" @click="goToCourseProgramOutcomePage">Program Çıktıları</a><br />
+                    <a href="#" class="card-link" @click="goToMatchMatrixPage">ÖÇ ve PÇ Eşleştirme</a><br />
+                    <a href="#" class="card-link" @click="goToStudentListPage">Öğrenci Listesi</a><br />
                 </div>
             </div>
 
@@ -47,36 +48,44 @@
                         </div>
                         <div style="max-height: 300px; overflow-y: auto">
                             <table class="table table-stretched mt-3">
-                                <thead>
-                                    <tr>
-                                        <th scope="col"></th>
-                                        <th v-for="(assessment, index) in assessments" :key="'assessment-' + index"
-                                            scope="col">
-                                            <div class="d-flex align-items-center">
-                                                <span @click="selectColumn(index)">{{ !useCustomNames ? assessment.name
-                :
-                'Soru' }} {{ index + 1 }}</span>
-                                            </div>
-                                        </th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr v-for="(outcome, outcomeIndex) in outcomes" :key="outcomeIndex">
-                                        <th class="loDescription" scope="row">{{ outcome.description }}</th>
-                                        <td :ref="`cell_${outcomeIndex}_${assessmentIndex}`"
-                                            v-for="(assessment, assessmentIndex) in assessments"
-                                            :key="'assessment-' + assessmentIndex" :contenteditable="isEditMode">
-                                            <span style="align-items: center; justify-content: center; display: flex;">
-                                                <input style="text-align: center;" v-if="isEditMode" type="text" v-bind:placeholder="fillTable(outcomeIndex, assessmentIndex)"
-                                                    v-model="cellData[outcomeIndex][assessmentIndex]" /> <span
-                                                    v-else></span>
-                                                <span v-else>{{ fillTable(outcomeIndex, assessmentIndex) }}</span>
-                                            </span>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
+      <thead>
+        <tr>
+          <th scope="col"></th>
+          <th v-for="(assessment, index) in assessments" :key="'assessment-' + index" scope="col">
+            <div class="d-flex align-items-center">
+              <span @click="selectColumn(index)">
+                {{ !useCustomNames ? assessment.name : 'Soru' }} {{ index + 1 }}
+              </span>
+            </div>
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr v-for="(outcome, outcomeIndex) in outcomes" :key="outcomeIndex">
+          <th class="loDescription" scope="row">{{ outcome.description }}</th>
+          <td
+            :ref="`cell_${outcomeIndex}_${assessmentIndex}`"
+            v-for="(assessment, assessmentIndex) in assessments"
+            :key="'assessment-' + assessmentIndex"
+            :tabindex="-1"
+            @keydown="handleTab"
+          >
+            <span style="align-items: center; justify-content: center; display: flex;">
+              <input
+                style="text-align: center;"
+                v-if="isEditMode"
+                type="text"
+                v-bind:placeholder="fillTable(outcomeIndex, assessmentIndex)"
+                v-model="cellData[outcomeIndex][assessmentIndex]"
+                tabindex="0"
+              />
+              <span v-else>{{ fillTable(outcomeIndex, assessmentIndex) }}</span>
+            </span>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
                     </div>
                 </div>
             </div>
@@ -106,19 +115,19 @@ export default {
 
     },
     computed: {
-    ...mapGetters(["getUser"]),
-    username() {
-      const user = this.getUser;
-      return user ? `${user.firstName} ${user.lastName}` : "";
+        ...mapGetters(["getUser"]),
+        username() {
+            const user = this.getUser;
+            return user ? `${user.firstName} ${user.lastName}` : "";
+        },
     },
-  },
     mounted() {
         this.fetchLearningOutcomes()
-    .then(() => this.fetchAssessments())
-    .then(() => this.fetchUseCustomNames())
-    .catch(error => {
-      console.error('Fetch işlemi başarısız:', error);
-    });
+            .then(() => this.fetchAssessments())
+            .then(() => this.fetchUseCustomNames())
+            .catch(error => {
+                console.error('Fetch işlemi başarısız:', error);
+            });
     },
     methods: {
         fillTable(outcomeIndex, assessmentIndex) {
@@ -227,6 +236,15 @@ export default {
             }
 
         },
+        handleTab(event) {
+      if (event.key === 'Tab') {
+        event.preventDefault();
+        const inputs = this.$el.querySelectorAll('input');
+        const currentIndex = Array.from(inputs).indexOf(document.activeElement);
+        const nextIndex = (currentIndex + 1) % inputs.length;
+        inputs[nextIndex].focus();
+      }
+    },
         enableEditMode() {
             this.isEditMode = true;
         },
@@ -250,12 +268,12 @@ export default {
                 );
                 this.outcomes = response.data;
                 this.outcomes.sort((a, b) => {
-            return a.id - b.id;
-        });
+                    return a.id - b.id;
+                });
                 this.learningOutcomes = response.data
                 this.learningOutcomes.sort((a, b) => {
-            return a.id - b.id;
-        });
+                    return a.id - b.id;
+                });
                 if (this.assessments && this.outcomes) {
                     this.cellData = new Array(this.outcomes.length).fill().map(() => new Array(this.assessments.length).fill(''));
                 }
@@ -311,8 +329,8 @@ export default {
             this.$router.push({ name: "InstructorLearningOutcome", params: { courseId: courseId } });
         },
         goToStudentListPage() {
-        const courseId = this.$route.params.courseId;
-        this.$router.push({ name: "StudentList", params: { courseId: courseId }});
+            const courseId = this.$route.params.courseId;
+            this.$router.push({ name: "StudentList", params: { courseId: courseId } });
         },
     },
 };
@@ -327,12 +345,23 @@ export default {
     margin-right: 20px;
 }
 
-.loDescription{
-           max-width: 600px; /* Adjust the width as needed */
-  word-wrap: break-word;
+.loDescription {
+    max-width: 600px;
+    /* Adjust the width as needed */
+    word-wrap: break-word;
 }
+
+input {
+  cursor: text;
+}
+
 .icon {
-  max-width: 24px;
-  max-height: 24px;
+    max-width: 24px;
+    max-height: 24px;
+}
+
+/* Remove focus outline from table cells */
+td[contenteditable="true"]:focus {
+  outline: none;
 }
 </style>

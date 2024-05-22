@@ -56,14 +56,16 @@
               <tr v-for="(student, studentIndex) in students" :key="studentIndex">
                 <th scope="row">{{ student.firstName }} {{ student.lastName }} {{ student.studentNumber }}</th>
                 <td :ref="`cell_${studentIndex}_${assessmentIndex}`"
-                  v-for="(assessment, assessmentIndex) in assessments" :key="'assessment-' + assessmentIndex"
-                  :contenteditable="isEditMode">
-                  <span style="align-items: center; justify-content: center; display: flex;">
-                    <input style="text-align: center;" v-if="isEditMode"  type="text" v-bind:placeholder="fillTable(studentIndex, assessmentIndex)" v-model="cellData[studentIndex][assessmentIndex]" /> <span
-                      v-else></span>
-                    <span v-else>{{ fillTable(studentIndex, assessmentIndex) }}</span>
-                  </span>
-                </td>
+  v-for="(assessment, assessmentIndex) in assessments" :key="'assessment-' + assessmentIndex"
+  :contenteditable="isEditMode"
+  @keydown="handleTab"
+  @mousedown="handleMouseDown">
+  <span style="align-items: center; justify-content: center; display: flex;">
+    <input style="text-align: center;" v-if="isEditMode" type="text" v-bind:placeholder="fillTable(studentIndex, assessmentIndex)" v-model="cellData[studentIndex][assessmentIndex]" tabindex="0"/> <span v-else></span>
+    <span v-else>{{ fillTable(studentIndex, assessmentIndex) }}</span>
+  </span>
+</td>
+
               </tr>
             </tbody>
           </table>
@@ -258,6 +260,15 @@ export default {
       }
 
     },
+    handleTab(event) {
+    if (event.key === 'Tab') {
+      event.preventDefault();
+      const focusable = this.$el.querySelectorAll('input[tabindex]');
+      const index = Array.prototype.indexOf.call(focusable, event.target);
+      const nextElement = focusable[index + 1] || focusable[0];
+      nextElement.focus();
+    }
+  },
     enableEditMode() {
       this.isEditMode = true;
     },
@@ -292,6 +303,12 @@ export default {
     refreshPage() {
       this.$router.push("/instructor-home");
     },
+    handleMouseDown(event) {
+    // Tıklanan element input alanı değilse, olayın işlenmesini engelle
+    if (!event.target.tagName.toLowerCase().includes('input')) {
+      event.preventDefault();
+    }
+  },
     logoutUser() {
       const store = useStore();
       const router = useRouter();
@@ -379,7 +396,6 @@ export default {
   color: #fff;
 }
 
-input,
 select {
   border: 1px solid #ced4da;
   border-radius: 0.25rem;
