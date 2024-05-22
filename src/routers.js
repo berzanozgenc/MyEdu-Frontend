@@ -169,19 +169,44 @@ const adminAllowedRoutes = [
     '/admin-load-student',
     '/program-output-admin'
   ];
+
+  const studentAllowedRoutes = [
+    '/student-home', 
+    '/student-pageMatrix/:courseId'
+  ];
   
   router.beforeEach((to, from, next) => {
     const isAuthenticated = store.getters['getUser'] !== null; // Kullanıcının oturum açıp açmadığını kontrol edin
     const user = store.getters['getUser']; // Kullanıcı bilgilerini alın
-  
+    
     if (to.meta.requiresAuth && !isAuthenticated) {
-      next('/login'); // Kullanıcı oturum açmamışsa ve sayfa giriş gerektiriyorsa, giriş yapma sayfasına yönlendirin
-    } else if (isAuthenticated && user.statusCode === 3 && !adminAllowedRoutes.includes(to.path)) {
-      next('/add-course'); // Kullanıcı admin ise ve izin verilen sayfalar dışında bir yere gitmeye çalışıyorsa, /add-course sayfasına yönlendirin
+        next('/login'); // Kullanıcı oturum açmamışsa ve sayfa giriş gerektiriyorsa, giriş yapma sayfasına yönlendirin
+    } else if (isAuthenticated) {
+        // Kullanıcı oturum açtıysa
+        if (user.statusCode === 1) {
+            // Kullanıcı durum kodu 1 (belirtilmemiş) ise tüm rotalara izin ver
+            next();
+        } else if (user.statusCode === 2) {
+            // Kullanıcı durum kodu 2 (öğrenci) ise
+            if (studentAllowedRoutes.includes(to.matched[0].path)) {
+                next(); // İzin verilen rotaya yönlendir
+            } else {
+                next('/student-home'); // Öğrenci varsayılan olarak /student-home sayfasına yönlendirilir
+            }
+        } else if (user.statusCode === 3) {
+            // Kullanıcı durum kodu 3 (admin) ise
+            if (adminAllowedRoutes.includes(to.matched[0].path)) {
+                next(); // İzin verilen rotaya yönlendir
+            } else {
+                next('/add-course'); // Admin izin verilen rotalardan birine gitmeye çalışmıyorsa, varsayılan olarak /add-course sayfasına yönlendir
+            }
+        }
     } else {
-      next(); // Diğer durumlarda rota değişikliğine izin verin
+        next(); // Diğer durumlarda rota değişikliğine izin verin
     }
-  });
+});
+
+  
   
   
 
