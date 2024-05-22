@@ -105,6 +105,7 @@ export default {
     return {
       students: [],
       excelStudents: [],
+      allStudents: [],
       selectedStudentId: null,
       showModal: false,
       newStudent: {

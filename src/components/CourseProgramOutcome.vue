@@ -35,7 +35,7 @@
             <thead>
               <tr>
                 <th scope="col" style="width: 15%;">Program Çıktısı No.</th>
-                <th scope="col" style="width: 70%;">Açıklama</th>
+                <th scope="col" style="width: 70%;">Tanım</th>
                 <th scope="col" style="width: 15%;">İşlemler</th>
               </tr>
             </thead>
@@ -67,7 +67,7 @@
             <div class="form-group">
               <label for="no">PÇ Numarası:</label>
               <input type="number" class="form-control" id="no" v-model="newProgram.number" style="width: 10%;">
-              <label for="description">Açıklama:</label>
+              <label for="description">Tanım:</label>
               <textarea class="form-control" id="description" v-model="newProgram.description"
                 style="width: 25%; height: 100px;"></textarea>
             </div>

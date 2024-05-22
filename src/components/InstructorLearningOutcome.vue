@@ -34,7 +34,7 @@
             <thead>
               <tr>
                 <th scope="col" style="width: 150px;">Öğrenim Çıktısı</th>
-                <th scope="col" style="width: 400px;">Açıklama</th>
+                <th scope="col" style="width: 400px;">Tanım</th>
                 <th scope="col" style="width: 150px;">Hedef</th>
                 <th scope="col" style="width: 150px;">İşlemler</th>
               </tr>
@@ -63,7 +63,7 @@
           <div class="card-body">
             <h5 class="card-title">ÖÇ Ekle</h5>
             <div class="form-group">
-    <label for="description">Açıklama:</label>
+    <label for="description">Tanım:</label>
     <textarea class="form-control" id="description" v-model="newProgram.description" style="width: 250px; height: 100px;"></textarea>
 </div>
 
