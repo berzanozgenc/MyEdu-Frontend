@@ -24,12 +24,18 @@
         </div>
       </nav>
       <div class="flex-container">
-        <div class="card" style="width: 13rem; margin-left: 10px">
-          <div class="card-body">
-            <h5 class="card-title">Menü</h5>
-            <a href="#" class="card-link">Derslerim</a><br />
-          </div>
+      <!-- Side Menu -->
+      <div class="card menu" style="width: 12%; margin-left: 10px;">
+        <div class="card-body">
+          <h5 class="card-title">Menü</h5>
+          <ul class="list-group">
+            <li class="list-group-item" >
+              <i class="fas fa-book"></i> Derslerim
+            </li>
+      
+          </ul>
         </div>
+      </div>
   
         <div
           class="card"

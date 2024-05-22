@@ -7,6 +7,8 @@ import 'vue-toast-notification/dist/theme-sugar.css';
 import 'vue-toast-notification/dist/theme-default.css'
 import '@fortawesome/fontawesome-free/css/all.css';
 import { Bar } from 'vue-chartjs'
+import Menu from 'primevue/menu';
+
 
 
 

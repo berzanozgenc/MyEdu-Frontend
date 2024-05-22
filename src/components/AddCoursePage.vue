@@ -10,16 +10,25 @@
         </span>
       </div>
     </nav>
-
     <div class="flex-container">
-        <div class="card" style="width: 13rem; margin-left: 10px;">
-          <div class="card-body">
-            <h5 class="card-title">Menü</h5>
-            <a href="#" class="card-link" >Ders Sayfası</a><br />
-            <a href="#" class="card-link" @click="goToProgramOutputPage">Program Çıktıları Sayfası</a><br />
-            <a href="#" class="card-link" @click="goToLoadStudentPage" >Öğrenci Yükleme Sayfası</a><br />
-          </div>
+      <!-- Side Menu -->
+      <div class="card menu" style="width: 12%; margin-left: 10px;">
+        <div class="card-body">
+          <h5 class="card-title">Menü</h5>
+          <ul class="list-group">
+            <li class="list-group-item" @click="goToProgramOutputPage">
+              <i class="fas fa-book"></i> Program Çıktıları Sayfası
+            </li>
+            <li class="list-group-item" @click="goToAddCoursePage">
+              <i class="fas fa-graduation-cap"></i> Ders Sayfası
+            </li>
+            <li class="list-group-item" @click="goToLoadStudentPage">
+              <i class="fas fa-chalkboard-teacher"></i> Öğrenci Yükleme Sayfası
+            </li>
+          </ul>
         </div>
+      </div>
+    
 
       <div class="card" style="width: 75rem; height: 40rem; overflow-y: auto; overflow-x: hidden">
         <div class="card-body">

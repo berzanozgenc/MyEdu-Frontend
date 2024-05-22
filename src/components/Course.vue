@@ -20,16 +20,32 @@
 
     <div class="flex-container">
       <!-- Side Menu -->
-      <div class="card menu" style="width: 16%; margin-left: 10px;">
+      <div class="card menu" style="width: 12%; margin-left: 10px;">
         <div class="card-body">
           <h5 class="card-title">Menü</h5>
-          <a href="#" class="card-link" @click="goToCoursePage">Derslerim</a><br />
-          <a href="#" class="card-link" @click="goToInstructorLearningOutcomePage">Öğrenim Çıktıları</a><br />
-          <a href="#" class="card-link" @click="goToCourseProgramOutcomePage">Program Çıktıları</a><br />
-          <a href="#" class="card-link" @click="goToMatchMatrixPage">ÖÇ ve PÇ Eşleştirme</a><br />
-          <a href="#" class="card-link" @click="goToStudentListPage">Öğrenci Listesi</a><br />
-          <a href="#" class="card-link" @click="goToLearningOutcomeResult">ÖÇ Sonuçları</a><br />
-          <a href="#" class="card-link" @click="goToProgramOutcomeResult">PÇ Sonuçları</a><br />
+          <ul class="list-group">
+            <li class="list-group-item" @click="goToCoursePage">
+              <i class="fas fa-book"></i> Derslerim
+            </li>
+            <li class="list-group-item" @click="goToInstructorLearningOutcomePage">
+              <i class="fas fa-graduation-cap"></i> Öğrenim Çıktıları
+            </li>
+            <li class="list-group-item" @click="goToCourseProgramOutcomePage">
+              <i class="fas fa-chalkboard-teacher"></i> Program Çıktıları
+            </li>
+            <li class="list-group-item" @click="goToMatchMatrixPage">
+              <i class="fas fa-exchange-alt"></i> ÖÇ ve PÇ Eşleştirme
+            </li>
+            <li class="list-group-item" @click="goToStudentListPage">
+              <i class="fas fa-users"></i> Öğrenci Listesi
+            </li>
+            <li class="list-group-item" @click="goToLearningOutcomeResult">
+              <i class="fas fa-chart-bar"></i> ÖÇ Sonuçları
+            </li>
+            <li class="list-group-item" @click="goToProgramOutcomeResult">
+              <i class="fas fa-chart-line"></i> PÇ Sonuçları
+            </li>
+          </ul>
         </div>
       </div>
       <!-- Course Details and Assessments -->
@@ -128,7 +144,7 @@
       </div>
     </div>
     <!-- End Confirmation Modal -->
-  </div>
+ </div>
 </template>
 
 <script>
@@ -397,14 +413,27 @@ logoutUser() {
 
 .buttons-container button {
   margin-right: 10px; /* düzeltilmiş */
-}
-
-.list-group-item {
+} 
+.list-group-item:hover {
+    background-color: #f0f0f0;
+    cursor: pointer;
+  }
+  .list-group-item {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
+  align-items: center; /* Dikey hizalama */
+  justify-content: flex-start; /* Yatay hizalama */
 }
-
+.list-group-item .fas {
+  margin-right: 10px;
+}.list-group-item span {
+  text-align: left;
+}
+.list-group-item:nth-child(1) {
+  padding-left: 20px; /* Sol iç boşluğu artırın */
+}
+.list-group-item:nth-child(4) {
+  padding-left: 20px; /* Sol iç boşluğu artırın */
+}
 .list-group-item input {
   margin-left: 10px;
 }

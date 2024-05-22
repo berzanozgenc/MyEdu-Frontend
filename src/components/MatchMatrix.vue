@@ -19,16 +19,29 @@
     </nav>
 
     <!-- Flex container -->
-    <div class="flex-container mt-4">
-      <!-- Menu -->
-      <div class="card" style="width: 13rem; margin-left: 10px;">
+    <div class="flex-container">
+      <!-- Side Menu -->
+      <div class="card menu" style="width: 12%; margin-left: 10px;">
         <div class="card-body">
           <h5 class="card-title">Menü</h5>
-          <a href="#" class="card-link" @click="goToCoursePage">Derslerim</a><br />  
-          <a href="#" class="card-link" @click="goToInstructorLearningOutcomePage">Öğrenim Çıktıları</a><br />
-          <a href="#" class="card-link" @click="goToCourseProgramOutcomePage">Program Çıktıları</a><br />
-          <a href="#" class="card-link">ÖÇ - PÇ Eşleştirme</a><br />
-          <a href="#" class="card-link" @click="goToStudentListPage">Öğrenci Listesi</a><br />
+          <ul class="list-group">
+            <li class="list-group-item" @click="goToCoursePage">
+              <i class="fas fa-book"></i> Derslerim
+            </li>
+            <li class="list-group-item" @click="goToInstructorLearningOutcomePage">
+              <i class="fas fa-graduation-cap"></i> Öğrenim Çıktıları
+            </li>
+            <li class="list-group-item" @click="goToCourseProgramOutcomePage">
+              <i class="fas fa-chalkboard-teacher"></i> Program Çıktıları
+            </li>
+            <li class="list-group-item" @click="goToMatchMatrixPage">
+              <i class="fas fa-exchange-alt"></i> ÖÇ ve PÇ Eşleştirme
+            </li>
+            <li class="list-group-item" @click="goToStudentListPage">
+              <i class="fas fa-users"></i> Öğrenci Listesi
+            </li>
+           
+          </ul>
         </div>
       </div>
 

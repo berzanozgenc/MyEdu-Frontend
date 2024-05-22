@@ -14,16 +14,24 @@
 
     <!-- Ana İçerik -->
     <div class="flex-container">
-      <!-- Sol Menü -->
-      <div class="card" style="width: 13rem; margin-left: 10px;">
+      <!-- Side Menu -->
+      <div class="card menu" style="width: 12%; margin-left: 10px;">
         <div class="card-body">
           <h5 class="card-title">Menü</h5>
-          <a href="#" class="card-link" @click="goToAddCoursePage">Ders Sayfası</a><br />
-          <a href="#" class="card-link">Program Çıktıları Sayfası</a><br />
-          <a href="#" class="card-link" @click="goToLoadStudentPage">Öğrenci Yükleme Sayfası</a><br />
+          <ul class="list-group">
+            <li class="list-group-item" @click="goToProgramOutputPage">
+              <i class="fas fa-book"></i> Program Çıktıları Sayfası
+            </li>
+            <li class="list-group-item" @click="goToAddCoursePage">
+              <i class="fas fa-graduation-cap"></i> Ders Sayfası
+            </li>
+            <li class="list-group-item" @click="goToLoadStudentPage">
+              <i class="fas fa-chalkboard-teacher"></i> Öğrenci Yükleme Sayfası
+            </li>
+          </ul>
         </div>
       </div>
-
+    
       <!-- Program Çıktıları -->
       <div class="card" style="width: 80%; height: 100%">
         <div class="card-body" style="overflow-x: auto;">

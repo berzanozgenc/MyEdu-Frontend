@@ -17,10 +17,16 @@
       </div>
     </nav>
     <div class="flex-container">
-      <div class="card" style="width: 13rem; margin-left: 10px">
+      <!-- Side Menu -->
+      <div class="card menu" style="width: 12%; margin-left: 10px;">
         <div class="card-body">
           <h5 class="card-title">Menü</h5>
-          <a href="#">Derslerim</a><br />
+          <ul class="list-group">
+            <li class="list-group-item" @click="goToCoursePage">
+              <i class="fas fa-book"></i> Derslerim
+            </li>
+      
+          </ul>
         </div>
       </div>
   
@@ -253,7 +259,11 @@ export default {
   align-items: center;
   justify-content: center;
 }
-
+.list-group-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
 .modal-dialog {
   background: white;
   padding: 20px;
@@ -272,5 +282,17 @@ export default {
 .course-link:hover {
   text-decoration: underline; /* Hover durumunda alt çizgi ekle */
   color: navy; /* Hover durumunda renk değiştir */
+}
+</style>
+<style scoped>
+.list-group-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.list-group-item .btn-danger {
+  margin-left: 0; /* Silme butonunu sola hizala */
+  margin-right: 2px; /* Opsiyonel: butonlar arasına boşluk bırak */
 }
 </style>
