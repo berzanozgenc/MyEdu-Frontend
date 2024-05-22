@@ -160,7 +160,7 @@ export default {
         })
         .catch(error => {
           console.error('Program eklenirken bir hata oluştu:', error);
-          this.$toast.success("Program çıktısı eklenirken bir hata oluştu:");
+          this.$toast.error("Program çıktısı eklenirken bir hata oluştu:");
         });
     },
     getPrograms() {
