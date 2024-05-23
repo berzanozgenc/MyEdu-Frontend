@@ -23,6 +23,7 @@ import StudentList from "./components/StudentList.vue";
 import StudentHome from "./components/StudentHome.vue";
 import GuidePage from "./components/GuidePage.vue";
 import AdminGuide from "./components/AdminGuide.vue";
+import AdminCourseChange from './components/AdminCourseChange.vue'
 
 const routes = [{
         name: "Login",
@@ -103,6 +104,12 @@ const routes = [{
         meta: { requiresAuth: true }, // Oturum açma gerektiren sayfaları belirtin
     },
     {
+        name: "AdminCourseChange",
+        component: AdminCourseChange,
+        path: "/admin-course",
+        meta: { requiresAuth: true }, // Oturum açma gerektiren sayfaları belirtin
+    },
+    {
         name: "AddCoursePage",
         component: AddCoursePage,
         path: "/add-course",
@@ -175,7 +182,8 @@ const adminAllowedRoutes = [
     '/admin-home',
     '/admin-load-student',
     '/program-output-admin',
-    '/admin-guide'
+    '/admin-guide',
+    '/admin-course'
   ];
 
   const studentAllowedRoutes = [

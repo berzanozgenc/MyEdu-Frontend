@@ -28,6 +28,9 @@
             <li class="list-group-item" @click="goToLoadStudentPage">
               <i class="fas fa-chalkboard-teacher"></i> Öğrenci Yükleme Sayfası
             </li>
+            <li class="list-group-item" @click="goToAdminCoursePage">
+                <i class="fa-solid fa-person-chalkboard"></i> Öğretmen Atamaları
+              </li>
             <li class="list-group-item" @click="goToAdminGuidePage">
               <i class="fas fa-chalkboard-teacher"></i> Kılavuz
             </li>
@@ -177,6 +180,9 @@ export default {
           this.$toast.error("Program çıktısı eklenirken bir hata oluştu:");
         });
     },
+    goToAdminCoursePage(){
+        this.$router.push("/admin-course");
+      },
     getPrograms() {
       axios.get('http://localhost:8080/program-outcomes')
         .then(response => {

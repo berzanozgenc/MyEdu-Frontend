@@ -31,6 +31,9 @@
             <li class="list-group-item" @click="goToLoadStudentPage">
               <i class="fas fa-chalkboard-teacher"></i> Öğrenci Yükleme Sayfası
             </li>
+            <li class="list-group-item" @click="goToAdminCoursePage">
+                <i class="fa-solid fa-person-chalkboard"></i> Öğretmen Atamaları
+              </li>
             <li class="list-group-item" @click="goToAdminGuidePage">
               <i class="fas fa-chalkboard-teacher"></i> Kılavuz
             </li>
@@ -96,6 +99,9 @@ export default {
     goToLoginPage() {
       this.$router.push("/");
     },
+    goToAdminCoursePage(){
+        this.$router.push("/admin-course");
+      },
     goToProgramOutputPage() {
       this.$router.push("/program-output-admin");
     },
