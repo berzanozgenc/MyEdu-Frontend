@@ -42,37 +42,7 @@
       <div class="card" style="width: 80%; height: 100%">
         <div class="card-body" style="overflow-x: auto;">
           <h5 class="card-title">Program Çıktıları</h5>
-          <table class="table">
-            <thead>
-              <tr>
-                <th scope="col" style="width: 15%;">Program Çıktısı No.</th>
-                <th scope="col" style="width: 70%;">Açıklama</th>
-                <th scope="col" style="width: 15%;">İşlemler</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr v-for="(item, index) in programs" :key="index">
-                <td>
-                  <input v-if="item.editable" type="number" class="form-control editable" v-model="item.number"
-                    style="width: 100%;">
-                  <div v-else>{{ item.number }}</div>
-                </td>
 
-                <td>
-                  <input v-if="item.editable" type="text" class="form-control editable" v-model="item.description"
-                    style="width: 250px;">
-                  <div class="descriptionField" v-else>{{ item.description }}</div>
-                </td>
-                <td>
-                  <button class="btn btn-danger btn-sm" @click="deleteProgram(item.id, item)">Sil</button>
-                  <button v-if="item.editable" class="btn btn-success btn-sm text-white"
-                    @click="updateProgram(item)">Kaydet</button>
-                  <button style="margin-left: 2px;" v-else class="btn btn-warning btn-sm text-white"
-                    @click="editProgram(item)">Düzenle</button>
-                </td>
-              </tr>
-            </tbody>
-          </table>
           <div class="card-body">
             <h5 class="card-title">Program Çıktısı Ekle</h5>
             <div class="form-group">
@@ -97,14 +67,21 @@
 <script>
 import { useStore } from 'vuex';
 import { useRouter } from 'vue-router';
+import { mapGetters } from 'vuex';
 import axios from 'axios';
 
 export default {
   name: "AdminPage",
+  computed: {
+    ...mapGetters(['getUser']),
+    // Diğer computed özellikler
+  },
   data() {
     return {
       programs: [],
       selectedProgramOutcomeId: null,
+      userDepartment: null,
+      courses: [],
       newProgram: {
         output: '',
         description: '',
@@ -112,7 +89,14 @@ export default {
       }
     };
   },
+  created() {
+    this.getDepartment();
+  },
   methods: {
+    getDepartment(){
+      const user = this.getUser;
+      this.userDepartment = user.department;
+    },
     goToAdminGuidePage(){
       this.$router.push("/admin-guide");
     },
@@ -162,23 +146,33 @@ export default {
             this.$store.dispatch('logoutUser');
             this.$router.push("/");
         },
-    addProgram() {
-      axios.post('http://localhost:8080/program-outcomes', {
-          description: this.newProgramOutput,
-          department: this.newProgramDepartment
-        })
-        .then(response => {
-          console.log('Yeni program çıktısı eklendi:', response.data);
-          this.$toast.success("Yeni program çıktısı eklendi");
-          this.programs.push(response.data);
-          // Yeni program ekledikten sonra inputları temizle
-          this.newProgramOutput = "";
-          this.newProgramDepartment = "";
-        })
-        .catch(error => {
-          console.error('Program eklenirken bir hata oluştu:', error);
-          this.$toast.error("Program çıktısı eklenirken bir hata oluştu:");
-        });
+    async addProgram() {
+      const departmentId = this.userDepartment.id
+      axios
+  .get(`http://localhost:8080/course/get-courses/department/${departmentId}`)
+  .then(async (response) => {
+    this.courses = response.data;
+
+    // Her bir kurs için POST isteği yap
+    for (const course of this.courses) {
+      const data = {
+        description: this.newProgram.description,
+        number: this.newProgram.number,
+        courseId: course.courseId // Her bir kurs için farklı courseId kullan
+      };
+
+      try {
+        await axios.post(`http://localhost:8080/program-outcomes/${course.courseId}`, data);
+        this.$toast.success("Program çıktısı başarıyla oluşturuldu.");
+      } catch (error) {
+        console.error(error);
+        this.$toast.error("Program çıktısı eklenirken bir hata oluştu.");
+      }
+    }
+  })
+  .catch((error) => {
+    console.error("Error fetching courses:", error);
+  });
     },
     goToAdminCoursePage(){
         this.$router.push("/admin-course");
@@ -196,9 +190,6 @@ export default {
           console.error('Programlar alınırken bir hata oluştu:', error);
         });
     },
-  },
-  created() {
-    this.getPrograms();
   },
 };
 </script>
