@@ -19,11 +19,11 @@
         <div class="card-body">
           <h5 class="card-title">Menü</h5>
           <ul class="list-group">
-            <li class="list-group-item" @click="goToProgramOutputPage">
-              <i class="fas fa-book"></i> Program Çıktıları Sayfası
-            </li>
             <li class="list-group-item" @click="goToAddCoursePage">
               <i class="fas fa-graduation-cap"></i> Ders Sayfası
+            </li>
+            <li class="list-group-item" @click="goToProgramOutputPage">
+              <i class="fas fa-book"></i> Program Çıktıları Sayfası
             </li>
             <li class="list-group-item" @click="goToLoadStudentPage">
               <i class="fas fa-chalkboard-teacher"></i> Öğrenci Yükleme Sayfası
