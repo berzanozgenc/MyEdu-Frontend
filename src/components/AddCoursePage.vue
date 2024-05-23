@@ -1,8 +1,13 @@
 <template>
   <div>
+    <!-- Navbar -->
     <nav class="navbar navbar-expand-lg navbar-light" style="background-color: #98bdff;">
-      <a @click="refreshPage" style="margin-left: 10px" class="navbar-brand" href="#"> <img src="../assets/Baskent_University_Logo.png" alt="Logo" style="max-height: 50px;">myEdu</a>
-      <a @click="refreshPage" style="margin-left: 10px" class="navbar-brand" href="#">Kişiselleştirilmiş Akademik Gelişim ve <br /> Değerlendirme Sistemi</a>
+      <a @click="refreshPage" style="margin-left: 10px" class="navbar-brand" href="#">
+        <img src="../assets/Baskent_University_Logo.png" alt="Logo" style="max-height: 50px;">myEdu
+      </a>
+      <a @click="refreshPage" style="margin-left: 10px" class="navbar-brand" href="#">
+        Kişiselleştirilmiş Akademik Gelişim ve <br /> Değerlendirme Sistemi
+      </a>
       <div class="collapse navbar-collapse" id="navbarSupportedContent">
         <ul class="navbar-nav mr-auto"></ul>
         <span class="logout">
@@ -10,39 +15,28 @@
         </span>
       </div>
     </nav>
+
+    <!-- Main content -->
     <div class="flex-container">
-      <!-- Side Menu -->
-      <div class="card menu" style="width: 12%; margin-left: 10px;">
+      <!-- Menu -->
+      <div class="card" style="width: 13rem; margin-left: 10px;">
         <div class="card-body">
           <h5 class="card-title">Menü</h5>
-          <ul class="list-group">
-            <li class="list-group-item" @click="goToAddCoursePage">
-              <i class="fas fa-graduation-cap"></i> Ders Sayfası
-            </li>
-            <li class="list-group-item" @click="goToProgramOutputPage">
-              <i class="fas fa-book"></i> Program Çıktıları Sayfası
-            </li>
-            <li class="list-group-item" @click="goToLoadStudentPage">
-              <i class="fas fa-chalkboard-teacher"></i> Öğrenci Yükleme Sayfası
-            </li>
-            <li class="list-group-item" @click="goToAdminCoursePage">
-                <i class="fa-solid fa-person-chalkboard"></i> Öğretmen Atamaları
-              </li>
-            <li class="list-group-item" @click="goToAdminGuidePage">
-              <i class="fas fa-chalkboard-teacher"></i> Kılavuz
-            </li>
-          </ul>
+          <a href="#" class="card-link">Ders Sayfası</a><br />
+          <a href="#" class="card-link" @click="goToProgramOutputPage">Program Çıktıları Sayfası</a><br />
+          <a href="#" class="card-link" @click="goToLoadStudentPage">Öğrenci Yükleme Sayfası</a><br />
         </div>
       </div>
-    
 
+      <!-- Course table -->
       <div class="card" style="width: 75rem; height: 40rem; overflow-y: auto; overflow-x: hidden">
         <div class="card-body">
           <h5 class="card-title">Ders Sayfası</h5>
-          <table class="table">
+          <table class="table table-striped table-bordered">
             <thead>
               <tr>
-                <th scope="col">Fakülte Adı</th>
+                <th scope="col">Dönem</th>
+                <th scope="col">Şube</th>
                 <th scope="col">Bölüm Adı</th>
                 <th scope="col">Ders Adı</th>
                 <th scope="col">AKTS</th>
@@ -53,62 +47,55 @@
             <tbody>
               <tr v-for="(item, index) in courses" :key="index">
                 <td>
-                  <span v-if="editable === index && activeField === 'faculty'">
-                    <select
-                      v-model="item.faculty"
-                      @blur="editable = -1; activeField = ''"
-                    >
-                      <option value="Mühendislik">Mühendislik</option>
-                    </select>
+                  <span v-if="editable === index">
+                    <input v-model="item.semester" class="editable-input" />
                   </span>
-                  <span v-else @click="editCell(index, 'faculty')">{{ item.faculty }}</span>
+                  <span v-else>{{ item.semester }}</span>
                 </td>
                 <td>
-                  <span v-if="editable === index && activeField === 'department'">
-                    <select
-                      v-model="item.department"
-                      @blur="editable = -1; activeField = ''"
-                    >
-                      <option value="Bilgisayar Mühendisliği">Bilgisayar Mühendisliği</option>
-                      <option value="Elektrik Elektronik Mühendisliği">Elektrik Elektronik Mühendisliği</option>
-                      <option value="Endüstri Mühendisliği">Endüstri Mühendisliği</option>
-                      <option value="Makine Mühendisliği">Makine Mühendisliği</option>
-                      <option value="Biyomedikal Mühendisliği">Biyomedikal Mühendisliği</option>
-                    </select>
+                  <span v-if="editable === index">
+                    <input v-model="item.section" class="editable-input" />
                   </span>
-                  <span v-else @click="editCell(index, 'department')">{{ item.department }}</span>
+                  <span v-else>{{ item.section }}</span>
+                </td>
+                
+                <td>
+                  <span v-if="editable === index">
+                    <input v-model="item.department.name" class="editable-input" />
+                  </span>
+                  <span v-else>{{ item.department.name }}</span>
                 </td>
                 <td>
-                  <span v-if="editable === index && activeField === 'courseName'">
-                    <input v-model="item.courseName" @blur="editable = -1; activeField = ''" />
+                  <span v-if="editable === index">
+                    <input v-model="item.courseName" class="editable-input" />
                   </span>
-                  <span v-else @click="editCell(index, 'courseName')">{{ item.courseName }}</span>
+                  <span v-else>{{ item.courseName }}</span>
                 </td>
                 <td>
-                  <span v-if="editable === index && activeField === 'akts'">
-                    <input v-model="item.akts" @blur="editable = -1; activeField = ''" />
+                  <span v-if="editable === index">
+                    <input v-model="item.ects" class="editable-input" />
                   </span>
-                  <span v-else @click="editCell(index, 'akts')">{{ item.akts }}</span>
+                  <span v-else>{{ item.ects }}</span>
                 </td>
                 <td>
-                  <span v-if="editable === index && activeField === 'credit'">
-                    <input v-model="item.credit" @blur="editable = -1; activeField = ''" />
+                  <span v-if="editable === index">
+                    <input v-model="item.credit" class="editable-input" />
                   </span>
-                  <span v-else @click="editCell(index, 'credit')">{{ item.credit }}</span>
+                  <span v-else>{{ item.credit }}</span>
                 </td>
                 <td>
+                  <button :class="editable === index ? 'btn btn-success btn-sm' : 'btn btn-warning btn-sm'" @click="toggleEdit(index
+)">
+                    {{ editable === index ? 'Kaydet' : 'Düzenle' }}
+                  </button>
                   <button class="btn btn-danger btn-sm" @click="deleteCourse(index)">Sil</button>
                 </td>
               </tr>
             </tbody>
           </table>
+          <!-- Ders Ekle buttonu -->
           <div class="card-body">
-            <button
-              class="btn btn-outline-primary my-2 my-sm-0"
-              style="width: 150px; height: 35px"
-              type="submit"
-              @click="addCourse"
-            >
+            <button class="btn btn-outline-primary my-2 my-sm-0" style="width: 150px; height: 35px" type="submit" @click="addCourseColumn">
               Ders Ekle
             </button>
           </div>
@@ -121,59 +108,170 @@
 <script>
 import { useStore } from 'vuex';
 import { useRouter } from 'vue-router';
+import axios from 'axios';
+import { mapGetters } from 'vuex';
+
 export default {
   name: "AddCoursePage",
   data() {
     return {
-      courses: [
-        { faculty: "Mühendislik", department: "Bilgisayar Mühendisliği", courseName: "BİL477-Veri Madenciliğine Giriş", akts: 7, credit: 4 },
-      ],
-      selectedCourse: { faculty: "Mühendislik", department: "Bilgisayar Mühendisliği", courseName: "Program Çıktısı 1", akts: 7, credit: 4 },
+      courses: [],
       editable: -1,
-      activeField: "",
+      userDepartment: null
     };
   },
+  computed: {
+    ...mapGetters(["getUser"]) 
+  },
+  created() {
+    this.fetchCourses();
+  },
+  mounted() {
+    this.getDepartment();
+  },
   methods: {
-    goToAdminGuidePage(){
-      this.$router.push("/admin-guide");
+    updateCourse(index, updatedCourse) {
+  // Güncellenen kursun bilgilerini kontrol et
+  console.log('Updated Course:', updatedCourse);
+
+  const courseId = updatedCourse.id;
+  if (!courseId) {
+    console.error('Course ID is undefined');
+    return;
+  }
+
+  axios.put(`http://localhost:8080/course/${courseId}`, updatedCourse)
+    .then(response => {
+      console.log('Course updated:', response.data);
+      this.editable = -1;
+    })
+    .catch(error => {
+      if (error.response && error.response.status === 404) {
+        console.error('Course not found.');
+      } else {
+        console.error('Error updating course:', error);
+      }
+    });
+},
+
+    getDepartment() {
+      const user = this.getUser;
+      if (user && user.department) {
+        this.userDepartment = user.department;
+        console.log('Kullanıcı departmanı:', this.userDepartment);
+      } else {
+        console.error("Kullanıcı departmanı bulunamadı!");
+      }
     },
-    goToProgramOutputPage(){
-      this.$router.push("/program-output-admin");
-    }, 
-    goToLoadStudentPage(){
+    toggleEdit(index) {
+  const editedCourse = this.courses[index];
+  console.log('Edited Course:', editedCourse);
+
+  
+
+  if (this.editable === index) {
+    // Save edit
+    this.updateCourse(editedCourse);
+    this.editable = -1;
+  } else {
+    // Enter edit mode
+    this.editable = index;
+  }
+},
+
+
+    fetchCourses() {
+      axios.get('http://localhost:8080/course/get-courses')
+        .then(response => {
+          this.courses = response.data;
+          console.log(this.courses); // courses dizisini konsola yazdır
+        })
+        .catch(error => {
+          console.error('Error fetching courses:', error);
+        });
+    },
+    deleteCourse(index) {
+      const courseId = this.courses[index].courseId;
+
+      if (!courseId) {
+        console.error('courseId is undefined');
+        return;
+      }
+
+      console.log(`Deleting course with courseId: ${courseId}`);
+
+      axios.delete(`http://localhost:8080/course/${courseId}`)
+        .then(response => {
+          console.log('Course deleted:', response.data);
+
+          // Silinen kursu courses dizisinden kaldır
+          this.courses.splice(index, 1);
+
+          // Alternatif olarak, filter yöntemini kullanabilirsiniz:
+          // this.courses = this.courses.filter(course => course.courseId !== courseId);
+        })
+        .catch(error => {
+          if (error.response) {
+            console.error('Error deleting course:', error.response.data);
+          } else {
+            console.error('Error deleting course:', error.message);
+          }
+        });
+    },
+    goToProgramOutputPage() {
+      this.$router.push("/program-output");
+    },
+    goToLoadStudentPage() {
       this.$router.push("/admin-load-student");
     },
-    goToLoginPage(){
+    goToLoginPage() {
       this.$router.push("/");
     },
     refreshPage() {
-      //window.location.reload();
       this.$router.push("/admin-home");
     },
-    goToAdminCoursePage(){
-        this.$router.push("/admin-course");
-      },
-    editCell(index, key) {
-      this.editable = index;
-      this.activeField = key;
-    },
-    deleteCourse(index) {
-      this.courses.splice(index, 1);
-    },
-    addCourse() {
-      this.courses.push({ faculty: "Fakülte Adı", department: "Bölümler", courseName: "Ders Adı", akts: 0, credit: 0 });
+    addCourseColumn() {
+      if (!this.userDepartment) {
+        console.error("Kullanıcı departmanı bulunamadı!");
+        return;
+      }
+
+      const newCourse = {
+        semester: "-",
+        section: 0,
+        code: "-",
+        courseName: "-",
+        ects: 0,
+        credit: 0,
+        department: {
+          id: this.userDepartment.id,
+          name: this.userDepartment.name,
+          courses: null,
+          users: null
+        }
+      };
+
+      axios.post('http://localhost:8080/course/create-course', newCourse)
+        .then(response => {
+          console.log(response.data); // Başarılı bir şekilde eklendiğinde işlem sonucunu konsola yazdırabiliriz
+          this.courses.push(response.data); // Yeni kursu courses dizisine ekleyin
+          this.fetchCourses();
+        })
+        .catch(error => {
+          console.error('Error adding course:', error); // Ekleme sırasında bir hata oluştuğunda hatayı konsola yazdırabiliriz
+        });
     },
     logoutUser() {
-            const store = useStore();
-            const router = useRouter();
-            localStorage.removeItem('store');
-            this.$store.dispatch('logoutUser');
-            this.$router.push("/");
-        },
+      const store = useStore();
+      const router = useRouter();
+      localStorage.removeItem('store');
+      this.$store.dispatch('logoutUser');
+      this.$router.push("/");
+    },
   },
 };
-</script>
 
+</script>
 <style>
 .container {
   display: flex;
@@ -215,6 +313,12 @@ export default {
   background-color: #fff;
 }
 
+.editable-input {
+  width: 100%;
+  max-width: 150px; /* Add max-width to control input size */
+  box-sizing: border-box;
+}
+
 .btn-outline-primary {
   border-color: #007bff;
   color: #007bff;
@@ -235,25 +339,15 @@ export default {
   color: #fff;
 }
 
-.btn-outline-danger {
-  border-color: #dc3545;
-  color: #dc3545;
-}
-
 .btn-outline-danger:hover {
   background-color: #dc3545;
   color: #fff;
 }
 
-input,
-select {
-  border: 1px solid #ced4da;
-  border-radius: 0.25rem;
-  transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
-}
-
-input.editable,
-select.editable {
-  border-color: #007bff;
+.flex-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin: 20px;
 }
 </style>
