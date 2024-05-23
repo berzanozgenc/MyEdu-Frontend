@@ -169,12 +169,7 @@ export default {
           statusCode: "2",
           email: student.studentMail,
           password: "deneme",
-          department: {
-            id: this.userDepartment.id,
-            name: this.userDepartment.name,
-            courses: null,
-            users: null
-          },
+          department: this.userDepartment,
           studentNumber: student.studentNumber
         };
 
