@@ -76,7 +76,7 @@
                   </td>
                   <td>{{ this.instructors[item.courseId] }}</td>
                   <td>
-                    <button class="btn btn-danger btn-sm" @click="deleteInstructor(index)">Öğretmen atamasını kaldır</button>
+                    <button class="btn btn-danger btn-sm" @click="deleteInstructor(item.courseId)">Öğretmen atamasını kaldır</button>
                   </td>
                 </tr>
               </tbody>
@@ -133,6 +133,16 @@
     console.error("Error fetching courses:", error);
   }
 },
+    async deleteInstructor (courseId){
+        try {
+        await axios.delete(`http://localhost:8080/user-course-registrations/delete/instructor/${courseId}`);
+        this.$toast.success("Atama başarıyla kaldırıldı");
+        this.refreshPage();
+      } catch (error) {
+        console.error("Error:", error);
+        this.$toast.error("Atama kaldırılamadı!");
+      }
+    },
     async getInstructor(courseId) {
       try {
         const response = await axios.get(`http://localhost:8080/user-course-registrations/course/${courseId}/user`);
@@ -159,8 +169,7 @@
         this.$router.push("/");
       },
       refreshPage() {
-        //window.location.reload();
-        this.$router.push("/admin-home");
+        window.location.reload();
       },
       editCell(index, key) {
         this.editable = index;
