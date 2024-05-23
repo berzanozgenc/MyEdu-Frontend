@@ -81,8 +81,10 @@
           </table>
           <!-- End of matrix table -->
 
-
-      
+          <!-- Uyarı mesajı -->
+          <div v-if="!isColumnTotalValid" class="alert alert-danger">
+            Sütun toplamları 100 olmalı!
+          </div>
 
           <!-- Tümünü kaydet butonu -->
           <button v-if="editMode" @click="saveAllChanges" class="btn btn-success mt-3">Tümünü Kaydet</button>
@@ -104,6 +106,7 @@ export default {
   data() {
     return {
       editMode: false,
+      isColumnTotalValid: true,
       outcomes: [],
       programs: [],
       contributions: []
@@ -115,7 +118,6 @@ export default {
       const user = this.getUser;
       return user ? `${user.firstName} ${user.lastName}` : "";
     },
-
   },
   created() {
     const courseId = this.$route.params.courseId;
@@ -123,6 +125,22 @@ export default {
     this.fetchProgramOutcomes(courseId);
   },
   methods: {
+
+    contributionCalculate() {
+      const contributionSums = this.contributions.reduce((accumulator, currentValue) => {
+      const { learningId, contribution } = currentValue;
+      accumulator[learningId] = (accumulator[learningId] || 0) + contribution;
+      return accumulator;}, {});
+
+      const isNotEqualTo100 = Object.values(contributionSums).some(sum => sum !== 100);
+
+      if (isNotEqualTo100) {
+        this.isColumnTotalValid = false
+      } else {
+        this.isColumnTotalValid = true
+      }
+    },
+
     dummy(outcomeIndex, programIndex) {
       var learningId = this.outcomes[outcomeIndex].id;
       var programId = this.programs[programIndex].id;
@@ -165,6 +183,7 @@ export default {
         }
         this.contributions = tempList;
         console.log(this.contributions);
+        this.contributionCalculate();
       }
     },
     // Functions for navigation
