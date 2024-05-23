@@ -37,7 +37,9 @@
             <li class="list-group-item" @click="goToStudentListPage">
               <i class="fas fa-users"></i> Öğrenci Listesi
             </li>
-            
+            <li class="list-group-item" @click="goToGuidePage">
+              <i class="fas fa-users"></i> Kılavuz
+            </li>
           </ul>
         </div>
       </div>
@@ -156,6 +158,9 @@ export default {
         }
       });
   },
+  goToGuidePage(){
+this.$router.push('/guidance');
+        },
     goToMatchMatrixPage() {
       const courseId = this.$route.params.courseId;
       this.$router.push({ name: "MatchMatrix", params: { courseId: courseId }});

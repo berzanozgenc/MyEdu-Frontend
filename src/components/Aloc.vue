@@ -40,6 +40,9 @@
             <li class="list-group-item" @click="goToStudentListPage">
               <i class="fas fa-users"></i> Öğrenci Listesi
             </li>
+            <li class="list-group-item" @click="goToGuidePage">
+              <i class="fas fa-users"></i> Kılavuz
+            </li>
            
           </ul>
         </div>
@@ -341,6 +344,9 @@ export default {
         goToInstructorLearningOutcomePage() {
             const courseId = this.$route.params.courseId;
             this.$router.push({ name: "InstructorLearningOutcome", params: { courseId: courseId } });
+        },
+        goToGuidePage(){
+this.$router.push('/guidance');
         },
         goToStudentListPage() {
             const courseId = this.$route.params.courseId;

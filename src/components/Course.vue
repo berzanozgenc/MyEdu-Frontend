@@ -45,6 +45,9 @@
             <li class="list-group-item" @click="goToProgramOutcomeResult">
               <i class="fas fa-chart-line"></i> PÇ Sonuçları
             </li>
+            <li class="list-group-item" @click="goToGuidePage">
+              <i class="fas fa-users"></i> Kılavuz
+            </li>
           </ul>
         </div>
       </div>
@@ -330,6 +333,9 @@ export default {
       const courseId = this.$route.params.courseId;
       this.$router.push({ name: "LearningOutcomeResult", params: { courseId: courseId }});
     },
+    goToGuidePage(){
+this.$router.push('/guidance');
+        },
     goToProgramOutcomeResult(){
       const courseId = this.$route.params.courseId;
       this.$router.push({ name: "ProgramOutcomeResult", params: { courseId: courseId }});

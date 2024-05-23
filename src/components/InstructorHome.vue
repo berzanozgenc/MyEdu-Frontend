@@ -25,7 +25,9 @@
             <li class="list-group-item" @click="goToCoursePage">
               <i class="fas fa-book"></i> Derslerim
             </li>
-      
+            <li class="list-group-item" @click="goToGuidePage">
+              <i class="fas fa-users"></i> Kılavuz
+            </li>
           </ul>
         </div>
       </div>
@@ -114,6 +116,9 @@ export default {
     this.fetchUserCourses();
   },
   methods: {
+    goToGuidePage(){
+this.$router.push('/guidance');
+        },
     goToCoursePage(registration) {
       const courseId = registration.courseId;
       this.$router.push({ name: 'Course', params: { courseId: courseId } });

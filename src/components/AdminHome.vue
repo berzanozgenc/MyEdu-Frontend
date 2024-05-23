@@ -40,6 +40,9 @@
             <li class="list-group-item" @click="goToLoadStudentPage">
               <i class="fas fa-chalkboard-teacher"></i> Öğrenci Yükleme Sayfası
             </li>
+            <li class="list-group-item" @click="goToAdminGuidePage">
+              <i class="fas fa-chalkboard-teacher"></i> Kılavuz
+            </li>
           </ul>
         </div>
       </div>
@@ -76,6 +79,9 @@
     methods: {
     goToLoginPage(){
       this.$router.push("/");
+    },
+    goToAdminGuidePage(){
+      this.$router.push("/admin-guide");
     },
     goToProgramOutputPage(){
       this.$router.push("/program-output-admin");
