@@ -56,7 +56,7 @@
     },
     methods: {
       goToAdminGuidePage() {
-        this.$router.push("/program-output-admin");
+        this.$router.push("/add-course");
       },
       refreshPage() {
         this.$router.push("/instructor-home");
