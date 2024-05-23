@@ -8,7 +8,7 @@
       <a @click="refreshPage" style="margin-left: 10px" class="navbar-brand" href="#">
         Kişiselleştirilmiş Akademik Gelişim ve <br /> Değerlendirme Sistemi
       </a>
-    
+
       <div style="margin-left: auto; margin-right: 2%;" class="ml-auto d-flex align-items-center">
         <span class="d-flex align-items-center">
           <img style="margin-right: 2px;" class="icon" src="../assets/profile.png" />
@@ -54,10 +54,10 @@
 
           <!-- Düzenle butonu -->
           <button v-if="!editMode" @click="toggleEditMode" class="btn btn-primary mt-2 mr-2 float-right">
-  <i class="fas fa-pencil-alt"></i> 
-</button>
-<br>
-<br>
+            <i class="fas fa-pencil-alt"></i>
+          </button>
+          <br>
+          <br>
 
           <!-- Matrix table -->
           <table class="table" style="min-width: 600px;">
@@ -81,15 +81,18 @@
           </table>
           <!-- End of matrix table -->
 
+
+      
+
           <!-- Tümünü kaydet butonu -->
           <button v-if="editMode" @click="saveAllChanges" class="btn btn-success mt-3">Tümünü Kaydet</button>
           <button style="margin-left: 2px;" v-if="editMode" @click="disableEditMode" class="btn btn-danger mt-3">Vazgeç</button>
-
         </div>
       </div>
     </div>
   </div>
 </template>
+
 
 <script>
 import { useStore } from 'vuex';
@@ -112,75 +115,57 @@ export default {
       const user = this.getUser;
       return user ? `${user.firstName} ${user.lastName}` : "";
     },
+
   },
   created() {
     const courseId = this.$route.params.courseId;
-    console.log("Current Course ID : ", courseId);
     this.fetchLearningOutcomes(courseId);
     this.fetchProgramOutcomes(courseId);
   },
   methods: {
     dummy(outcomeIndex, programIndex) {
-  
-      var learningId = this.outcomes[outcomeIndex].id 
-      var programId = this.programs[programIndex].id 
+      var learningId = this.outcomes[outcomeIndex].id;
+      var programId = this.programs[programIndex].id;
       var contribution = 0;
 
-      console.log("dummy");
-      console.log(learningId)
-      console.log(programId);
-
-      for(var i = 0; i < this.contributions.length; i++) {
-        let cont = this.contributions[i]
-        if(cont.programId == programId && cont.learningId == learningId) {
+      for (var i = 0; i < this.contributions.length; i++) {
+        let cont = this.contributions[i];
+        if (cont.programId == programId && cont.learningId == learningId) {
           contribution = cont.contribution;
         }
-      
       }
       return contribution;
     },
-
-    async fillTable(){
-      console.log("fill table")
-      console.log(this.outcomes[0].id)
+    async fillTable() {
 
       let items = [];
-      for(var i= 0; i < this.outcomes.length; i++) {
-        for(var j = 0; j < this.programs.length; j++) {
-          console.log("outcomes:" + this.outcomes[i].id + "programs:" + this.programs[j].id)
+      for (var i = 0; i < this.outcomes.length; i++) {
+        for (var j = 0; j < this.programs.length; j++) {
           let obj = {
             learningId: this.outcomes[i].id,
             programId: this.programs[j].id
-          } 
+          };
           items.push(obj);
         }
       }
-      console.log(items);
 
       const response = await axios.post('http://localhost:8080/learning-outcome-program-outcome/contribution', {
         "learningOutcomeContributionDTOList": items
-        }, // async () => {
-          //await axios.get('http://localhost:8080/contribution/program/1/learning/2')
-        //}
-      );
-      if(response.status == 200) {
+      });
 
+      if (response.status == 200) {
         var tempList = [];
-        for(var i = 0; i < response.data.contributions.length; i++) {
-          console.log("girdi")
+        for (var i = 0; i < response.data.contributions.length; i++) {
           var obj = {
             contribution: response.data.contributions[i].contribution,
             learningId: response.data.contributions[i].learningOutcome.id,
             programId: response.data.contributions[i].programOutcome.id
-          }
-          console.log(obj)
-          tempList.push(obj)
+          };
+          tempList.push(obj);
         }
         this.contributions = tempList;
-        console.log("***-----****-------")
         console.log(this.contributions);
       }
-
     },
     // Functions for navigation
     goToLoginPage() {
@@ -195,24 +180,24 @@ export default {
     goToMatchMatrixPage() {
       this.$router.push("/instructor-match-matrix");
     },
-    goToCourseProgramOutcomePage(){
+    goToCourseProgramOutcomePage() {
       const courseId = this.$route.params.courseId;
-      this.$router.push({ name: "CourseProgramOutcome", params: { courseId: courseId }});
+      this.$router.push({ name: "CourseProgramOutcome", params: { courseId: courseId } });
     },
     goToLearningOutcomePage() {
       this.$router.push("/learning-outcome");
     },
     goToInstructorLearningOutcomePage() {
       const courseId = this.$route.params.courseId;
-      this.$router.push({ name: "InstructorLearningOutcome", params: { courseId: courseId }});
+      this.$router.push({ name: "InstructorLearningOutcome", params: { courseId: courseId } });
     },
-    goToGuidePage(){
-this.$router.push('/guidance');
-        },
+    goToGuidePage() {
+      this.$router.push('/guidance');
+    },
     goToStudentListPage() {
-        const courseId = this.$route.params.courseId;
-        this.$router.push({ name: "StudentList", params: { courseId: courseId }});
-        },
+      const courseId = this.$route.params.courseId;
+      this.$router.push({ name: "StudentList", params: { courseId: courseId } });
+    },
     refreshPage() {
       this.$router.push("/instructor-home");
     },
@@ -241,7 +226,6 @@ this.$router.push('/guidance');
       this.$store.dispatch('logoutUser');
       await router.push("/");
     },
-
     async fetchLearningOutcomes(courseId) {
       try {
         const response = await fetch(`http://localhost:8080/learningOutcomes/course/${courseId}`);
@@ -250,15 +234,12 @@ this.$router.push('/guidance');
         }
         const data = await response.json();
         this.outcomes = data;
-        this.outcomes.sort((a, b) => {
-            return a.id - b.id;
-        });
+        this.outcomes.sort((a, b) => a.id - b.id);
         this.fillTable();
       } catch (error) {
         console.error('Bir hata oluştu:', error);
       }
     },
-
     async fetchProgramOutcomes(courseId) {
       try {
         const response = await axios.get(`http://localhost:8080/program-outcomes/course/${courseId}`);
@@ -271,9 +252,7 @@ this.$router.push('/guidance');
             outcomes: Array(this.outcomes.length).fill(null)
           };
         });
-        this.programs.sort((a, b) => {
-            return a.id - b.id;
-        });
+        this.programs.sort((a, b) => a.id - b.id);
         this.fillTable();
       } catch (error) {
         console.error('Bir hata oluştu:', error);
@@ -285,8 +264,6 @@ this.$router.push('/guidance');
         const outcome = program.outcomes[outcomeIndex];
         const learningOutcomeId = this.outcomes[outcomeIndex].id;
         const programOutcomeId = program.id;
-        console.log(this.programs);
-        console.log(outcome);
         const contribution = parseFloat(outcome);
 
         if (isNaN(contribution) || contribution < 0 || contribution > 100 || outcome.trim() === '') {
@@ -295,19 +272,13 @@ this.$router.push('/guidance');
           return;
         }
 
-        console.log('Kaydedilen Learning Outcome ID:', learningOutcomeId, 'Kaydedilen Program Outcome ID:', programOutcomeId);
         const response = await axios.post('http://localhost:8080/learning-outcome-program-outcome', {
           learningOutcomeId,
           programOutcomeId,
           contribution
-        }, // async () => {
-          //await axios.get('http://localhost:8080/contribution/program/1/learning/2')
-        //}
-      );
+        });
 
         if (response.status === 201 || response.status === 200) {
-          console.log('Başarıyla kaydedildi.');
-          
         } else {
           console.error('Kaydedilirken bir hata oluştu:', response.data);
           this.$toast.error("Kaydedilirken bir hata oluştu!");
@@ -326,6 +297,8 @@ this.$router.push('/guidance');
   },
 };
 </script>
+
+
 
 <style scoped>
 

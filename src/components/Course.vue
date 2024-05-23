@@ -91,7 +91,8 @@
             </thead>
             <tbody>
               <tr v-for="(assessment, index) in generalAssessments" :key="assessment.generalAssesmentId">
-                <td>{{ assessment.name }}</td>
+                <td v-if="assessment.editMode"> <input type="text" v-model="assessment.name">  </td>
+                <td v-else>{{ assessment.name }} </td>
                 <td v-if="assessment.editMode">
                   <input type="text" v-model="assessment.totalContribution"> 
                 </td>
@@ -134,10 +135,10 @@
       <div class="modal-dialog" role="document">
         <div class="modal-content">
           <div class="modal-header">
-            <h5 class="modal-title">Program Çıktısını Sil</h5>
+            <h5 class="modal-title">Araç Türünü Sil</h5>
           </div>
           <div class="modal-body">
-            <p>Bu program çıktısını silmek istediğinizden emin misiniz?</p>
+            <p>Bu araç türünü  silmek istediğinizden emin misiniz?</p>
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-secondary" @click="closeModal">İptal</button>
@@ -231,14 +232,15 @@ export default {
   
         const requestData = {
           generalAssesmentId: assessment.generalAssesmentId,
-          newAssesmentContribution: assessment.totalContribution
+          newAssesmentContribution: assessment.totalContribution,
+          newAssessmentName: assessment.name
         };
   
         console.log("newAssesmentContribution:", requestData.newAssesmentContribution);
         console.log("generalAssesmentId:", requestData.generalAssesmentId);
   
         // Değişiklikleri backend'e gönderme
-        axios.put(`http://localhost:8080/generalAssesment/updateTotalContributionForCourse/${courseId}?generalAssesmentId=${assessment.generalAssesmentId}&newAssesmentContribution=${assessment.totalContribution}`)
+        axios.put(`http://localhost:8080/generalAssesment/updateTotalContributionForCourse/${courseId}?generalAssesmentId=${assessment.generalAssesmentId}&newAssesmentContribution=${assessment.totalContribution}&newAssessmentName=${assessment.name}`)
           .then(response => {
             if (response.status === 200) {
               console.log("Değişiklikler başarıyla kaydedildi.");
@@ -372,7 +374,7 @@ goToAlocPage(assessmentId) {
 logoutUser() {
             const store = useStore();
             const router = useRouter();
-            localStorage.removeItem('store');
+            localStorage.removeItem('store'); 
             this.$store.dispatch('logoutUser');
             this.$router.push("/");
         }

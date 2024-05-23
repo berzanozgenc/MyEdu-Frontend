@@ -1,13 +1,13 @@
 <template>
   <div>
-<nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
       <a @click="refreshPage" style="margin-left: 10px" class="navbar-brand" href="#">
         <img src="../assets/Baskent_University_Logo.png" alt="Logo" style="max-height: 50px;">
       </a>
       <a @click="refreshPage" style="margin-left: 10px" class="navbar-brand" href="#">
         Kişiselleştirilmiş Akademik Gelişim ve <br /> Değerlendirme Sistemi
       </a>
-    
+
       <div style="margin-left: auto; margin-right: 2%;" class="ml-auto d-flex align-items-center">
         <span class="d-flex align-items-center">
           <img style="margin-right: 2px;" class="icon" src="../assets/profile.png" />
@@ -46,6 +46,9 @@
       <div class="card" style="width: 80%;">
         <div class="card-body" style="overflow-x: auto;">
           <h5 class="card-title">Dersin Öğrenim Çıktıları</h5>
+          <div v-if="targetTotal !== 100" class="alert alert-danger" role="alert">
+            Hedef sütun toplamları 100 olmalıdır!
+          </div>
           <table class="table">
             <thead>
               <tr>
@@ -79,10 +82,9 @@
           <div class="card-body">
             <h5 class="card-title">ÖÇ Ekle</h5>
             <div class="form-group">
-    <label for="description">Tanım:</label>
-    <textarea class="form-control" id="description" v-model="newProgram.description" style="width: 250px; height: 100px;"></textarea>
-</div>
-
+              <label for="description">Tanım:</label>
+              <textarea class="form-control" id="description" v-model="newProgram.description" style="width: 250px; height: 100px;"></textarea>
+            </div>
             <div class="form-group">
               <label for="target">Hedef:</label>
               <input type="text" class="form-control" id="target" v-model="newProgram.target" style="width: 150px;">
@@ -95,8 +97,8 @@
         </div>
       </div>
     </div>
-     <!-- Confirmation Modal -->
-     <div v-if="showModal" class="modal" tabindex="-1" role="dialog" style="display: block;">
+    <!-- Confirmation Modal -->
+    <div v-if="showModal" class="modal" tabindex="-1" role="dialog" style="display: block;">
       <div class="modal-dialog" role="document">
         <div class="modal-content">
           <div class="modal-header">
@@ -116,11 +118,12 @@
   </div>
 </template>
 
+
 <script>
 import { useStore } from 'vuex';
 import { useRouter } from 'vue-router';
 import { mapGetters } from "vuex";
-import axios from 'axios'; // axios'ı projenize dahil edin
+import axios from 'axios';
 
 export default {
   name: "InstructorLearningOutcome",
@@ -142,6 +145,9 @@ export default {
       const user = this.getUser;
       return user ? `${user.firstName} ${user.lastName}` : "";
     },
+    targetTotal() {
+      return this.programs.reduce((total, program) => total + parseInt(program.target), 0);
+    }
   },
   created() {
     const courseId = this.$route.params.courseId;
@@ -229,7 +235,6 @@ this.$router.push('/guidance');
       }
       this.showModal = false;
     },
-
     closeModal() {
       this.showModal = false;
     },
@@ -268,7 +273,6 @@ this.$router.push('/guidance');
         this.$toast.error("Öğrenim çıktısı eklenirken bir hata oluştu.");
       }
     },
-
     logoutUser() {
       const store = useStore();
       const router = useRouter();
