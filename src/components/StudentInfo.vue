@@ -62,7 +62,7 @@
                 <th scope="col"></th>
                 <th v-for="(assessment, index) in assessments" :key="'assessment-' + index" scope="col">
                   <div class="d-flex align-items-center">
-                    <span>{{ !useCustomNames ? assessment.name : 'Soru' }} {{ index + 1}}</span>
+                    <span>{{ !useCustomNames ? assessment.name : 'Soru' }} {{ index + 1}} ({{ assessment.contribution }})</span>
                   </div>
                 </th>
               </tr>
