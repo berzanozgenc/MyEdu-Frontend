@@ -33,66 +33,68 @@
         <div class="card-body">
           <h5 class="card-title">Ders Sayfası</h5>
           <table class="table table-striped table-bordered">
-            <thead>
-              <tr>
-                <th scope="col">Dönem</th>
-                <th scope="col">Şube</th>
-                <th scope="col">Bölüm Adı</th>
-                <th scope="col">Ders Adı</th>
-                <th scope="col">AKTS</th>
-                <th scope="col">Kredi</th>
-                <th scope="col">İşlemler</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr v-for="(item, index) in courses" :key="index">
-                <td>
-                  <span v-if="editable === index">
-                    <input v-model="item.semester" class="editable-input" />
-                  </span>
-                  <span v-else>{{ item.semester }}</span>
-                </td>
-                <td>
-                  <span v-if="editable === index">
-                    <input v-model="item.section" class="editable-input" />
-                  </span>
-                  <span v-else>{{ item.section }}</span>
-                </td>
-                
-                <td>
-                  <span v-if="editable === index">
-                    <input v-model="item.department.name" class="editable-input" />
-                  </span>
-                  <span v-else>{{ item.department.name }}</span>
-                </td>
-                <td>
-                  <span v-if="editable === index">
-                    <input v-model="item.courseName" class="editable-input" />
-                  </span>
-                  <span v-else>{{ item.courseName }}</span>
-                </td>
-                <td>
-                  <span v-if="editable === index">
-                    <input v-model="item.ects" class="editable-input" />
-                  </span>
-                  <span v-else>{{ item.ects }}</span>
-                </td>
-                <td>
-                  <span v-if="editable === index">
-                    <input v-model="item.credit" class="editable-input" />
-                  </span>
-                  <span v-else>{{ item.credit }}</span>
-                </td>
-                <td>
-                  <button :class="editable === index ? 'btn btn-success btn-sm' : 'btn btn-warning btn-sm'" @click="toggleEdit(index
-)">
-                    {{ editable === index ? 'Kaydet' : 'Düzenle' }}
-                  </button>
-                  <button class="btn btn-danger btn-sm" @click="deleteCourse(index)">Sil</button>
-                </td>
-              </tr>
-            </tbody>
-          </table>
+    <thead>
+      <tr>
+        <th scope="col">Departman</th>
+        <th scope="col">Dönem</th>
+        <th scope="col">Ders Kodu</th>
+        <th scope="col">Ders Adı</th>
+        <th scope="col">Şube</th>
+        <th scope="col">AKTS</th>
+        <th scope="col">Kredi</th>
+        <th scope="col">İşlemler</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr v-for="(item, index) in courses" :key="index">
+        <td>
+          <span>{{ item.department.name }}</span>
+        </td>
+        <td>
+          <span v-if="editable === index">
+            <input v-model="item.semester" class="editable-input" />
+          </span>
+          <span v-else>{{ item.semester }}</span>
+        </td>
+        <td>
+          <span v-if="editable === index">
+            <input v-model="item.code" class="editable-input" />
+          </span>
+          <span v-else>{{ item.code }}</span>
+        </td>
+        <td>
+          <span v-if="editable === index">
+            <input v-model="item.courseName" class="editable-input" />
+          </span>
+          <span v-else>{{ item.courseName }}</span>
+        </td>
+        <td>
+          <span v-if="editable === index">
+            <input v-model="item.section" class="editable-input" />
+          </span>
+          <span v-else>{{ item.section }}</span>
+        </td>
+        <td>
+          <span v-if="editable === index">
+            <input v-model="item.ects" class="editable-input" />
+          </span>
+          <span v-else>{{ item.ects }}</span>
+        </td>
+        <td>
+          <span v-if="editable === index">
+            <input v-model="item.credit" class="editable-input" />
+          </span>
+          <span v-else>{{ item.credit }}</span>
+        </td>
+        <td>
+          <button :class="editable === index ? 'btn btn-success btn-sm' : 'btn btn-warning btn-sm'" @click="editable === index ? saveCourse(index) : toggleEdit(index)">
+            {{ editable === index ? 'Kaydet' : 'Düzenle' }}
+          </button>
+          <button class="btn btn-danger btn-sm" @click="deleteCourse(index)">Sil</button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
           <!-- Ders Ekle buttonu -->
           <div class="card-body">
             <button class="btn btn-outline-primary my-2 my-sm-0" style="width: 150px; height: 35px" type="submit" @click="addCourseColumn">
@@ -116,7 +118,7 @@ export default {
   data() {
     return {
       courses: [],
-      editable: -1,
+      editable: null,
       userDepartment: null
     };
   },
@@ -164,22 +166,24 @@ export default {
       }
     },
     toggleEdit(index) {
-  const editedCourse = this.courses[index];
-  console.log('Edited Course:', editedCourse);
+      this.editable = index;
+    },
+    saveCourse(index) {
+      const course = this.courses[index];
+      const courseId = this.courses[index].courseId;
+      console.log(course);
+      console.log(courseId)
 
-  
-
-  if (this.editable === index) {
-    // Save edit
-    this.updateCourse(editedCourse);
-    this.editable = -1;
-  } else {
-    // Enter edit mode
-    this.editable = index;
-  }
-},
-
-
+      // Example PUT request using Axios
+      axios.put(`http://localhost:8080/course/${courseId}`, course)
+        .then(response => {
+          console.log('Course updated:', response.data);
+          this.editable = null; // Exit edit mode
+        })
+        .catch(error => {
+          console.error('Error updating course:', error);
+        });
+    },
     fetchCourses() {
       axios.get('http://localhost:8080/course/get-courses')
         .then(response => {
@@ -236,6 +240,8 @@ export default {
         return;
       }
 
+      console.log(this.userDepartment);
+
       const newCourse = {
         semester: "-",
         section: 0,
@@ -243,12 +249,7 @@ export default {
         courseName: "-",
         ects: 0,
         credit: 0,
-        department: {
-          id: this.userDepartment.id,
-          name: this.userDepartment.name,
-          courses: null,
-          users: null
-        }
+        department: this.userDepartment
       };
 
       axios.post('http://localhost:8080/course/create-course', newCourse)
