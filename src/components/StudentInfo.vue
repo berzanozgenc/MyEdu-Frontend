@@ -17,7 +17,6 @@
       </div>
     </nav>
 
-
     <div class="flex-container">
       <!-- Side Menu -->
       <div class="card menu" style="width: 12%; margin-left: 10px;">
@@ -49,13 +48,12 @@
         <div class="card-body">
           <h5 class="card-title">Öğrenci Notları</h5>
           <div>
-            <button v-if="!isEditMode" @click="enableEditMode" class="btn btn-primary mb-2"><i
-                class="fas fa-pencil-alt"></i> </button>
+            <button v-if="!isEditMode" @click="enableEditMode" class="btn btn-primary mb-2"><i class="fas fa-pencil-alt"></i></button>
             <button v-if="isEditMode" @click="saveAllChanges" class="btn btn-success mb-2">Notları Kaydet</button>
-            <button style="margin-left: 2px;" v-if="isEditMode" @click="disableEditMode"
-              class="btn btn-danger mb-2">Vazgeç</button>
-
+            <button style="margin-left: 2px;" v-if="isEditMode" @click="disableEditMode" class="btn btn-danger mb-2">Vazgeç</button>
           </div>
+          <input type="file" @change="handleFileUpload" accept=".xlsx, .xls" />
+          <button class="btn btn-outline-primary" @click="uploadExcelGrades">Excelden Not Gir</button>
           <table class="table table-stretched mt-3">
             <thead>
               <tr>
@@ -71,16 +69,16 @@
               <tr v-for="(student, studentIndex) in students" :key="studentIndex">
                 <th scope="row">{{ student.studentNumber }} {{ student.firstName }} {{ student.lastName }} </th>
                 <td :ref="`cell_${studentIndex}_${assessmentIndex}`"
-  v-for="(assessment, assessmentIndex) in assessments" :key="'assessment-' + assessmentIndex"
-  :contenteditable="isEditMode"
-  @keydown="handleTab"
-  @mousedown="handleMouseDown">
-  <span style="align-items: center; justify-content: center; display: flex;">
-    <input style="text-align: center;" v-if="isEditMode" type="text" v-bind:placeholder="fillTable(studentIndex, assessmentIndex)" v-model="cellData[studentIndex][assessmentIndex]" tabindex="0"/> <span v-else></span>
-    <span v-else>{{ fillTable(studentIndex, assessmentIndex) }}</span>
-  </span>
-</td>
-
+                    v-for="(assessment, assessmentIndex) in assessments"
+                    :key="'assessment-' + assessmentIndex"
+                    :contenteditable="isEditMode"
+                    @keydown="handleTab"
+                    @mousedown="handleMouseDown">
+                  <span style="align-items: center; justify-content: center; display: flex;">
+                    <input style="text-align: center;" v-if="isEditMode" type="text" v-bind:placeholder="fillTable(studentIndex, assessmentIndex)" v-model="cellData[studentIndex][assessmentIndex]" tabindex="0"/>
+                    <span v-else>{{ fillTable(studentIndex, assessmentIndex) }}</span>
+                  </span>
+                </td>
               </tr>
             </tbody>
           </table>
@@ -89,12 +87,12 @@
     </div>
   </div>
 </template>
-
 <script>
 import axios from 'axios';
 import { useStore } from 'vuex';
 import { useRouter } from 'vue-router';
 import { mapGetters } from 'vuex';
+import ExcelJS from 'exceljs';
 
 export default {
   name: "StudentInfo",
@@ -102,10 +100,11 @@ export default {
     return {
       assessments: [],
       cellData: [],
-      students: [], // Öğrenci listesini tutmak için yeni bir veri alanı
+      students: [],
       grades: [],
       isEditMode: false,
-      useCustomNames: false
+      useCustomNames: false,
+      excelStudents: []
     };
   },
   computed: {
@@ -120,37 +119,38 @@ export default {
     const generalAssessmentId = this.$route.params.generalAssessmentId;
 
     this.fetchUseCustomNames();
+    this.fetchTable();
 
-    // Dersi alan öğrencileri getir
+    // Fetch students
     axios.get(`http://localhost:8080/student-course/${courseId}/students`)
       .then(response => {
-        this.students = response.data; // Öğrenci listesini al
-        if (this.assessments && this.students) {
-          this.cellData = new Array(this.students.length).fill().map(() => new Array(this.assessments.length).fill(''));
-          this.fetchTable();
+        this.students = response.data;
+        console.log("Fetched Students:", this.students);  // Konsol log eklendi
+        if (this.assessments.length > 0) {
+          this.initializeCellData();
         }
       })
       .catch(error => {
         console.error('Error fetching student list:', error);
       });
 
-    // Genel değerlendirmeye ait soruları veya değerlendirmeleri getir
+    // Fetch assessments
     axios.get(`http://localhost:8080/assessments/generalAssessment/${generalAssessmentId}`)
       .then(response => {
         this.assessments = response.data.sort((a, b) => a.assessmentId - b.assessmentId);
-        if (this.assessments && this.students) {
-          this.cellData = new Array(this.students.length).fill().map(() => new Array(this.assessments.length).fill(''));
-          this.fetchTable();
+        console.log("Fetched Assessments:", this.assessments);  // Konsol log eklendi
+        if (this.students.length > 0) {
+          this.initializeCellData();
         }
       })
       .catch(error => {
         console.error('Error fetching assessments:', error);
       });
 
-    // Genel değerlendirmenin soru tabanlı olup olmadığını kontrol et
+    // Fetch question-based status
     axios.get(`http://localhost:8080/generalAssesment/${generalAssessmentId}/isQuestionBased`)
       .then(response => {
-        this.isQuestionBased = response.data; // Aldığımız veriyi kullanarak isQuestionBased değişkenini güncelle
+        this.isQuestionBased = response.data;
       })
       .catch(error => {
         console.error('Error fetching question based status:', error);
@@ -158,14 +158,19 @@ export default {
   },
   methods: {
     async fetchUseCustomNames() {
-            try {
-                const generalAssessmentId = this.$route.params.generalAssessmentId;
-                const response = await axios.get(`http://localhost:8080/generalAssesment/${generalAssessmentId}/isQuestionBased`);
-                this.useCustomNames = response.data; // Backend'den gelen veriyi useCustomNames değişkenine atar
-            } catch (error) {
-                console.error("Error fetching useCustomNames:", error);
-            }
-        },
+      try {
+        const generalAssessmentId = this.$route.params.generalAssessmentId;
+        const response = await axios.get(`http://localhost:8080/generalAssesment/${generalAssessmentId}/isQuestionBased`);
+        this.useCustomNames = response.data;
+      } catch (error) {
+        console.error("Error fetching useCustomNames:", error);
+      }
+    },
+    initializeCellData() {
+      // Initialize cellData array based on the number of students and assessments
+      this.cellData = new Array(this.students.length).fill().map(() => new Array(this.assessments.length).fill(''));
+      this.fetchTable();
+    },
     async saveAllChanges() {
       try {
         const studentIds = this.students.map(student => student.userId);
@@ -185,7 +190,6 @@ export default {
               this.$toast.error("Lütfen Geçerli Değer Giriniz!");
             }
 
-            // dolu boş kontrolü
             if (cellValue == undefined || cellValue == "" || cellValue == NaN || cellValue < 0)
               continue;
 
@@ -196,7 +200,6 @@ export default {
             }
 
             stAsArr.push(obj);
-
           }
         }
 
@@ -205,227 +208,251 @@ export default {
         })
 
         if (response.status == 200) {
-          this.$toast.success("Tüm değişiklikler başarıyla kaydedildi!");
-          await this.fetchTable();
+          this.$toast.success('Başarıyla Kaydedildi!');
+          this.disableEditMode();
         }
-
-      } catch (error) {
-        console.error("Error saving changes:", error);
+        else
+          this.$toast.error('Kaydedilirken Bir Hata Oluştu!');
       }
-      this.isEditMode = false
-    },
-
-    fillTable(studentIndex, assessmentIndex) {
-            var studentId = this.students[studentIndex].userId
-            var assessmentId = this.assessments[assessmentIndex].assessmentId
-            var grade = 0;
-            var emptySt = "";
-
-
-            for (var i = 0; i < this.grades.length; i++) {
-                let grad = this.grades[i]
-                if (grad.assessmentId == assessmentId && grad.studentId == studentId) {
-                    grade = grad.grade;
-                    return grade;
-                }
-
-            }
-            return emptySt
-        },
-
-    async fetchTable() {
-      try {
-        const studentIds = this.students.map(student => student.userId);
-        const assessmentIds = this.assessments.map(assessment => assessment.assessmentId);
-
-        let stAsArr = [];
-        for (let studentIndex = 0; studentIndex < studentIds.length; studentIndex++) {
-          const studentId = studentIds[studentIndex];
-          for (let assessmentIndex = 0; assessmentIndex < assessmentIds.length; assessmentIndex++) {
-            const assessmentId = assessmentIds[assessmentIndex];
-            let obj = {
-              "assessmentId": assessmentId,
-              "user_id": studentId,
-            }
-            stAsArr.push(obj);
-          }
-        }
-
-        const response = await axios.post('http://localhost:8080/student-assessment/grade', {
-          "studentGradeDTOList": stAsArr
-        },
-        );
-        if (response.status == 200) {
-
-          var tempList = [];
-          for (var i = 0; i < response.data.grades.length; i++) {
-            var obj = {
-              grade: response.data.grades[i].grade,
-              studentId: response.data.grades[i].student.userId,
-              assessmentId: response.data.grades[i].assessment.assessmentId
-            }
-            tempList.push(obj)
-          }
-          this.grades = tempList;
-          console.log(this.grades);
-        }
-
-      } catch (error) {
-        console.error("Error filling table:", error);
+      catch (error) {
+        console.error('Error saving changes:', error);
+        this.$toast.error('Kaydedilirken Bir Hata Oluştu!');
       }
-
     },
-    handleTab(event) {
-    if (event.key === 'Tab' || event.key === 'Enter') {
-      event.preventDefault();
-      const focusable = this.$el.querySelectorAll('input[tabindex]');
-      const index = Array.prototype.indexOf.call(focusable, event.target);
-      const nextElement = focusable[index + 1] || focusable[0];
-      nextElement.focus();
-    }
-  },
     enableEditMode() {
       this.isEditMode = true;
     },
     disableEditMode() {
       this.isEditMode = false;
     },
-    goToLoginPage() {
-      this.$router.push("/");
+    fillTable(studentIndex, assessmentIndex) {
+  const student = this.students[studentIndex];
+  const assessment = this.assessments[assessmentIndex];
+  const grade = this.grades.find(g => g.assessmentId === assessment.assessmentId && g.studentId === student.userId);
+
+  if (grade) {
+    return grade.grade;
+  } else {
+    // Değer yoksa boş bir hücre döndür
+    return null;
+  }
+},
+    handleTab(event) {
+      const target = event.target;
+      if (event.key === 'Tab') {
+        event.preventDefault();
+        const cell = target.parentElement.parentElement;
+        const cells = cell.parentElement.children;
+        const index = Array.prototype.indexOf.call(cells, cell);
+
+        const nextIndex = event.shiftKey ? index - 1 : index + 1;
+        const nextCell = cells[nextIndex];
+
+        if (nextCell) {
+          nextCell.querySelector('input').focus();
+        }
+      }
+    },
+    handleMouseDown(event) {
+      const target = event.target;
+      if (target.contentEditable === 'true') {
+        document.execCommand('selectAll', false, null);
+      }
+    },
+    handleFileUpload(event) {
+      const file = event.target.files[0];
+      if (file) {
+        this.readExcelFile(file);
+      }
+    },
+    readExcelFile(file) {
+      const reader = new FileReader();
+      reader.onload = async (e) => {
+        const arrayBuffer = e.target.result;
+        const workbook = new ExcelJS.Workbook();
+        await workbook.xlsx.load(arrayBuffer);
+        const worksheet = workbook.worksheets[0];
+
+        const excelStudents = [];
+worksheet.eachRow((row, rowNumber) => {
+  if (rowNumber === 1) {
+    // İlk satırı atla, sadece öğrenci verilerini al
+    return;
+  }
+  const studentNumber = row.getCell(1).value;
+  const grades = row.values.slice(2); // Öğrenci notlarını al, isim ve soyisim bilgilerini atlamak için 2. sıradan başla
+
+  const student = {
+    studentNumber: studentNumber,
+    grades: grades
+  };
+  excelStudents.push(student);
+});
+
+
+        this.excelStudents = excelStudents;
+        this.populateGradesFromExcel();
+      };
+      reader.readAsArrayBuffer(file);
+    },
+    populateGradesFromExcel() {
+      const studentMap = new Map(
+        this.students.map((student) => [student.studentNumber, student])
+      );
+
+      this.excelStudents.forEach((excelStudent) => {
+        const student = studentMap.get(excelStudent.studentNumber);
+        if (student) {
+          const studentIndex = this.students.indexOf(student);
+          excelStudent.grades.forEach((grade, assessmentIndex) => {
+            if (assessmentIndex < this.assessments.length) {
+              this.cellData[studentIndex][assessmentIndex] = grade;
+            }
+          });
+        }
+      });
+    },
+    async uploadExcelGrades() {
+  try {
+    const studentIds = this.students.map(student => student.userId);
+    const assessmentIds = this.assessments.map(assessment => assessment.assessmentId);
+
+    let stAsArr = [];
+    for (let studentIndex = 0; studentIndex < studentIds.length; studentIndex++) {
+      const studentId = studentIds[studentIndex];
+      for (let assessmentIndex = 0; assessmentIndex < assessmentIds.length; assessmentIndex++) {
+        const assessmentId = assessmentIds[assessmentIndex];
+        const cellValue = this.cellData[studentIndex][assessmentIndex];
+
+        if (cellValue < 0 || isNaN(cellValue)) {
+          this.$toast.error("Lütfen geçerli bir sayı giriniz!");
+          return; // Hata durumunda fonksiyondan çık
+        }
+
+        let obj = {
+          "assessmentId": assessmentId,
+          "user_id": studentId,
+          "grade": parseFloat(cellValue)
+        }
+
+        stAsArr.push(obj);
+      }
+    }
+
+    const response = await axios.post('http://localhost:8080/student-assessment/create', {
+      "stAsList": stAsArr
+    });
+
+    if (response.status == 200) {
+      this.$toast.success('Başarıyla Kaydedildi!');
+      this.disableEditMode();
+      this.fetchTable();
+    } else {
+      this.$toast.error('Kaydedilirken bir hata oluştu!');
+      this.fetchTable();
+    }
+  } catch (error) {
+    console.error('Değişiklikler kaydedilirken bir hata oluştu:', error);
+    this.$toast.error('Kaydedilirken bir hata oluştu!');
+    
+  }
+},
+    refreshPage() {
+      window.location.reload();
+    },
+    async fetchTable() {
+  try {
+    const studentIds = this.students.map(student => student.userId);
+    const assessmentIds = this.assessments.map(assessment => assessment.assessmentId);
+   
+    let stAsArr = [];
+    for (let studentIndex = 0; studentIndex < studentIds.length; studentIndex++) {
+      const studentId = studentIds[studentIndex];
+      for (let assessmentIndex = 0; assessmentIndex < assessmentIds.length; assessmentIndex++) {
+        const assessmentId = assessmentIds[assessmentIndex];
+        let obj = {
+          "assessmentId": assessmentId,
+          "user_id": studentId,
+        }
+        stAsArr.push(obj);
+      }
+    }
+
+    const response = await axios.post('http://localhost:8080/student-assessment/grade', {
+      "studentGradeDTOList": stAsArr
+    });
+    console.log("responsedata",response.data)
+    if (response.status == 200) {
+      // Önceki not verilerini temizle
+      this.grades = [];
+
+      // Her bir öğrenci not verisini grades array'ine ekleyin
+      response.data.grades.forEach(gradeData => {
+        const grade = {
+          grade: gradeData.grade,
+          studentId: gradeData.student.userId,
+          assessmentId: gradeData.assessment.assessmentId
+        };
+        this.grades.push(grade);
+      });
+
+      console.log(this.grades);
+    }
+  } catch (error) {
+    console.error("Error filling table:", error);
+  }
+},
+   goToLoginPage() {
+      this.$router.push("/"); // Login page
+    },
+    goToCoursePage() {
+      this.$router.push("/instructor-home");
+    },
+    goToStudentInfoPage() {
+      this.$router.push("/student-info");
+    },
+    goToMatchMatrixPage() {
+      this.$router.push("/instructor-match-matrix");
+    },
+    goToCourseProgramOutcomePage() {
+      const courseId = this.$route.params.courseId;
+      this.$router.push({ name: "CourseProgramOutcome", params: { courseId: courseId } });
+    },
+    goToLearningOutcomePage() {
+      this.$router.push("/learning-outcome");
     },
     goToInstructorLearningOutcomePage() {
       const courseId = this.$route.params.courseId;
       this.$router.push({ name: "InstructorLearningOutcome", params: { courseId: courseId } });
     },
-    goToMatchMatrixPage() {
-      const courseId = this.$route.params.courseId;
-      this.$router.push({ name: "MatchMatrix", params: { courseId: courseId } });
+    goToGuidePage() {
+      this.$router.push('/guidance');
     },
-    goToStudentInfoPage() {
-      this.$router.push("/student-info");
-    },
-    goToGuidePage(){
-this.$router.push('/guidance');
-        },
     goToStudentListPage() {
-        const courseId = this.$route.params.courseId;
-        this.$router.push({ name: "StudentList", params: { courseId: courseId }});
-        },
-    goToCourseProgramOutcomePage() {
       const courseId = this.$route.params.courseId;
-      this.$router.push({ name: "CourseProgramOutcome", params: { courseId: courseId } });
-    },
-    goToCoursePage() {
-      this.$router.push("/instructor-home");
+      this.$router.push({ name: "StudentList", params: { courseId: courseId } });
     },
     refreshPage() {
       this.$router.push("/instructor-home");
     },
-    handleMouseDown(event) {
-    // Tıklanan element input alanı değilse, olayın işlenmesini engelle
-    if (!event.target.tagName.toLowerCase().includes('input')) {
-      event.preventDefault();
-    }
-  },
     logoutUser() {
       const store = useStore();
       const router = useRouter();
       localStorage.removeItem('store');
       this.$store.dispatch('logoutUser');
       this.$router.push("/");
-    },
-  },
+    }
+  }
 };
 </script>
 
-<style>
-.container {
-  display: flex;
-}
+<style scoped>
+  .flex-container {
+    display: flex;
+    flex-direction: row;
+  }
 
-.logout {
-  margin-left: auto;
-  margin-right: 20px;
-}
-
-.card {
-  margin-top: 3%;
-  margin-left: auto;
-  margin-right: auto;
-}
-
-.icon {
-  width: 60px;
-}
-
-.list-group a {
-  text-decoration: none;
-  color: black;
-  font-family: "Calibri", sans-serif;
-  font-size: 17px;
-  font-weight: bold;
-}
-
-.table th,
-.table td {
-  border: 1px solid #dee2e6;
-}
-
-.table th {
-  background-color: #f8f9fa;
-}
-
-.table td {
-  background-color: #fff;
-}
-
-.btn-outline-primary {
-  border-color: #007bff;
-  color: #007bff;
-}
-
-.btn-outline-primary:hover {
-  background-color: #007bff;
-  color: #fff;
-}
-
-.btn-outline-success {
-  border-color: #28a745;
-  color: #28a745;
-}
-
-.btn-outline-success:hover {
-  background-color: #28a745;
-  color: #fff;
-}
-
-.btn-outline-danger {
-  border-color: #dc3545;
-  color: #dc3545;
-}
-
-.card-body table {
-  width: 100%;
-  overflow-x: auto;
-}
-
-.btn-outline-danger:hover {
-  background-color: #dc3545;
-  color: #fff;
-}
-
-select {
-  border: 1px solid #ced4da;
-  border-radius: 0.25rem;
-  transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
-}
-
-input.editable,
-select.editable {
-  border-color: #007bff;
-}
-.icon {
-  max-width: 24px;
-  max-height: 24px;
-}
+  .menu {
+    margin-right: 20px;
+  }
 </style>

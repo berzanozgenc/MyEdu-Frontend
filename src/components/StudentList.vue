@@ -113,7 +113,7 @@ import { useStore } from 'vuex';
 import { useRouter } from 'vue-router';
 import { mapGetters } from 'vuex';
 import axios from 'axios';
-import ExcelJS from 'exceljs'
+import ExcelJS from 'exceljs';
 
 export default {
   name: "StudentList",

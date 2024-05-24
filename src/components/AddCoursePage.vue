@@ -130,6 +130,7 @@ import { useRouter } from 'vue-router';
 import axios from 'axios';
 import { mapGetters } from 'vuex';
 import ExcelJS from 'exceljs';
+import { Suspense } from 'vue';
 
 export default {
   name: "AddCoursePage",
@@ -186,10 +187,8 @@ export default {
   });
 
   // Tüm kursları yeniden getir
-  
 },
-
-    readExcelFile(file) {
+  readExcelFile(file) {
   const workbook = new ExcelJS.Workbook();
   const reader = new FileReader();
   reader.onload = (event) => {
