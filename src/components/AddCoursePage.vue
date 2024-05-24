@@ -257,7 +257,7 @@ export default {
         .then(response => {
           console.log(response.data); // Başarılı bir şekilde eklendiğinde işlem sonucunu konsola yazdırabiliriz
           this.courses.push(response.data); // Yeni kursu courses dizisine ekleyin
-          this.fetchCourses();
+          this.fetchCourses(this.userDepartment);
         })
         .catch(error => {
           console.error('Error adding course:', error); // Ekleme sırasında bir hata oluştuğunda hatayı konsola yazdırabiliriz
