@@ -253,6 +253,13 @@ export default {
   reader.readAsArrayBuffer(file);
   
 },
+goToAdminGuidePage(){
+  this.$router.push("/admin-guide");
+}
+,
+goToAdminCoursePage(){
+  this.$router.push("/admin-course");
+},
 
     loadCourses() {
       document.getElementById('fileInput').click();

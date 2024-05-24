@@ -153,6 +153,9 @@
         return null;
       }
     },
+    goToAddCoursePage(){
+      this.$router.push("/add-course");
+    },
       goToAdminGuidePage(){
         this.$router.push("/admin-guide");
       },
