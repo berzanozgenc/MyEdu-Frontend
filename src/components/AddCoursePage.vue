@@ -18,20 +18,37 @@
 
     <!-- Main content -->
     <div class="flex-container">
-      <!-- Menu -->
-      <div class="card" style="width: 13rem; margin-left: 10px;">
+      <!-- Side Menu -->
+      <div class="card menu" style="width: 12%; margin-left: 10px;">
         <div class="card-body">
           <h5 class="card-title">Menü</h5>
-          <a href="#" class="card-link">Ders Sayfası</a><br />
-          <a href="#" class="card-link" @click="goToProgramOutputPage">Program Çıktıları Sayfası</a><br />
-          <a href="#" class="card-link" @click="goToLoadStudentPage">Öğrenci Yükleme Sayfası</a><br />
+          <ul class="list-group">
+            <li class="list-group-item" @click="goToAddCoursePage">
+              <i class="fas fa-graduation-cap"></i> Ders Sayfası
+            </li>
+            <li class="list-group-item" @click="goToProgramOutputPage">
+              <i class="fas fa-book"></i> Program Çıktıları Sayfası
+            </li>
+            <li class="list-group-item" @click="goToLoadStudentPage">
+              <i class="fas fa-chalkboard-teacher"></i> Öğrenci Yükleme Sayfası
+            </li>
+            <li class="list-group-item" @click="goToAdminCoursePage">
+                <i class="fa-solid fa-person-chalkboard"></i> Öğretmen Atamaları
+              </li>
+            <li class="list-group-item" @click="goToAdminGuidePage">
+              <i class="fas fa-chalkboard-teacher"></i> Kılavuz
+            </li>
+          </ul>
         </div>
       </div>
+    
+
 
       <!-- Course table -->
       <div class="card" style="width: 75rem; height: 40rem; overflow-y: auto; overflow-x: hidden">
         <div class="card-body">
           <h5 class="card-title">Ders Sayfası</h5>
+          <input id="fileInput" type="file" @change="onFileChange" accept=".xlsx, .xls">
           <table class="table table-striped table-bordered">
     <thead>
       <tr>
@@ -112,6 +129,7 @@ import { useStore } from 'vuex';
 import { useRouter } from 'vue-router';
 import axios from 'axios';
 import { mapGetters } from 'vuex';
+import ExcelJS from 'exceljs';
 
 export default {
   name: "AddCoursePage",
@@ -131,6 +149,79 @@ export default {
     this.getDepartment();
   },
   methods: {
+    onFileChange(event) {
+      const file = event.target.files[0];
+      this.readExcelFile(file);
+    },
+    addCoursesFromExcel() {
+  if (!this.userDepartment) {
+    console.error("Kullanıcı departmanı bulunamadı!");
+    return;
+  }
+
+  console.log(this.userDepartment);
+
+  // Her bir kurs için POST isteği yap
+  this.courses.forEach(course => {
+    const newCourse = {
+      department: this.userDepartment,
+      semester: course.semester,
+      code: course.code,
+      courseName: course.courseName,
+      section: course.section,
+      ects: course.ects,
+      credit: course.credit
+    };
+
+    axios.post('http://localhost:8080/course/create-course', newCourse)
+      .then(response => {
+        console.log('Course added:', response.data); // Başarılı bir şekilde eklendiğinde işlem sonucunu konsola yazdırabiliriz
+        // Yeni kursu courses dizisine eklemek gerekmiyor çünkü zaten tablodan geliyor
+        this.fetchCourses(this.userDepartment);
+      })
+      .catch(error => {
+        console.error('Error adding course:', error); // Ekleme sırasında bir hata oluştuğunda hatayı konsola yazdırabiliriz
+        this.$toast.error("Kurs eklenemedi!");
+      });
+  });
+
+  // Tüm kursları yeniden getir
+  
+},
+
+    readExcelFile(file) {
+  const workbook = new ExcelJS.Workbook();
+  const reader = new FileReader();
+  reader.onload = (event) => {
+    const arrayBuffer = event.target.result;
+    workbook.xlsx.load(arrayBuffer).then((workbook) => {
+      const worksheet = workbook.getWorksheet(1);
+      const rows = [];
+      worksheet.eachRow((row, rowNumber) => {
+        console.log(this.userDepartment.name);
+        if (rowNumber !== 1) { // Skip header row
+          rows.push({
+            department: this.userDepartment,
+            semester: row.getCell(1).value,
+            code: row.getCell(2).value,
+            courseName: row.getCell(3).value,
+            section: row.getCell(4).value,
+            ects: row.getCell(5).value,
+            credit: row.getCell(6).value
+          });
+        }
+      });
+      this.courses = rows;
+      this.addCoursesFromExcel();
+    });
+  };
+  reader.readAsArrayBuffer(file);
+  
+},
+
+    loadCourses() {
+      document.getElementById('fileInput').click();
+    },
     updateCourse(index, updatedCourse) {
   // Güncellenen kursun bilgilerini kontrol et
   console.log('Updated Course:', updatedCourse);
@@ -145,6 +236,7 @@ export default {
     .then(response => {
       console.log('Course updated:', response.data);
       this.editable = -1;
+      this.$toast.success("Kurs bilgileri güncellendi!");
     })
     .catch(error => {
       if (error.response && error.response.status === 404) {
@@ -257,10 +349,13 @@ export default {
         .then(response => {
           console.log(response.data); // Başarılı bir şekilde eklendiğinde işlem sonucunu konsola yazdırabiliriz
           this.courses.push(response.data); // Yeni kursu courses dizisine ekleyin
+          this.$toast.success("Kurs başarıyla eklendi!");
           this.fetchCourses(this.userDepartment);
+          
         })
         .catch(error => {
           console.error('Error adding course:', error); // Ekleme sırasında bir hata oluştuğunda hatayı konsola yazdırabiliriz
+          this.$toast.error("Kurs eklenemedi!");
         });
     },
     logoutUser() {
