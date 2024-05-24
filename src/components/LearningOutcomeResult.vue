@@ -169,7 +169,7 @@ this.$router.push('/guidance');
       const router = useRouter();
       localStorage.removeItem('store');
       await this.$store.dispatch('logoutUser');
-      await router.push("/");
+      this.$router.push("/");
     },
     async downloadExcel() {
       const workbook = new ExcelJS.Workbook();

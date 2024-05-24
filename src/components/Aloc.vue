@@ -259,7 +259,6 @@ export default {
 
             // dolu boş kontrolü
             if (
-              cellValue == 0 ||
               cellValue == undefined ||
               cellValue == "" ||
               cellValue == NaN ||

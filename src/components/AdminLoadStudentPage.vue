@@ -176,6 +176,7 @@ export default {
         axios.post('http://localhost:8080/students', studentData)
           .then(response => {
             console.log("Öğrenci bilgileri başarıyla gönderildi:", studentData);
+            this.$toast.success("Öğrenci bilgileri başarıyla gönderildi:");
           })
           .catch(error => {
             console.error("Öğrenci bilgileri gönderme hatası:", error);

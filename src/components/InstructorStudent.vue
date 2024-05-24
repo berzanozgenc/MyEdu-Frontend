@@ -176,17 +176,22 @@ async getProgramOutcomeResults(programOutcomeList) {
         
         // Gelen verileri kullanabilirsiniz
         let programOutcomeResults = userProgramOutcomeResponse.data;
-        
+
         // Program outcome'ları idsine göre sırala
         programOutcomeResults.sort((a, b) => {
             return a.programOutcome.id - b.programOutcome.id;
         });
 
+        // Level of provision 0 ya da NaN olan sonuçları filtrele
+        programOutcomeResults = programOutcomeResults.filter(result => !isNaN(result.levelOfProvision));
+
         this.programOutcomeResults = programOutcomeResults;
+        console.log(this.programOutcomeResults);
     } catch (error) {
         console.error("Error fetching program outcome results:", error);
     }
 },
+
 
 async getLearningOutcomeResults(learningOutcomeList) {
     try {
@@ -203,6 +208,9 @@ async getLearningOutcomeResults(learningOutcomeList) {
         learningOutcomeResults.sort((a, b) => {
             return a.learningOutcome.id - b.learningOutcome.id;
         });
+
+        // Level of provision 0 olan sonuçları filtrele
+        learningOutcomeResults = learningOutcomeResults.filter(result => !isNaN(result.levelOfProvision));
 
         console.log(learningOutcomeResults);
 
@@ -228,6 +236,7 @@ async getLearningOutcomeResults(learningOutcomeList) {
         const courseId = this.$route.params.courseId;
         const response = await axios.get(`http://localhost:8080/program-outcomes/course/${courseId}`);
         this.programOutcomes = response.data;
+
       } catch (error) {
         console.error("Error fetching program outcomes:", error);
       }

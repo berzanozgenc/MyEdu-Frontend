@@ -168,6 +168,7 @@ export default {
         console.error(error);
         this.$toast.error("Program çıktısı eklenirken bir hata oluştu.");
       }
+      
     }
   })
   .catch((error) => {

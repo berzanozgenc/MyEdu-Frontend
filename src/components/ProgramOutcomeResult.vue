@@ -61,11 +61,11 @@
             </thead>
             <tbody>
               <tr v-for="(outcome, index) in outcomes" :key="index">
-                <td class="description-cell">{{ outcome.description }}</td>
+                <td class="description-cell">{{ outcome.description }} ({{ outcome.number }})</td>
                 <td style="text-align: center;">%{{ outcome.levelOfProvision.toFixed(3) }}</td>
-                <td style="text-align: center;">{{ outcome.target.toFixed(2) }}</td>
-                <td style="text-align: center;">{{ outcome.assessmentValue.toFixed(2) }}</td>
-                <td style="text-align: center;">{{ outcome.score.toFixed(2) }}</td>
+                <td style="text-align: center;">{{ outcome.target.toFixed(3) }}</td>
+                <td style="text-align: center;">{{ outcome.assessmentValue.toFixed(3)}}</td>
+                <td style="text-align: center;">{{ outcome.score.toFixed(3) }}</td>
               </tr>
             </tbody>
           </table>
@@ -127,17 +127,17 @@ export default {
       }
     },
     async fetchProgramOutcomes() {
-      try {
-        const courseId = this.$route.params.courseId;
-        const response = await axios.get(`http://localhost:8080/program-outcomes/course/${courseId}`);
-        this.outcomes = response.data;
-        this.outcomes.sort((a, b) => {
-            return a.id - b.id;
-        });
-      } catch (error) {
-        console.error("Error fetching program outcomes:", error);
-      }
-    },
+  try {
+    const courseId = this.$route.params.courseId;
+    const response = await axios.get(`http://localhost:8080/program-outcomes/course/${courseId}`);
+    // Geçerli olanları filtrele
+    this.outcomes = response.data.filter(outcome => !isNaN(outcome.levelOfProvision) && outcome.levelOfProvision !== 0);
+    // Sonrasında sırala
+    this.outcomes.sort((a, b) => a.id - b.id);
+  } catch (error) {
+    console.error("Error fetching program outcomes:", error);
+  }
+},
     goToLoginPage() {
       this.$router.push("/"); // Login page
     },
@@ -175,7 +175,7 @@ this.$router.push('/guidance');
       const router = useRouter();
       localStorage.removeItem('store');
       await this.$store.dispatch('logoutUser');
-      await router.push("/");
+      this.$router.push("/");
     },
     async downloadExcel() {
       const workbook = new ExcelJS.Workbook();

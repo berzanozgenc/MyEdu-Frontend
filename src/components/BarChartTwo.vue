@@ -89,6 +89,7 @@ export default {
     try {
       const response = await axios.get(`http://localhost:8080/program-outcomes/course/${id}`);
       this.outcomes = response.data;
+      this.outcomes = response.data.filter(outcome => !isNaN(outcome.levelOfProvision) && outcome.levelOfProvision !== 0);
       this.chartData.labels = this.outcomes.map(outcome => outcome.description);
       this.chartData.datasets[0].data = this.outcomes.map(outcome => outcome.levelOfProvision);
       this.chartData.datasets[1].data = this.outcomes.map(outcome => outcome.score);

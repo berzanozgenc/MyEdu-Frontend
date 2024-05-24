@@ -61,24 +61,24 @@
 
           <!-- Matrix table -->
           <table class="table" style="min-width: 600px;">
-            <thead>
-              <tr>
-                <th scope="col"></th>
-                <th class="loDescription" v-for="(outcome, index) in outcomes" :key="index" scope="col">{{ outcome.description }}</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr v-for="(program, programIndex) in programs" :key="programIndex">
-                <th class="prDescription" scope="row">{{ program.description }}</th>
-                <td v-for="(outcome, outcomeIndex) in outcomes" :key="outcomeIndex">
-                  <div style="align-items: center; justify-content: center; display: flex;">
-                    <input style="align-items: center; text-align: center" v-if="editMode" v-bind:placeholder="dummy(outcomeIndex, programIndex)" type="text" v-model="program.outcomes[outcomeIndex]">
-                    <span v-else>{{ dummy(outcomeIndex, programIndex) }}</span>
-                  </div>
-                </td>
-              </tr>
-            </tbody>
-          </table>
+  <thead>
+    <tr>
+      <th scope="col"></th>
+      <th class="loDescription" v-for="(outcome, index) in outcomes" :key="index" scope="col">{{ outcome.description }}</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr v-for="(program, programIndex) in programs" :key="programIndex">
+      <th class="prDescription" scope="row">{{ program.number }}</th>
+      <td v-for="(outcome, outcomeIndex) in outcomes" :key="outcomeIndex">
+        <div style="align-items: center; justify-content: center; display: flex;">
+          <input style="align-items: center; text-align: center" v-if="editMode" v-bind:placeholder="dummy(outcomeIndex, programIndex)" type="text" v-model="program.outcomes[outcomeIndex]">
+          <span v-else>{{ dummy(outcomeIndex, programIndex) }}</span>
+        </div>
+      </td>
+    </tr>
+  </tbody>
+</table>
           <!-- End of matrix table -->
 
           <!-- Uyarı mesajı -->
@@ -90,6 +90,25 @@
           <button v-if="editMode" @click="saveAllChanges" class="btn btn-success mt-3">Tümünü Kaydet</button>
           <button style="margin-left: 2px;" v-if="editMode" @click="disableEditMode" class="btn btn-danger mt-3">Vazgeç</button>
         </div>
+      </div>
+    </div>
+    <div class="card" style="width: 80%; margin-left: 18%">
+      <div class="card-body">
+        <h5 class="card-title">Program Çıktıları</h5>
+        <table class="table">
+          <thead>
+            <tr>
+              <th scope="col">Program Numarası</th>
+              <th scope="col">Program Adı</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="(program, index) in programs" :key="index">
+              <td>{{ program.number }}</td>
+              <td>{{ program.description }}</td>
+            </tr>
+          </tbody>
+        </table>
       </div>
     </div>
   </div>
@@ -243,7 +262,7 @@ export default {
       const router = useRouter();
       localStorage.removeItem('store');
       this.$store.dispatch('logoutUser');
-      await router.push("/");
+      this.$router.push("/");
     },
     async fetchLearningOutcomes(courseId) {
       try {
@@ -325,6 +344,12 @@ export default {
   max-width: 800px; /* Adjust the width as needed */
   word-wrap: break-word;
 }
+
+.table th.loDescription {
+  text-align: left;
+  vertical-align: top;
+}
+
 
 .loDescription
 {
