@@ -1,8 +1,8 @@
 <template>
     <div>
-      <nav class="navbar navbar-expand-lg navbar-light bg-light">
+      <nav class="navbar navbar-expand-lg navbar-light" style="background-color: #98bdff;">
         <a @click="refreshPage" style="margin-left: 10px" class="navbar-brand" href="#">
-          <img src="../assets/Baskent_University_Logo.png" alt="Logo" style="max-height: 50px;">
+          <a @click="refreshPage" style="margin-left: 10px" class="navbar-brand" href="#"> <img src="../assets/Baskent_University_Logo.png" alt="Logo" style="max-height: 50px;">myEdu</a>
         </a>
         <a @click="refreshPage" style="margin-left: 10px" class="navbar-brand" href="#">
           Kişiselleştirilmiş Akademik Gelişim ve <br /> Değerlendirme Sistemi

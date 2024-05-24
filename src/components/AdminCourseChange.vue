@@ -137,7 +137,9 @@
         try {
         await axios.delete(`http://localhost:8080/user-course-registrations/delete/instructor/${courseId}`);
         this.$toast.success("Atama başarıyla kaldırıldı");
-        this.refreshPage();
+        setTimeout(() => {
+      this.refreshPage();
+    }, 2000); // 3 saniye bekleyip sayfayı yenile
       } catch (error) {
         console.error("Error:", error);
         this.$toast.error("Atama kaldırılamadı!");

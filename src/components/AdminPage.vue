@@ -2,7 +2,7 @@
   <div>
     <!-- Navbar -->
     <nav class="navbar navbar-expand-lg navbar-light" style="background-color: #98bdff;">
-      <a @click="refreshPage" style="margin-left: 10px" class="navbar-brand" href="#"> <img src="../assets/Baskent_University_Logo.png" alt="Logo" style="max-height: 50px;"></a>
+      <a @click="refreshPage" style="margin-left: 10px" class="navbar-brand" href="#"> <img src="../assets/Baskent_University_Logo.png" alt="Logo" style="max-height: 50px;">myEdu</a>
       <a @click="refreshPage" style="margin-left: 10px" class="navbar-brand" href="#">Kişiselleştirilmiş Akademik Gelişim ve <br /> Değerlendirme Sistemi</a>
       <div class="collapse navbar-collapse" id="navbarSupportedContent">
         <ul class="navbar-nav mr-auto"></ul>
@@ -146,35 +146,33 @@ export default {
             this.$store.dispatch('logoutUser');
             this.$router.push("/");
         },
-    async addProgram() {
-      const departmentId = this.userDepartment.id
-      axios
-  .get(`http://localhost:8080/course/get-courses/department/${departmentId}`)
-  .then(async (response) => {
+        async addProgram() {
+  const departmentId = this.userDepartment.id
+  try {
+    const response = await axios.get(`http://localhost:8080/course/get-courses/department/${departmentId}`);
     this.courses = response.data;
 
-    // Her bir kurs için POST isteği yap
+    // Başarı mesajına eklemek için program numarasını kullanabilirsiniz
+    this.$toast.success(`${this.newProgram.number} numaralı program çıktısı  başarıyla oluşturuldu.`);
+
     for (const course of this.courses) {
       const data = {
         description: this.newProgram.description,
         number: this.newProgram.number,
-        courseId: course.courseId // Her bir kurs için farklı courseId kullan
+        courseId: course.courseId
       };
 
-      try {
-        await axios.post(`http://localhost:8080/program-outcomes/${course.courseId}`, data);
-        this.$toast.success("Program çıktısı başarıyla oluşturuldu.");
-      } catch (error) {
-        console.error(error);
-        this.$toast.error("Program çıktısı eklenirken bir hata oluştu.");
-      }
-      
+      await axios.post(`http://localhost:8080/program-outcomes/${course.courseId}`, data);
     }
-  })
-  .catch((error) => {
-    console.error("Error fetching courses:", error);
-  });
-    },
+
+  } catch (error) {
+    console.error("Error fetching courses or adding program outcomes:", error);
+    this.$toast.error("Program çıktısı eklenirken bir hata oluştu.");
+  }
+},
+
+
+
     goToAdminCoursePage(){
         this.$router.push("/admin-course");
       },
