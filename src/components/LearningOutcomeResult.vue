@@ -125,6 +125,7 @@ export default {
         const courseId = this.$route.params.courseId;
         const response = await axios.get(`http://localhost:8080/learningOutcomes/course/${courseId}`);
         this.outcomes = response.data;
+        this.outcomes = response.data.filter(outcome => !isNaN(outcome.levelOfProvision));
         this.outcomes.sort((a, b) => {
             return a.id - b.id;
         });

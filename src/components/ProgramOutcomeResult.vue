@@ -131,7 +131,7 @@ export default {
     const courseId = this.$route.params.courseId;
     const response = await axios.get(`http://localhost:8080/program-outcomes/course/${courseId}`);
     // Geçerli olanları filtrele
-    this.outcomes = response.data.filter(outcome => !isNaN(outcome.levelOfProvision) && outcome.levelOfProvision !== 0);
+    this.outcomes = response.data.filter(outcome => !isNaN(outcome.levelOfProvision));
     // Sonrasında sırala
     this.outcomes.sort((a, b) => a.id - b.id);
   } catch (error) {
