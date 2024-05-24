@@ -52,6 +52,18 @@
             <button v-if="isEditMode" @click="saveAllChanges" class="btn btn-success mb-2">Notları Kaydet</button>
             <button style="margin-left: 2px;" v-if="isEditMode" @click="disableEditMode" class="btn btn-danger mb-2">Vazgeç</button>
           </div>
+          <div>
+        <a @mouseenter="showInfoBox = true" @mouseleave="showInfoBox = false" style="cursor: pointer; color: #007bff;;">
+          <i class="fas fa-info-circle"></i> Excel Formatı
+        </a>
+        <div v-if="showInfoBox" class="info-box">
+          <p>Ders için yükleyeceğiniz Excel'in sütun bazlı formatı:
+            Öğrenci Numarası, Not Girilecek Araç İsimleri (Quiz 1, Quiz 2, Quiz 3)
+            şeklinde olmalıdır. İlk satır başlığa ayrılmalıdır. Verilerin önü ve arkasında BOŞLUK bulunmamalıdır.
+
+          </p>
+        </div>
+      </div>
           <input type="file" @change="handleFileUpload" accept=".xlsx, .xls" />
           <button class="btn btn-outline-primary" @click="uploadExcelGrades">Excelden Not Gir</button>
           <table class="table table-stretched mt-3">
@@ -98,6 +110,7 @@ export default {
   name: "StudentInfo",
   data() {
     return {
+      showInfoBox: false,
       assessments: [],
       cellData: [],
       students: [],

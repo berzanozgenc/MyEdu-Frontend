@@ -45,6 +45,18 @@
       <div class="card" style="width: 75rem; height: 40rem; overflow-y: auto; overflow-x: hidden">
         <div class="card-body">
           <h5 class="card-title">Öğrenci Yükleme Sayfası</h5>
+          <div>
+        <a @mouseenter="showInfoBox = true" @mouseleave="showInfoBox = false" style="cursor: pointer; color: #007bff;;">
+          <i class="fas fa-info-circle"></i> Excel Formatı
+        </a>
+        <div v-if="showInfoBox" class="info-box">
+          <p>Ders için yükleyeceğiniz Excel'in sütun bazlı formatı:
+            Ad, Soyad, Numara, E-Posta
+            şeklinde olmalıdır. İlk satır başlığa ayrılmalıdır. Verilerin önü ve arkasında BOŞLUK bulunmamalıdır.
+
+          </p>
+        </div>
+      </div>
           <input id="fileInput" type="file" @change="onFileChange" accept=".xlsx, .xls">
           <table class="table mt-4">
             <thead>
@@ -83,7 +95,8 @@ export default {
   data() {
     return {
       students: [],
-      userDepartment: null
+      userDepartment: null,
+      showInfoBox: false
     };
   },
   computed: {

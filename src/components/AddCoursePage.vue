@@ -48,6 +48,19 @@
       <div class="card" style="width: 75rem; height: 40rem; overflow-y: auto; overflow-x: hidden">
         <div class="card-body">
           <h5 class="card-title">Ders Sayfası</h5>
+          <div>
+        <a @mouseenter="showInfoBox = true" @mouseleave="showInfoBox = false" style="cursor: pointer; color: #007bff;;">
+          <i class="fas fa-info-circle"></i> Excel Formatı
+        </a>
+        <div v-if="showInfoBox" class="info-box">
+          <p>Ders için yükleyeceğiniz Excel'in sütun bazlı formatı:
+            Dönem, Ders Kodu,	Ders Adı,	Şube,	AKTS,	Kredi
+            şeklinde olmalıdır. İlk satır başlığa ayrılmalıdır. Verilerin önü ve arkasında BOŞLUK bulunmamalıdır.
+
+          </p>
+        </div>
+      </div>
+
           <input id="fileInput" type="file" @change="onFileChange" accept=".xlsx, .xls">
           <table class="table table-striped table-bordered">
     <thead>
@@ -107,7 +120,7 @@
           <button :class="editable === index ? 'btn btn-success btn-sm' : 'btn btn-warning btn-sm'" @click="editable === index ? saveCourse(index) : toggleEdit(index)">
             {{ editable === index ? 'Kaydet' : 'Düzenle' }}
           </button>
-          <button class="btn btn-danger btn-sm" style="margin-left: 2px;" @click="deleteCourse(index)">Sil</button>
+          <button class="btn btn-danger btn-sm" style="margin-left: 2px;" @click="openModal(item)">Sil</button>
         </td>
       </tr>
     </tbody>
@@ -121,6 +134,24 @@
         </div>
       </div>
     </div>
+    <!-- Confirmation Modal -->
+    <div v-if="showModal" class="modal" tabindex="-1" role="dialog" style="display: block;">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Araç Türünü Sil</h5>
+          </div>
+          <div class="modal-body">
+            <p>Bu dersi silmek istediğinizden emin misiniz?</p>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" @click="closeModal">İptal</button>
+            <button type="button" class="btn btn-danger" @click="deleteCourse">Sil</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- End Confirmation Modal -->
   </div>
 </template>
 
@@ -138,7 +169,11 @@ export default {
     return {
       courses: [],
       editable: null,
-      userDepartment: null
+      userDepartment: null,
+      showInfoBox: false,
+      showModal: false, // showModal değişkenini tanımlayın
+      selectedCourse: null,
+    courseToDeleteIndex: null
     };
   },
   computed: {
@@ -178,11 +213,12 @@ export default {
       .then(response => {
         console.log('Course added:', response.data); // Başarılı bir şekilde eklendiğinde işlem sonucunu konsola yazdırabiliriz
         // Yeni kursu courses dizisine eklemek gerekmiyor çünkü zaten tablodan geliyor
+        this.$toast.success("Ders başarıyla eklendi!");
         this.fetchCourses(this.userDepartment);
       })
       .catch(error => {
         console.error('Error adding course:', error); // Ekleme sırasında bir hata oluştuğunda hatayı konsola yazdırabiliriz
-        this.$toast.error("Kurs eklenemedi!");
+        this.$toast.error("Ders eklenemedi!");
       });
   });
 
@@ -235,7 +271,7 @@ export default {
     .then(response => {
       console.log('Course updated:', response.data);
       this.editable = -1;
-      this.$toast.success("Kurs bilgileri güncellendi!");
+      this.$toast.success("Ders bilgileri güncellendi!");
     })
     .catch(error => {
       if (error.response && error.response.status === 404) {
@@ -287,8 +323,8 @@ export default {
         });
     },
     deleteCourse(index) {
-      const courseId = this.courses[index].courseId;
-
+      const courseId = this.selectedCourse.courseId;
+      this.showModal=false;
       if (!courseId) {
         console.error('courseId is undefined');
         return;
@@ -299,7 +335,7 @@ export default {
       axios.delete(`http://localhost:8080/course/${courseId}`)
         .then(response => {
           console.log('Course deleted:', response.data);
-
+          this.$toast.success("Kurs başarıyla silindi!");
           // Silinen kursu courses dizisinden kaldır
           this.courses.splice(index, 1);
 
@@ -309,13 +345,23 @@ export default {
         .catch(error => {
           if (error.response) {
             console.error('Error deleting course:', error.response.data);
+            this.$toast.error("Kurs silinemedi!");
           } else {
             console.error('Error deleting course:', error.message);
           }
         });
     },
+    openModal(course) {
+    this.showModal = true; // Modalı açmak için showModal değişkenini true olarak ayarlayın
+    console.log(course);
+    this.selectedCourse=course;
+  },
+  
+  closeModal() {
+    this.showModal = false; // Modalı kapatmak için showModal değişkenini false olarak ayarlayın
+  },
     goToProgramOutputPage() {
-      this.$router.push("/program-output");
+      this.$router.push("/program-output-admin");
     },
     goToLoadStudentPage() {
       this.$router.push("/admin-load-student");
@@ -346,9 +392,10 @@ export default {
 
       axios.post('http://localhost:8080/course/create-course', newCourse)
         .then(response => {
+          this.$toast.success("Kurs başarıyla eklendi!");
           console.log(response.data); // Başarılı bir şekilde eklendiğinde işlem sonucunu konsola yazdırabiliriz
           this.courses.push(response.data); // Yeni kursu courses dizisine ekleyin
-          this.$toast.success("Kurs başarıyla eklendi!");
+          
           this.fetchCourses(this.userDepartment);
           
         })
@@ -446,4 +493,14 @@ export default {
   align-items: flex-start;
   margin: 20px;
 }
+.info-box {
+  position: absolute;
+  background-color: #fff;
+  border: 1px solid #ccc;
+  padding: 10px;
+  border-radius: 5px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+  z-index: 999; /* Kutucuğun diğer öğelerin üstünde olmasını sağlar */
+}
+
 </style>

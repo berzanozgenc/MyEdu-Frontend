@@ -58,6 +58,18 @@
             </form>
             <div>
         <h5 class="card-title">Excelden Öğrenci Ekle</h5>
+        <div>
+        <a @mouseenter="showInfoBox = true" @mouseleave="showInfoBox = false" style="cursor: pointer; color: #007bff;;">
+          <i class="fas fa-info-circle"></i> Excel Formatı
+        </a>
+        <div v-if="showInfoBox" class="info-box">
+          <p>Ders için yükleyeceğiniz Excel'in sütun bazlı formatı:
+            Numara, Ad Soyad
+            şeklinde olmalıdır. İlk satır başlığa ayrılmalıdır. Verilerin önü ve arkasında BOŞLUK bulunmamalıdır.
+
+          </p>
+        </div>
+      </div>
         <input type="file" @change="handleFileUpload" accept=".xlsx, .xls" />
         <button class="btn btn-outline-primary" @click="uploadExcelStudents">Excelden Öğrenci Ekle</button>
       </div>
@@ -120,6 +132,7 @@ export default {
   data() {
     return {
       students: [],
+      showInfoBox: false,
       excelStudents: [],
       allStudents: [],
       selectedStudentId: null,
@@ -128,7 +141,9 @@ export default {
         output: '',
         description: '',
       }
+      
     };
+    
   },
   computed: {
     ...mapGetters(["getUser"]),
