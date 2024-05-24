@@ -143,6 +143,7 @@ async getProgramOutcomeResults(programOutcomeList, userId) {
             return a.programOutcome.id - b.programOutcome.id;
         });
 
+        programOutcomeResults = programOutcomeResults.filter(result => !isNaN(result.levelOfProvision));
         this.programOutcomeResults = programOutcomeResults;
     } catch (error) {
         console.error("Error fetching program outcome results:", error);
@@ -165,7 +166,7 @@ async getLearningOutcomeResults(learningOutcomeList, userId) {
         });
 
         console.log(learningOutcomeResults);
-
+        learningOutcomeResults = learningOutcomeResults.filter(result => !isNaN(result.levelOfProvision));
         this.learningOutcomeResults = learningOutcomeResults;
     } catch (error) {
         console.error("Error fetching learning outcome results:", error);

@@ -40,9 +40,7 @@
                   <a :href="'#'" @click="goToStudentResultPage(registration.courseId)" class="course-link">
                     {{ registration.code }} - {{ registration.courseName }} - {{ registration.semester }}
                   </a>
-                  <button class="btn btn-danger btn-sm ml-2" @click="openConfirmationModal(registration.registrationId)">
-                    Sil
-                  </button>
+                 
                 </li>
               </ul>
             </div>
