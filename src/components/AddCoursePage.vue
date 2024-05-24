@@ -90,7 +90,7 @@
           <button :class="editable === index ? 'btn btn-success btn-sm' : 'btn btn-warning btn-sm'" @click="editable === index ? saveCourse(index) : toggleEdit(index)">
             {{ editable === index ? 'Kaydet' : 'Düzenle' }}
           </button>
-          <button class="btn btn-danger btn-sm" @click="deleteCourse(index)">Sil</button>
+          <button class="btn btn-danger btn-sm" style="margin-left: 2px;" @click="deleteCourse(index)">Sil</button>
         </td>
       </tr>
     </tbody>
@@ -126,7 +126,6 @@ export default {
     ...mapGetters(["getUser"]) 
   },
   created() {
-    this.fetchCourses();
   },
   mounted() {
     this.getDepartment();
@@ -161,6 +160,7 @@ export default {
       if (user && user.department) {
         this.userDepartment = user.department;
         console.log('Kullanıcı departmanı:', this.userDepartment);
+        this.fetchCourses(this.userDepartment);
       } else {
         console.error("Kullanıcı departmanı bulunamadı!");
       }
@@ -184,8 +184,9 @@ export default {
           console.error('Error updating course:', error);
         });
     },
-    fetchCourses() {
-      axios.get('http://localhost:8080/course/get-courses')
+    fetchCourses(userDepartment) {
+      const departmentId = userDepartment.id
+      axios.get(`http://localhost:8080/course/get-courses/department/${departmentId}`)
         .then(response => {
           this.courses = response.data;
           console.log(this.courses); // courses dizisini konsola yazdır
