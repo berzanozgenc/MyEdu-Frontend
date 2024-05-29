@@ -337,17 +337,11 @@ goToAdminCoursePage(){
         return;
       }
 
-      console.log(`Deleting course with courseId: ${courseId}`);
-
       axios.delete(`http://localhost:8080/course/${courseId}`)
         .then(response => {
           console.log('Course deleted:', response.data);
           this.$toast.success("Kurs başarıyla silindi!");
-          // Silinen kursu courses dizisinden kaldır
-          this.courses.splice(index, 1);
-
-          // Alternatif olarak, filter yöntemini kullanabilirsiniz:
-          // this.courses = this.courses.filter(course => course.courseId !== courseId);
+          this.fetchCourses(this.userDepartment);
         })
         .catch(error => {
           if (error.response) {
@@ -357,10 +351,13 @@ goToAdminCoursePage(){
             console.error('Error deleting course:', error.message);
           }
         });
+
+      console.log(`Deleting course with courseId: ${courseId}`);
+
+     
     },
     openModal(course) {
     this.showModal = true; // Modalı açmak için showModal değişkenini true olarak ayarlayın
-    console.log(course);
     this.selectedCourse=course;
   },
   
