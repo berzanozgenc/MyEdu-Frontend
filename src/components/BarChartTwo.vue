@@ -24,7 +24,7 @@ export default {
         datasets: [
           {
             data: [],
-            label: 'Öğrenim Çıktısı Sağlanma Düzeyi (%)',
+            label: 'Program Çıktısı Sağlanma Düzeyi (%)',
             backgroundColor: 'rgba(255, 99, 132, 0.2)', // Barların arka plan rengini mavi yap
             borderColor: 'red', // Barların kenar rengini mavi yap
             borderWidth: 1 // Barların kenar kalınlığını ayarlama
