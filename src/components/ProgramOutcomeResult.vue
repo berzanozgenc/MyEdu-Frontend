@@ -127,8 +127,6 @@ export default {
     async fetchProgramOutcomes() {
   try {
     const courseId = this.$route.params.courseId;
-    //const responseDepartment = await axios.get(`http://localhost:8080/course/get-department/course/${courseId}`);
-    //const departmentId = responseDepartment.data.id;
     const response = await axios.get(`http://localhost:8080/courseProgramOutcomeResults/${courseId}`);
     // Geçerli olanları filtrele
     this.outcomes = response.data.filter(outcome => !isNaN(outcome.levelOfProvision));
