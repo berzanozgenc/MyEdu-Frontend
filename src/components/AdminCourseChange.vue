@@ -12,7 +12,7 @@
       </nav>
       <div class="flex-container">
         <!-- Side Menu -->
-        <div class="card menu" style="width: 12%; margin-left: 10px;">
+        <div class="card menu" style="width: 18%;">
           <div class="card-body">
             <h5 class="card-title">Menü</h5>
             <ul class="list-group">
@@ -36,7 +36,7 @@
         </div>
       
   
-        <div class="card" style="width: 75rem; height: 40rem; overflow-y: auto; overflow-x: hidden">
+        <div class="card" style="width: 80%; overflow-y: auto; overflow-x: hidden">
           <div class="card-body">
             <h5 class="card-title">Ders Sayfası</h5>
             <table class="table">
