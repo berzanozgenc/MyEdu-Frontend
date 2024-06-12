@@ -66,7 +66,8 @@
       </div>
           <input type="file" @change="handleFileUpload" accept=".xlsx, .xls" />
           <button class="btn btn-outline-primary" @click="uploadExcelGrades">Excelden Not Gir</button>
-          <table class="table table-stretched mt-3">
+          <div style="overflow-x: auto;">
+            <table class="table table-stretched mt-3">
             <thead>
               <tr>
                 <th scope="col"></th>
@@ -94,6 +95,7 @@
               </tr>
             </tbody>
           </table>
+          </div>
         </div>
       </div>
     </div>
@@ -185,53 +187,61 @@ export default {
       this.fetchTable();
     },
     async saveAllChanges() {
-      try {
-        const studentIds = this.students.map(student => student.userId);
-        const assessmentIds = this.assessments.map(assessment => assessment.assessmentId);
+  try {
+    const studentIds = this.students.map(student => student.userId);
+    const assessmentIds = this.assessments.map(assessment => assessment.assessmentId);
 
-        let stAsArr = [];
-        for (let studentIndex = 0; studentIndex < studentIds.length; studentIndex++) {
-          const studentId = studentIds[studentIndex];
-          for (let assessmentIndex = 0; assessmentIndex < assessmentIds.length; assessmentIndex++) {
-            const assessmentId = assessmentIds[assessmentIndex];
-            const cellValue = this.cellData[studentIndex][assessmentIndex];
+    let stAsArr = [];
+    for (let studentIndex = 0; studentIndex < studentIds.length; studentIndex++) {
+      const studentId = studentIds[studentIndex];
+      for (let assessmentIndex = 0; assessmentIndex < assessmentIds.length; assessmentIndex++) {
+        const assessmentId = assessmentIds[assessmentIndex];
+        const cellValue = this.cellData[studentIndex][assessmentIndex];
+        const contributionValue = this.assessments[assessmentIndex].contribution;
 
-            if (cellValue < 0 || cellValue == NaN)
-              this.$toast.error("Lütfen Geçerli Sayı Giriniz!");
-
-            if (isNaN(cellValue)) {
-              this.$toast.error("Lütfen Geçerli Değer Giriniz!");
-            }
-
-            if (cellValue == undefined || cellValue == "" || cellValue == NaN || cellValue < 0)
-              continue;
-
-            let obj = {
-              "assessmentId": assessmentId,
-              "user_id": studentId,
-              "grade": parseFloat(cellValue)
-            }
-
-            stAsArr.push(obj);
-          }
+        // Eğer cellValue contributionValue'dan büyükse, hata mesajı göster ve işlemi durdur
+        if (cellValue > contributionValue) {
+          this.$toast.error(`Öğrenci ${this.students[studentIndex].studentNumber} için girilen not ${contributionValue} değerinden büyük olamaz!`);
+          return; // Hata durumunda fonksiyondan çık
         }
 
-        const response = await axios.post('http://localhost:8080/student-assessment/create', {
-          "stAsList": stAsArr
-        })
-
-        if (response.status == 200) {
-          this.$toast.success('Başarıyla Kaydedildi!');
-          this.disableEditMode();
+        // Diğer doğrulamalar
+        if (cellValue < 0 || isNaN(cellValue)) {
+          this.$toast.error("Lütfen geçerli bir sayı giriniz!");
+          return; // Hata durumunda fonksiyondan çık
         }
-        else
-          this.$toast.error('Kaydedilirken Bir Hata Oluştu!');
+
+        if (cellValue == undefined || cellValue == "" || isNaN(cellValue) || cellValue < 0) {
+          continue; // Hatalı değerleri atla
+        }
+
+        let obj = {
+          "assessmentId": assessmentId,
+          "user_id": studentId,
+          "grade": parseFloat(cellValue)
+        };
+
+        stAsArr.push(obj);
       }
-      catch (error) {
-        console.error('Error saving changes:', error);
-        this.$toast.error('Kaydedilirken Bir Hata Oluştu!');
-      }
-    },
+    }
+
+    const response = await axios.post('http://localhost:8080/student-assessment/create', {
+      "stAsList": stAsArr
+    });
+
+    if (response.status == 200) {
+      this.$toast.success('Başarıyla Kaydedildi!');
+      this.disableEditMode();
+      this.fetchUseCustomNames();
+      this.fetchTable();
+    } else {
+      this.$toast.error('Kaydedilirken Bir Hata Oluştu!');
+    }
+  } catch (error) {
+    console.error('Error saving changes:', error);
+    this.$toast.error('Kaydedilirken Bir Hata Oluştu!');
+  }
+},
     enableEditMode() {
       this.isEditMode = true;
     },

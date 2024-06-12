@@ -53,7 +53,7 @@
       </div>
       <!-- Course Details and Assessments -->
       
-      <div class="card course-details" style="width: 78%; overflow-y: auto; overflow-x: hidden;">
+      <div class="card course-details" style="width: 78%; overflow-y: auto; overflow-x: auto;">
         <div style="display: flex; margin-left: 14px;">
           <h3 style="margin-top: 12px; margin-left: 6px;">{{ course.code }} - {{ course.courseName }} - {{ course.semester }}</h3>
         </div>
@@ -453,6 +453,18 @@ logoutUser() {
 .iconmy {
   max-width: 24px;
   max-height: 24px;
+}
+
+.card.menu {
+    width: 16%; /* Sabit genişlik */
+    min-width: 250px; /* Opsiyonel: minimum genişlik belirleyebilirsiniz */
+    overflow-x: auto; /* Yatay kaydırma ekler */
+    white-space: nowrap; /* Satırları kırpmaz, yatayda devam eder */
+}
+
+.card.course-details{
+  overflow-x: auto; /* Yatay kaydırma ekler */
+  white-space: nowrap; /* Satırları kırpmaz, yatayda devam eder */
 }
 
 </style>

@@ -88,11 +88,13 @@
   <img class="icon" src="../assets/profile.png" />
   <br>
   <template v-if="student">
-    <h7 class="card-text">Öğrenci Adı: {{ student.firstName }}</h7>
+    <h7 class="card-text"><strong>Öğrenci Adı: </strong> {{ student.firstName }}</h7>
     <br>
-    <h7 class="card-text">Öğrenci soyadı: {{ student.lastName }}</h7>
+    <h7 class="card-text"><strong>Öğrenci soyadı: </strong> {{ student.lastName }}</h7>
     <br>
-    <h7 class="card-text">Öğrenci no:  {{ student.studentNumber }}</h7>
+    <h7 class="card-text"><strong>Öğrenci no: </strong>  {{ student.studentNumber }}</h7>
+    <br>
+    <h7 class="card-text"><strong> Bölüm:</strong> {{ student.department.name }}</h7>
   </template>
   <template v-else>
     <p>Bilgiler yükleniyor...</p>

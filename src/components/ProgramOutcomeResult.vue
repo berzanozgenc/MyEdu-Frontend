@@ -62,10 +62,10 @@
             <tbody>
               <tr v-for="(outcome, index) in outcomes" :key="index">
                 <td class="description-cell">{{ outcome.description }} ({{ outcome.number }})</td>
-                <td style="text-align: center;">%{{ outcome.levelOfProvision.toFixed(3) }}</td>
-                <td style="text-align: center;">{{ outcome.target.toFixed(3) }}</td>
-                <td style="text-align: center;">{{ outcome.assessmentValue.toFixed(3)}}</td>
-                <td style="text-align: center;">{{ outcome.score.toFixed(3) }}</td>
+                <td style="text-align: center;">%{{ outcome.levelOfProvision.toFixed(2) }}</td>
+                <td style="text-align: center;">{{ outcome.target.toFixed(2) }}</td>
+                <td style="text-align: center;">{{ outcome.assessmentValue.toFixed(2)}}</td>
+                <td style="text-align: center;">{{ outcome.score.toFixed(2) }}</td>
               </tr>
             </tbody>
           </table>

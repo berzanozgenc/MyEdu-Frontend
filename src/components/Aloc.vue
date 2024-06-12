@@ -77,7 +77,7 @@
         </div>
       </div>
 
-      <div class="card mt-3" style="width: 80%">
+      <div class="card mt-3" style="width: 80%;">
         <div class="card-body">
           <br />
           <h5 class="card-title">Öğrenim Çıktısı - Araç Eşleştirme</h5>
@@ -229,67 +229,73 @@ export default {
       return contribution;
     },
     async saveAllChanges() {
-      try {
-        const outcomeIds = this.outcomes.map((outcome) => outcome.id);
-        const assessmentIds = this.assessments.map(
-          (assessment) => assessment.assessmentId
-        );
+  try {
+    const outcomeIds = this.outcomes.map((outcome) => outcome.id);
+    const assessmentIds = this.assessments.map(
+      (assessment) => assessment.assessmentId
+    );
 
-        let alocArr = [];
-        for (
-          let outcomeIndex = 0;
-          outcomeIndex < outcomeIds.length;
-          outcomeIndex++
+    let alocArr = [];
+    let contributions = [];
+
+    for (
+      let outcomeIndex = 0;
+      outcomeIndex < outcomeIds.length;
+      outcomeIndex++
+    ) {
+      const outcomeId = outcomeIds[outcomeIndex];
+      for (
+        let assessmentIndex = 0;
+        assessmentIndex < assessmentIds.length;
+        assessmentIndex++
+      ) {
+        const assessmentId = assessmentIds[assessmentIndex];
+        const cellValue = this.cellData[outcomeIndex][assessmentIndex];
+
+        if (cellValue < 0 || cellValue > 100 || isNaN(cellValue)) {
+          this.$toast.error("Lütfen geçerli bir değer giriniz!");
+          return;
+        }
+
+        // Dolu boş kontrolü
+        if (
+          cellValue !== undefined &&
+          cellValue !== "" &&
+          !isNaN(cellValue) &&
+          cellValue >= 0 &&
+          cellValue <= 100
         ) {
-          const outcomeId = outcomeIds[outcomeIndex];
-          for (
-            let assessmentIndex = 0;
-            assessmentIndex < assessmentIds.length;
-            assessmentIndex++
-          ) {
-            const assessmentId = assessmentIds[assessmentIndex];
-            const cellValue = this.cellData[outcomeIndex][assessmentIndex];
+          contributions.push({
+            assessmentId: assessmentId,
+            contribution: parseFloat(cellValue),
+          });
 
-            if (cellValue < 0 || cellValue > 100 || cellValue == NaN)
-              this.$toast.error("Lütfen Geçerli Değer Giriniz!");
+          let obj = {
+            assessmentId: assessmentId,
+            learningOutcomeId: outcomeId,
+            contribution: parseFloat(cellValue),
+          };
 
-            if (isNaN(cellValue)) {
-              this.$toast.error("Lütfen geçerli bir sayı giriniz!");
-            }
-
-            // dolu boş kontrolü
-            if (
-              cellValue == undefined ||
-              cellValue == "" ||
-              cellValue == NaN ||
-              cellValue < 0 ||
-              cellValue > 100
-            )
-              continue;
-
-            let obj = {
-              assessmentId: assessmentId,
-              learningOutcomeId: outcomeId,
-              contribution: parseFloat(cellValue),
-            };
-
-            alocArr.push(obj);
-          }
+          alocArr.push(obj);
         }
-
-        const response = await axios.post("http://localhost:8080/aloc", {
-          alocList: alocArr,
-        });
-
-        if (response.status == 200) {
-          this.$toast.success("Tüm değişiklikler başarıyla kaydedildi!");
-          await this.fetchTable();
-        }
-      } catch (error) {
-        console.error("Error saving changes:", error);
       }
-      this.isEditMode = false;
-    },
+    }
+
+    const response = await axios.post("http://localhost:8080/aloc", {
+      alocList: alocArr,
+    });
+
+    if (response.status == 200) {
+      this.$toast.success("Tüm değişiklikler başarıyla kaydedildi!");
+      await this.fetchTable();
+    }
+  } catch (error) {
+    console.error("Error saving changes:", error);
+  }
+  this.isEditMode = false;
+}
+
+,
     async fetchTable() {
       try {
         const outcomeIds = this.outcomes.map((outcome) => outcome.id);

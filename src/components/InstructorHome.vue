@@ -49,9 +49,8 @@
           <div class="card-body">
             <h5 class="card-title">Derslerim</h5>
             <ul style="max-width: 73rem" class="list-group">
-              <li class="list-group-item" v-for="(registration, index) in userCourses" :key="index">
-                <a :href="'#'" @click="goToCoursePage(registration.course)" class="course-link">
-                  {{ registration.course.code }} - {{ registration.course.courseName }} - {{ registration.course.semester }}
+              <li class="list-group-item text-left" v-for="(registration, index) in userCourses" :key="index">
+                <a @click="goToCoursePage(registration.course)" class="course-link">{{ registration.course.code }} - {{ registration.course.courseName }} - {{ registration.course.semester }}
                 </a>
                 <button class="btn btn-danger btn-sm ml-2" @click="openConfirmationModal(registration.registrationId)">
                   Sil
@@ -122,7 +121,6 @@ this.$router.push('/guidance');
     goToCoursePage(registration) {
       const courseId = registration.courseId;
       this.$router.push({ name: 'Course', params: { courseId: courseId } });
-      console.log(registration);
       this.selectedCourse = registration; // Seçilen dersin bilgilerini selectedCourse değişkenine atar
     },
     getDepartment(){
@@ -133,14 +131,12 @@ this.$router.push('/guidance');
     fetchUserCourses() {
       // Vuex'tan kullanıcı ID'sini alın
       const userId = this.getUser ? this.getUser.userId : null;
-      console.log(userId);
   
       // Kullanıcının derslerini getiren istek
       axios
         .get(`http://localhost:8080/user-course-registrations/user/${userId}/courses`)
         .then((response) => {
           this.userCourses = response.data; // Kullanıcıya ait dersleri listesini güncelle
-          console.log(response.data);
         })
         .catch((error) => {
           console.error("Hata:", error);
@@ -148,7 +144,6 @@ this.$router.push('/guidance');
     },
     fetchCourses(userDepartment) {
       const departmentId = this.userDepartment.id;
-      console.log("aaa",departmentId)
       axios
         .get(`http://localhost:8080/course/get-courses/department/${departmentId}`)
         .then((response) => {
@@ -176,14 +171,10 @@ this.$router.push('/guidance');
         courseId: courseId,
       };
   
-      console.log(courseId);
-      console.log(userId);
-  
       // Backend'e istek yapma
       axios
         .post("http://localhost:8080/user-course-registrations", requestData)
         .then((response) => {
-          console.log(response.data);
           // Başarılı cevap durumunda yapılacak işlemler
           
           this.$toast.success("Ders başarıyla eklendi");
@@ -210,7 +201,6 @@ this.$router.push('/guidance');
       axios
         .delete(`http://localhost:8080/user-course-registrations/${this.registrationIdToDelete}`)
         .then((response) => {
-          console.log(response.data);
           // Silme işlemi başarılıysa kullanıcıya ait derslerin listesini yeniden getir
           this.fetchUserCourses();
           // Modal pencereyi kapat
