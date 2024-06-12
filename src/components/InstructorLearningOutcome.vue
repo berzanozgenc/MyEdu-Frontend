@@ -73,7 +73,7 @@
                 </td>
                 <td>
                   <button class="btn btn-danger btn-sm" @click="deleteProgram(item.id, item)">Sil</button>
-                  <button v-if="item.editable" class="btn btn-success btn-sm text-white" @click="updateProgram(item)">Kaydet</button>
+                  <button style="margin-left: 2px;" v-if="item.editable" class="btn btn-success btn-sm text-white" @click="updateProgram(item)">Kaydet</button>
                   <button style="margin-left: 2px;" v-else class="btn btn-warning btn-sm text-white" @click="editProgram(item)">Düzenle</button>
                 </td>
               </tr>

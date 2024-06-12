@@ -19,7 +19,7 @@
     </nav>
     <div class="flex-container">
       <!-- Side Menu -->
-      <div class="card menu" style="width: 12%; margin-left: 10px;">
+      <div class="card menu" style="width: 12%;">
         <div class="card-body">
           <h5 class="card-title">Menü</h5>
           <ul class="list-group">
@@ -52,7 +52,6 @@
               <tr>
                 <th scope="col" style="width: 15%;">Program Çıktısı No.</th>
                 <th scope="col" style="width: 70%;">Tanım</th>
-                <th scope="col" style="width: 15%;">İşlemler</th>
               </tr>
             </thead>
             <tbody>
@@ -65,34 +64,12 @@
 
                 <td>
                   <input v-if="item.editable" type="text" class="form-control editable" v-model="item.description"
-                    style="width: 250px;">
+                    style="width: auto;">
                   <div class="descriptionField" v-else>{{ item.description }}</div>
-                </td>
-                <td>
-                  <button class="btn btn-danger btn-sm" @click="deleteProgram(item.id, item)">Sil</button>
-                  <button v-if="item.editable" class="btn btn-success btn-sm text-white"
-                    @click="updateProgram(item)">Kaydet</button>
-                  <button style="margin-left: 2px;" v-else class="btn btn-warning btn-sm text-white"
-                    @click="editProgram(item)">Düzenle</button>
                 </td>
               </tr>
             </tbody>
           </table>
-          <div class="card-body">
-            <h5 class="card-title">Program Çıktısı Ekle</h5>
-            <div class="form-group">
-              <label for="no">PÇ Numarası:</label>
-              <input type="number" class="form-control" id="no" v-model="newProgram.number" style="width: 10%;">
-              <label for="description">Tanım:</label>
-              <textarea class="form-control" id="description" v-model="newProgram.description"
-                style="width: 25%; height: 100px;"></textarea>
-            </div>
-            <br>
-            <button class="btn btn-outline-primary my-2 my-sm-0" style="width: 150px; height: 35px" type="submit"
-              @click="addProgram($route.params.courseId)">
-              PÇ Ekle
-            </button>
-          </div>
         </div>
       </div>
     </div>
@@ -263,10 +240,12 @@ this.$router.push('/guidance');
     },
     async fetchProgramOutcomes(courseId) {
       try {
-        const response = await axios.get(`http://localhost:8080/program-outcomes/course/${courseId}`);
+        const responseDepartment = await axios.get(`http://localhost:8080/course/get-department/course/${courseId}`);
+        const departmentId = responseDepartment.data.id;
+        const response = await axios.get(`http://localhost:8080/program-outcomes/department/${departmentId}`);
         console.log(response.data);
         // Her öğenin bir id alanı olduğunu varsayarak, bu id değerini kullanarak programları oluşturun
-        this.programs = response.data.sort((a, b) => a.id - b.id);
+        this.programs = response.data.sort((a, b) => a.number - b.number);
         console.log(this.programs)
       } catch (error) {
         console.error(error);
@@ -366,7 +345,7 @@ select.editable {
 }
 
 .descriptionField {
-  max-width: 700px;
+  max-width: 98%;
   /* Adjust the width as needed */
   word-wrap: break-word;
 }

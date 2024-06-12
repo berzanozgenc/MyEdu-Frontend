@@ -52,7 +52,7 @@
           <table class="table table-sm">
             <thead>
               <tr>
-                <th scope="col">Prg. Çıktı</th>
+                <th scope="col">Program Çıktısı</th>
                 <th scope="col">PÇ'leri Sağlama Düzeyi</th>
                 <th scope="col">HEDEFLER</th>
                 <th scope="col">ARAÇLAR</th>
@@ -61,7 +61,7 @@
             </thead>
             <tbody>
               <tr v-for="(outcome, index) in outcomes" :key="index">
-                <td class="description-cell">{{ outcome.description }} ({{ outcome.number }})</td>
+                <td class="description-cell">{{ outcome.programOutcome.description }} ({{ outcome.programOutcome.number }})</td>
                 <td style="text-align: center;">%{{ outcome.levelOfProvision.toFixed(2) }}</td>
                 <td style="text-align: center;">{{ outcome.target.toFixed(2) }}</td>
                 <td style="text-align: center;">{{ outcome.assessmentValue.toFixed(2)}}</td>
@@ -118,10 +118,8 @@ export default {
   methods: {
     async calculateValues() {
       try {
-        const courseId = this.$route.params.courseId;
-        await axios.get(`http://localhost:8080/program-outcomes/course/${courseId}/calculate-and-set-target`);
-        await axios.put(`http://localhost:8080/program-outcomes/course/${courseId}/calculate-and-set-assessment-value`);
-        await axios.post(`http://localhost:8080/program-outcomes/course/${courseId}/calculate-and-set-score-and-level-of-provision`);
+        const courseId = this.$route.params.courseId;  
+        await axios.post(`http://localhost:8080/courseProgramOutcomeResults/${courseId}`);
       } catch (error) {
         console.error("Error calculate program outcome values:", error);
       }
@@ -129,11 +127,14 @@ export default {
     async fetchProgramOutcomes() {
   try {
     const courseId = this.$route.params.courseId;
-    const response = await axios.get(`http://localhost:8080/program-outcomes/course/${courseId}`);
+    //const responseDepartment = await axios.get(`http://localhost:8080/course/get-department/course/${courseId}`);
+    //const departmentId = responseDepartment.data.id;
+    const response = await axios.get(`http://localhost:8080/courseProgramOutcomeResults/${courseId}`);
     // Geçerli olanları filtrele
     this.outcomes = response.data.filter(outcome => !isNaN(outcome.levelOfProvision));
     // Sonrasında sırala
-    this.outcomes.sort((a, b) => a.id - b.id);
+    console.log(this.outcomes)
+    this.outcomes.sort((a, b) => a.programOutcome.number - b.programOutcome.number);
   } catch (error) {
     console.error("Error fetching program outcomes:", error);
   }

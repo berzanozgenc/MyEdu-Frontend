@@ -18,7 +18,7 @@
     </nav>
     <div class="flex-container">
       <!-- Side Menu -->
-      <div class="card menu" style="width: 12%; margin-left: 10px;">
+      <div class="card menu" style="width: 12%;">
         <div class="card-body">
           <h5 class="card-title">Menü</h5>
           <ul class="list-group">
@@ -70,7 +70,7 @@
             <h5 class="modal-title">Dersi Sil</h5>
           </div>
           <div class="modal-body">
-            <p>Bu dersi silmek istediğinizden emin misiniz?</p>
+            <p>Bu dersi, derslerinizden silmek istediğinizden emin misiniz?</p>
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-secondary" @click="closeModal">İptal</button>
@@ -280,14 +280,7 @@ this.$router.push('/guidance');
 }
 </style>
 <style scoped>
-.list-group-item {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
 
-.list-group-item .btn-danger {
-  margin-left: 0; /* Silme butonunu sola hizala */
-  margin-right: 2px; /* Opsiyonel: butonlar arasına boşluk bırak */
-}
+
+
 </style>

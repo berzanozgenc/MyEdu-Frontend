@@ -280,7 +280,9 @@ export default {
     },
     async fetchProgramOutcomes(courseId) {
       try {
-        const response = await axios.get(`http://localhost:8080/program-outcomes/course/${courseId}`);
+        const responseDepartment = await axios.get(`http://localhost:8080/course/get-department/course/${courseId}`);
+        const departmentId = responseDepartment.data.id;
+        const response = await axios.get(`http://localhost:8080/program-outcomes/department/${departmentId}`);
         if (response.status !== 200) {
           throw new Error('Program çıktıları getirilirken bir hata oluştu.');
         }
@@ -290,7 +292,7 @@ export default {
             outcomes: Array(this.outcomes.length).fill(null)
           };
         });
-        this.programs.sort((a, b) => a.id - b.id);
+        this.programs.sort((a, b) => a.number - b.number);
         this.fillTable();
       } catch (error) {
         console.error('Bir hata oluştu:', error);

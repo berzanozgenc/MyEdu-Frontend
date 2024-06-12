@@ -59,7 +59,7 @@
             <tbody>
               <tr v-for="(outcome, index) in learningOutcomeResults" :key="index">
                 <td class="description-cell">{{ outcome.learningOutcome.description }}</td>
-                <td style="text-align: center;">%{{ outcome.levelOfProvision.toFixed(3) }}</td>
+                <td style="text-align: center;">%{{ outcome.levelOfProvision.toFixed(2)}}</td>
               </tr>
             </tbody>
           </table>
@@ -73,7 +73,7 @@
             <tbody>
               <tr v-for="(outcome, index) in programOutcomeResults" :key="index">
                 <td class="description-cell">{{ outcome.programOutcome.description }}</td>
-                <td style="text-align: center;">%{{ outcome.levelOfProvision.toFixed(3) }}</td>
+                <td style="text-align: center;">%{{ outcome.levelOfProvision.toFixed(2)}}</td>
          
               </tr>
             </tbody>
@@ -154,13 +154,15 @@ import { useRouter } from 'vue-router';
         try {
         const userId = this.$route.params.studentId;
         const courseId = this.$route.params.courseId;
-        const response = await axios.get(`http://localhost:8080/program-outcomes/course/${courseId}`);
+        const responseDepartment = await axios.get(`http://localhost:8080/course/get-department/course/${courseId}`);
+        const departmentId = responseDepartment.data.id;
+        const response = await axios.get(`http://localhost:8080/program-outcomes/department/${departmentId}`);
         const programOutcomeList = response.data;
         const requestBody = {
             userId: userId,
             programOutcomeList: programOutcomeList
         };
-        await axios.post(`http://localhost:8080/student-program-outcome`, requestBody);
+        await axios.post(`http://localhost:8080/student-program-outcome/${courseId}`, requestBody);
         this.getProgramOutcomeResults(programOutcomeList);
         this.getLearningOutcomeResults(learningOutcomeList);
     } catch (error) {
@@ -226,9 +228,7 @@ async getLearningOutcomeResults(learningOutcomeList) {
       async calculateValuesProgramOutcome() {
       try {
         const courseId = this.$route.params.courseId;
-        await axios.get(`http://localhost:8080/program-outcomes/course/${courseId}/calculate-and-set-target`);
-        await axios.put(`http://localhost:8080/program-outcomes/course/${courseId}/calculate-and-set-assessment-value`);
-        await axios.post(`http://localhost:8080/program-outcomes/course/${courseId}/calculate-and-set-score-and-level-of-provision`);
+        await axios.post(`http://localhost:8080/courseProgramOutcomeResults/${courseId}`);
       } catch (error) {
         console.error("Error calculate program outcome values:", error);
       }
@@ -236,7 +236,9 @@ async getLearningOutcomeResults(learningOutcomeList) {
     async fetchProgramOutcomes() {
       try {
         const courseId = this.$route.params.courseId;
-        const response = await axios.get(`http://localhost:8080/program-outcomes/course/${courseId}`);
+        const responseDepartment = await axios.get(`http://localhost:8080/course/get-department/course/${courseId}`);
+        const departmentId = responseDepartment.data.id;
+        const response = await axios.get(`http://localhost:8080/program-outcomes/department/${departmentId}`);
         this.programOutcomes = response.data;
 
       } catch (error) {

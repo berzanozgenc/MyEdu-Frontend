@@ -45,7 +45,7 @@
           <tbody>
             <tr v-for="(outcome, index) in learningOutcomeResults" :key="index">
               <td class="description-cell">{{ outcome.learningOutcome.description }}</td>
-              <td style="text-align: center;">%{{ outcome.levelOfProvision.toFixed(3) }}</td>
+              <td style="text-align: center;">%{{ outcome.levelOfProvision.toFixed(2) }}</td>
             </tr>
           </tbody>
         </table>
@@ -59,7 +59,7 @@
           <tbody>
             <tr v-for="(outcome, index) in programOutcomeResults" :key="index">
               <td class="description-cell">{{ outcome.programOutcome.description }}</td>
-              <td style="text-align: center;">%{{ outcome.levelOfProvision.toFixed(3) }}</td>
+              <td style="text-align: center;">%{{ outcome.levelOfProvision.toFixed(2) }}</td>
        
             </tr>
           </tbody>
@@ -115,13 +115,15 @@ export default {
       async calculateStudentValuesPO(learningOutcomeList, userId){
         try {
         const courseId = this.$route.params.courseId;
-        const response = await axios.get(`http://localhost:8080/program-outcomes/course/${courseId}`);
+        const responseDepartment = await axios.get(`http://localhost:8080/course/get-department/course/${courseId}`);
+        const departmentId = responseDepartment.data.id;
+        const response = await axios.get(`http://localhost:8080/program-outcomes/department/${departmentId}`);
         const programOutcomeList = response.data;
         const requestBody = {
             userId: userId,
             programOutcomeList: programOutcomeList
         };
-        await axios.post(`http://localhost:8080/student-program-outcome`, requestBody);
+        await axios.post(`http://localhost:8080/student-program-outcome/${courseId}`, requestBody);
         this.getProgramOutcomeResults(programOutcomeList, userId);
         this.getLearningOutcomeResults(learningOutcomeList, userId);
     } catch (error) {
@@ -159,8 +161,7 @@ async getLearningOutcomeResults(learningOutcomeList, userId) {
         
         // Gelen verileri kullanabilirsiniz
         let learningOutcomeResults = userLearningOutcomeResponse.data;
-        
-        // Program outcome'ları idsine göre sırala
+
         learningOutcomeResults.sort((a, b) => {
             return a.learningOutcome.id - b.learningOutcome.id;
         });

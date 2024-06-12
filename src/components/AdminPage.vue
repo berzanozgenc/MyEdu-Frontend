@@ -110,6 +110,7 @@
                     Sil
                   </button>
                   <button
+                  style="margin-left: 2px;"
                     v-if="item.editable"
                     class="btn btn-success btn-sm text-white"
                     @click="updateProgram(item)"
@@ -223,7 +224,7 @@ export default {
     confirmDelete() {
       axios
         .delete(
-          `http://localhost:8080/department/program-outcomes/${this.selectedProgramOutcomeId}`
+          `http://localhost:8080/program-outcomes/${this.selectedProgramOutcomeId}`
         )
         .then((response) => {
           console.log("Program silindi:", response.data);
@@ -276,7 +277,7 @@ export default {
         });
     },
     deleteProgram(programId) {
-      this.selectedProgramOutcomeId = programId; // Silinecek öğrencinin ID'sini sakla
+      this.selectedProgramOutcomeId = programId; // Silinecek programın ID'sini sakla
       this.showModal = true; // Modal'ı göster
     },
     logoutUser() {
@@ -305,22 +306,14 @@ export default {
           return;
         } else {
           await axios.post(
-            `http://localhost:8080/department/program-outcomes/${departmentId}`,
-            data
-          );
+          `http://localhost:8080/program-outcomes/${departmentId}`,
+          data
+        );
           this.$toast.success(
             `${this.newProgram.number} numaralı program çıktısı başarıyla oluşturuldu.`
           );
           this.fetchDepartmentProgramOutcomes();
         }
-
-        await axios.post(
-          `http://localhost:8080/department/program-outcomes/${departmentId}`,
-          data
-        );
-        this.$toast.success(
-          `${this.newProgram.number} numaralı program çıktısı  başarıyla oluşturuldu.`
-        );
         this.fetchDepartmentProgramOutcomes();
       } catch (error) {
         console.error("Error adding program outcomes:", error);
@@ -332,19 +325,29 @@ export default {
       console.log(this.userDepartment);
       try {
         const response = await axios.get(
-          `http://localhost:8080/department/program-outcomes/department/${this.userDepartment.id}`
+          `http://localhost:8080/program-outcomes/department/${this.userDepartment.id}`
         );
-        this.programs = response.data;
+        this.programs = response.data.sort((a, b) => a.number - b.number);
       } catch (error) {
         console.error("Error fetching outcomes:", error);
       }
     },
 
     async updateProgram(program) {
-      console.log("Güncellenen program:", program);
+      const ownNumber = program.number;
+      const existingProgram = this.programs.find(
+    (existingProgram) => existingProgram.number === ownNumber && existingProgram.id !== program.id
+  );
+
       try {
-        const response = await axios.put(
-          `http://localhost:8080/department/program-outcomes/${program.id}`,
+        if (existingProgram) {
+          this.$toast.error(
+            `${program.number} numaralı program çıktısı zaten mevcut.`
+          );
+          return;
+        }else{
+          const response = await axios.put(
+          `http://localhost:8080/program-outcomes/${program.id}`,
           {
             description: program.description,
             number: program.number,
@@ -359,6 +362,8 @@ export default {
         } else {
           this.$toast.error("Program çıktısı güncellenirken bir hata oluştu.");
         }
+        }
+       
       } catch (error) {
         console.error(error);
         this.$toast.error("Program çıktısı güncellenirken bir hata oluştu.");
