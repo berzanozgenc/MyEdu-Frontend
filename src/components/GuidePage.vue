@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div style="overflow-x: auto;">
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
       <a @click="refreshPage" style="margin-left: 10px" class="navbar-brand" href="#">
         <img src="../assets/Baskent_University_Logo.png" alt="Logo" style="max-height: 50px;">
@@ -17,7 +17,7 @@
     </nav>
 
     
-      <div class="steps-wrapper">
+      <div style="overflow-x: auto;"class="steps-wrapper">
         <div class="steps-container">
           <div v-for="(step, index) in steps" :key="index" class="step-card">
             <div class="step-number">{{ index + 1 }}</div>

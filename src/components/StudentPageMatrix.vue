@@ -30,7 +30,7 @@
       </div>
 
    <!-- Classes Card -->
-<div class="card" style="width: 50%; margin-left: 10px">
+<div class="card" style="width: 80%; margin-left: 10px">
 <div class="card-body">
   <h5 class="card-title">Öğrenci Sağlama Düzeyleri</h5>
 
@@ -38,8 +38,8 @@
   <table class="table table-sm">
           <thead>
             <tr>
-              <th scope="col">Öğr. Çıktı</th>
-              <th scope="col">ÖÇ'leri Sağlama Düzeyi</th>
+              <th style="width: 74%; vertical-align: top; text-align: left;" scope="col">Dersin Öğrenim Çıktıları</th>
+              <th style="text-align: center" scope="col">Sağlama Düzeyim</th>
             </tr>
           </thead>
           <tbody>
@@ -52,15 +52,14 @@
         <table class="table table-sm">
           <thead>
             <tr>
-              <th scope="col">Prg. Çıktı</th>
-              <th scope="col">PÇ'leri Sağlama Düzeyi</th>
+              <th style="width: 74%; text-align: left; vertical-align: top;" scope="col">Program Kazanımları</th>
+              <th style="text-align: center;" scope="col">Sağlama Düzeyim</th>
             </tr>
           </thead>
           <tbody>
             <tr v-for="(outcome, index) in programOutcomeResults" :key="index">
               <td class="description-cell">{{ outcome.programOutcome.description }}</td>
               <td style="text-align: center;">%{{ outcome.levelOfProvision.toFixed(2) }}</td>
-       
             </tr>
           </tbody>
         </table>

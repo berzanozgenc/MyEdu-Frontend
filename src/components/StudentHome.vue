@@ -34,6 +34,9 @@
         <div class="card" style="width: 80%; overflow-y: auto; overflow-x: hidden;">
           <div class="form-inline">
             <div class="card-body">
+              <button style="margin-left: 16px;" class="btn btn-outline-primary" @click="goToCourseProgramOutcomePage">Program Kazanımlarım</button>
+              <br>
+              <br>
               <h5 class="card-title">Derslerim</h5>
               <ul style="max-width: 73rem" class="list-group">
                 <li class="list-group-item" v-for="(registration, index) in userCourses" :key="index">

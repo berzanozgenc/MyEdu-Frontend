@@ -65,7 +65,7 @@
           <table class="table table-striped table-bordered">
     <thead>
       <tr>
-        <th scope="col">Departman</th>
+        <th style="width: 12%;"scope="col">Departman</th>
         <th scope="col">Dönem</th>
         <th scope="col">Ders Kodu</th>
         <th scope="col">Ders Adı</th>
@@ -82,9 +82,13 @@
         </td>
         <td>
           <span v-if="editable === index">
-            <input v-model="item.semester" class="editable-input" />
-          </span>
-          <span v-else>{{ item.semester }}</span>
+        <select v-model="item.semester" class="editable-input">
+          <option value="Güz">Güz</option>
+          <option value="Bahar">Bahar</option>
+          <option value="Yaz">Yaz</option>
+        </select>
+      </span>
+      <span v-else>{{ item.semester }}</span>
         </td>
         <td>
           <span v-if="editable === index">
@@ -139,10 +143,11 @@
       <div class="modal-dialog" role="document">
         <div class="modal-content">
           <div class="modal-header">
-            <h5 class="modal-title">Araç Türünü Sil</h5>
+            <h5 class="modal-title">Ders Sil</h5>
           </div>
           <div class="modal-body">
-            <p>Bu dersi silmek istediğinizden emin misiniz?</p>
+            <p>Bu dersi silmek istediğinizden emin misiniz? <br> <br> Dersi silerseniz içindeki bütün veriler silinecektir!
+            </p>
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-secondary" @click="closeModal">İptal</button>
@@ -168,10 +173,11 @@ export default {
   data() {
     return {
       courses: [],
+      years: [2023, 2024, 2025, 2026, 2027, 2028, 2029, 2030, 2031, 2032, 2033, 2034, 2035, 2036], 
       editable: null,
       userDepartment: null,
       showInfoBox: false,
-      showModal: false, // showModal değişkenini tanımlayın
+      showModal: false,
       selectedCourse: null,
     courseToDeleteIndex: null
     };
