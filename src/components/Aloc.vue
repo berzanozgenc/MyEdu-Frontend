@@ -188,7 +188,7 @@ export default {
   data() {
     return {
       learningOutcomes: [],
-      isColumnTotalValid: false,
+      isColumnTotalValid: true,
       cellData: [],
       assessments: [],
       contributions: [],
@@ -343,7 +343,6 @@ export default {
             tempList.push(obj);
           }
           this.contributions = tempList;
-          console.log(this.contributions);
           this.contributionCalculate();
         }
       } catch (error) {

@@ -42,7 +42,7 @@
     <!-- Ana İçerik -->
     <div class="flex-container">
       <!-- Side Menu -->
-      <div class="card menu" style="width: 12%; margin-left: 10px">
+      <div class="card menu" style="width:18%;">
         <div class="card-body">
           <h5 class="card-title">Menü</h5>
           <ul class="list-group">
