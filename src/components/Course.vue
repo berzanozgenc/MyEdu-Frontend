@@ -8,7 +8,9 @@
       <a @click="refreshPage" style="margin-left: 10px" class="navbar-brand" href="#">
         Kişiselleştirilmiş Akademik Gelişim ve <br /> Değerlendirme Sistemi
       </a>
-    
+      <div v-if="course" style="margin: 0 auto; margin-top: 2%;">
+        <h5>{{ course.code }} {{ course.courseName }} - {{ course.semester }}</h5>
+      </div>
       <div style="margin-left: auto; margin-right: 2%;" class="ml-auto d-flex align-items-center">
         <span class="d-flex align-items-center">
           <img style="margin-right: 2px;" class="iconmy" src="../assets/profile.png" />
@@ -54,9 +56,6 @@
       <!-- Course Details and Assessments -->
       
       <div class="card course-details" style="width: 78%; overflow-y: auto; overflow-x: auto;">
-        <div style="display: flex; margin-left: 14px;">
-          <h3 style="margin-top: 12px; margin-left: 6px;">{{ course.code }} - {{ course.courseName }} - {{ course.semester }}</h3>
-        </div>
         <br>
         <div class="buttons-container">
           <button style="margin-left: 16px;" class="btn btn-outline-primary" @click="goToCourseProgramOutcomePage">Program Çıktıları</button>

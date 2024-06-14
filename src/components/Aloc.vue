@@ -1,46 +1,22 @@
 <template>
   <div>
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
-      <a
-        @click="refreshPage"
-        style="margin-left: 10px"
-        class="navbar-brand"
-        href="#"
-      >
-        <img
-          src="../assets/Baskent_University_Logo.png"
-          alt="Logo"
-          style="max-height: 50px"
-        />
+      <a @click="refreshPage" style="margin-left: 10px" class="navbar-brand" href="#">
+        <img src="../assets/Baskent_University_Logo.png" alt="Logo" style="max-height: 50px" />
       </a>
-      <a
-        @click="refreshPage"
-        style="margin-left: 10px"
-        class="navbar-brand"
-        href="#"
-      >
+      <a @click="refreshPage" style="margin-left: 10px" class="navbar-brand" href="#">
         Kişiselleştirilmiş Akademik Gelişim ve <br />
         Değerlendirme Sistemi
       </a>
-
-      <div
-        style="margin-left: auto; margin-right: 2%"
-        class="ml-auto d-flex align-items-center"
-      >
+      <div v-if="course" style="margin: 0 auto; margin-top: 2%;">
+        <h5>{{ course.code }} {{ course.courseName }}</h5>
+      </div>
+      <div style="margin-left: auto; margin-right: 2%" class="ml-auto d-flex align-items-center">
         <span class="d-flex align-items-center">
-          <img
-            style="margin-right: 2px"
-            class="icon"
-            src="../assets/profile.png"
-          />
+          <img style="margin-right: 2px" class="icon" src="../assets/profile.png" />
           <h6 class="mb-0 ml-2">{{ username }}</h6>
         </span>
-        <button
-          style="margin-left: 8px"
-          @click="logoutUser"
-          class="btn btn-outline-danger my-2 my-sm-0"
-          type="submit"
-        >
+        <button style="margin-left: 8px" @click="logoutUser" class="btn btn-outline-danger my-2 my-sm-0" type="submit">
           Çıkış Yap
         </button>
       </div>
@@ -55,10 +31,7 @@
             <li class="list-group-item" @click="goToCoursePage">
               <i class="fas fa-book"></i> Derslerim
             </li>
-            <li
-              class="list-group-item"
-              @click="goToInstructorLearningOutcomePage"
-            >
+            <li class="list-group-item" @click="goToInstructorLearningOutcomePage">
               <i class="fas fa-graduation-cap"></i> Öğrenim Çıktıları
             </li>
             <li class="list-group-item" @click="goToCourseProgramOutcomePage">
@@ -83,26 +56,13 @@
           <h5 class="card-title">Öğrenim Çıktısı - Araç Eşleştirme</h5>
           <div style="max-width: 100%; overflow-x: auto">
             <div>
-              <button
-                v-if="!isEditMode"
-                @click="enableEditMode"
-                class="btn btn-primary mb-2"
-              >
+              <button v-if="!isEditMode" @click="enableEditMode" class="btn btn-primary mb-2">
                 <i class="fas fa-pencil-alt"></i>
               </button>
-              <button
-                v-if="isEditMode"
-                @click="saveAllChanges"
-                class="btn btn-success mb-2"
-              >
+              <button v-if="isEditMode" @click="saveAllChanges" class="btn btn-success mb-2">
                 Kaydet
               </button>
-              <button
-                style="margin-left: 2px"
-                v-if="isEditMode"
-                @click="disableEditMode"
-                class="btn btn-danger mb-2"
-              >
+              <button style="margin-left: 2px" v-if="isEditMode" @click="disableEditMode" class="btn btn-danger mb-2">
                 Vazgeç
               </button>
             </div>
@@ -111,11 +71,7 @@
                 <thead>
                   <tr>
                     <th scope="col"></th>
-                    <th
-                      v-for="(assessment, index) in assessments"
-                      :key="'assessment-' + index"
-                      scope="col"
-                    >
+                    <th v-for="(assessment, index) in assessments" :key="'assessment-' + index" scope="col">
                       <div class="d-flex align-items-center">
                         <span @click="selectColumn(index)">
                           {{ !useCustomNames ? assessment.name : "Soru" }}
@@ -126,40 +82,23 @@
                   </tr>
                 </thead>
                 <tbody>
-                  <tr
-                    v-for="(outcome, outcomeIndex) in outcomes"
-                    :key="outcomeIndex"
-                  >
+                  <tr v-for="(outcome, outcomeIndex) in outcomes" :key="outcomeIndex">
                     <th class="loDescription" scope="row">
                       {{ outcome.description }}
                     </th>
-                    <td
-                      :ref="`cell_${outcomeIndex}_${assessmentIndex}`"
-                      v-for="(assessment, assessmentIndex) in assessments"
-                      :key="'assessment-' + assessmentIndex"
-                      :tabindex="-1"
-                      @keydown="handleTab"
-                    >
-                      <span
-                        style="
+                    <td :ref="`cell_${outcomeIndex}_${assessmentIndex}`"
+                      v-for="(assessment, assessmentIndex) in assessments" :key="'assessment-' + assessmentIndex"
+                      :tabindex="-1" @keydown="handleTab">
+                      <span style="
                           align-items: center;
                           justify-content: center;
                           display: flex;
-                        "
-                      >
-                        <input
-                          style="text-align: center"
-                          v-if="isEditMode"
-                          type="text"
-                          v-bind:placeholder="
-                            fillTable(outcomeIndex, assessmentIndex)
-                          "
-                          v-model="cellData[outcomeIndex][assessmentIndex]"
-                          tabindex="0"
-                        />
+                        ">
+                        <input style="text-align: center" v-if="isEditMode" type="text" v-bind:placeholder="fillTable(outcomeIndex, assessmentIndex)
+        " v-model="cellData[outcomeIndex][assessmentIndex]" tabindex="0" />
                         <span v-else>{{
-                          fillTable(outcomeIndex, assessmentIndex)
-                        }}</span>
+        fillTable(outcomeIndex, assessmentIndex)
+      }}</span>
                       </span>
                     </td>
                   </tr>
@@ -195,7 +134,7 @@ export default {
       isEditMode: false,
     };
   },
-  created() {},
+  created() { },
   computed: {
     ...mapGetters(["getUser"]),
     username() {
@@ -229,73 +168,73 @@ export default {
       return contribution;
     },
     async saveAllChanges() {
-  try {
-    const outcomeIds = this.outcomes.map((outcome) => outcome.id);
-    const assessmentIds = this.assessments.map(
-      (assessment) => assessment.assessmentId
-    );
+      try {
+        const outcomeIds = this.outcomes.map((outcome) => outcome.id);
+        const assessmentIds = this.assessments.map(
+          (assessment) => assessment.assessmentId
+        );
 
-    let alocArr = [];
-    let contributions = [];
+        let alocArr = [];
+        let contributions = [];
 
-    for (
-      let outcomeIndex = 0;
-      outcomeIndex < outcomeIds.length;
-      outcomeIndex++
-    ) {
-      const outcomeId = outcomeIds[outcomeIndex];
-      for (
-        let assessmentIndex = 0;
-        assessmentIndex < assessmentIds.length;
-        assessmentIndex++
-      ) {
-        const assessmentId = assessmentIds[assessmentIndex];
-        const cellValue = this.cellData[outcomeIndex][assessmentIndex];
-
-        if (cellValue < 0 || cellValue > 100 || isNaN(cellValue)) {
-          this.$toast.error("Lütfen geçerli bir değer giriniz!");
-          return;
-        }
-
-        // Dolu boş kontrolü
-        if (
-          cellValue !== undefined &&
-          cellValue !== "" &&
-          !isNaN(cellValue) &&
-          cellValue >= 0 &&
-          cellValue <= 100
+        for (
+          let outcomeIndex = 0;
+          outcomeIndex < outcomeIds.length;
+          outcomeIndex++
         ) {
-          contributions.push({
-            assessmentId: assessmentId,
-            contribution: parseFloat(cellValue),
-          });
+          const outcomeId = outcomeIds[outcomeIndex];
+          for (
+            let assessmentIndex = 0;
+            assessmentIndex < assessmentIds.length;
+            assessmentIndex++
+          ) {
+            const assessmentId = assessmentIds[assessmentIndex];
+            const cellValue = this.cellData[outcomeIndex][assessmentIndex];
 
-          let obj = {
-            assessmentId: assessmentId,
-            learningOutcomeId: outcomeId,
-            contribution: parseFloat(cellValue),
-          };
+            if (cellValue < 0 || cellValue > 100 || isNaN(cellValue)) {
+              this.$toast.error("Lütfen geçerli bir değer giriniz!");
+              return;
+            }
 
-          alocArr.push(obj);
+            // Dolu boş kontrolü
+            if (
+              cellValue !== undefined &&
+              cellValue !== "" &&
+              !isNaN(cellValue) &&
+              cellValue >= 0 &&
+              cellValue <= 100
+            ) {
+              contributions.push({
+                assessmentId: assessmentId,
+                contribution: parseFloat(cellValue),
+              });
+
+              let obj = {
+                assessmentId: assessmentId,
+                learningOutcomeId: outcomeId,
+                contribution: parseFloat(cellValue),
+              };
+
+              alocArr.push(obj);
+            }
+          }
         }
+
+        const response = await axios.post("http://localhost:8080/aloc", {
+          alocList: alocArr,
+        });
+
+        if (response.status == 200) {
+          this.$toast.success("Tüm değişiklikler başarıyla kaydedildi!");
+          await this.fetchTable();
+        }
+      } catch (error) {
+        console.error("Error saving changes:", error);
       }
+      this.isEditMode = false;
     }
 
-    const response = await axios.post("http://localhost:8080/aloc", {
-      alocList: alocArr,
-    });
-
-    if (response.status == 200) {
-      this.$toast.success("Tüm değişiklikler başarıyla kaydedildi!");
-      await this.fetchTable();
-    }
-  } catch (error) {
-    console.error("Error saving changes:", error);
-  }
-  this.isEditMode = false;
-}
-
-,
+    ,
     async fetchTable() {
       try {
         const outcomeIds = this.outcomes.map((outcome) => outcome.id);
@@ -415,6 +354,8 @@ export default {
             .fill()
             .map(() => new Array(this.assessments.length).fill(""));
         }
+        const responseCourse = await axios.get(`http://localhost:8080/course/${courseId}`);
+        this.course = responseCourse.data;
       } catch (error) {
         console.error("Error fetching learning outcomes:", error);
       }

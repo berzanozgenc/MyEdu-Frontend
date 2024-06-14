@@ -8,7 +8,9 @@
       <a @click="refreshPage" style="margin-left: 10px" class="navbar-brand" href="#">
         Kişiselleştirilmiş Akademik Gelişim ve <br /> Değerlendirme Sistemi
       </a>
-
+      <div v-if="course" style="margin: 0 auto; margin-top: 2%;">
+        <h5>{{ course.code }} {{ course.courseName }}</h5>
+      </div>
       <div style="margin-left: auto; margin-right: 2%;" class="ml-auto d-flex align-items-center">
         <span class="d-flex align-items-center">
           <img style="margin-right: 2px;" class="icon" src="../assets/profile.png" />
@@ -50,7 +52,7 @@
       <!-- Matrix -->
       <div class="card" style="width: 80%;  overflow-x: auto;">
         <div class="card-body">
-          <h5 class="card-title">PROGRAM YETERLİLİKLERİ (P) / DERSİN ÖĞRENME KAZANIMLARI (Ö) MATRİSİ</h5>
+          <h5 style="color: #dc3545;" class="card-title">PROGRAM YETERLİLİKLERİ (P) / DERSİN ÖĞRENME KAZANIMLARI (Ö) MATRİSİ</h5>
 
           <!-- Düzenle butonu -->
           <button v-if="!editMode" @click="toggleEditMode" class="btn btn-primary mt-2 mr-2 float-right">
@@ -128,6 +130,7 @@ export default {
       isColumnTotalValid: true,
       outcomes: [],
       programs: [],
+      course: null,
       contributions: []
     };
   },
@@ -273,6 +276,8 @@ export default {
         const data = await response.json();
         this.outcomes = data;
         this.outcomes.sort((a, b) => a.id - b.id);
+        const responseCourse = await axios.get(`http://localhost:8080/course/${courseId}`);
+        this.course = responseCourse.data;
         this.fillTable();
       } catch (error) {
         console.error('Bir hata oluştu:', error);

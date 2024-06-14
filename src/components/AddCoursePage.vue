@@ -329,6 +329,15 @@ goToAdminCoursePage(){
       axios.get(`http://localhost:8080/course/get-courses/department/${departmentId}`)
         .then(response => {
           this.courses = response.data;
+          this.courses.sort((a, b) => {
+        if (a.code < b.code) {
+          return -1;
+        }
+        if (a.code > b.code) {
+          return 1;
+        }
+        return 0;
+      });
           console.log(this.courses); // courses dizisini konsola yazdır
         })
         .catch(error => {

@@ -7,7 +7,9 @@
       <a @click="refreshPage" style="margin-left: 10px" class="navbar-brand" href="#">
         Kişiselleştirilmiş Akademik Gelişim ve <br /> Değerlendirme Sistemi
       </a>
-
+      <div v-if="course" style="margin: 0 auto; margin-top: 2%;">
+        <h5>{{ course.code }} {{ course.courseName }}</h5>
+      </div>
       <div style="margin-left: auto; margin-right: 2%;" class="ml-auto d-flex align-items-center">
         <span class="d-flex align-items-center">
           <img style="margin-right: 2px;" class="icon" src="../assets/profile.png" />
@@ -46,7 +48,7 @@
       </div>
       <div class="card" style="width: 80%; height: 100%">
         <div class="card-body" style="overflow-x: auto;">
-          <h5 class="card-title">Program Çıktıları</h5>
+          <h5 style="color: #dc3545;" class="card-title">Program Çıktıları</h5>
           <table class="table">
             <thead>
               <tr>
@@ -106,6 +108,7 @@ export default {
     return {
       programs: [],
       showModal: false,
+      course: null,
       selectedProgramOutcomeId: null,
       newProgram: {
         output: '',
@@ -246,7 +249,8 @@ this.$router.push('/guidance');
         console.log(response.data);
         // Her öğenin bir id alanı olduğunu varsayarak, bu id değerini kullanarak programları oluşturun
         this.programs = response.data.sort((a, b) => a.number - b.number);
-        console.log(this.programs)
+        const responseCourse = await axios.get(`http://localhost:8080/course/${courseId}`);
+        this.course = responseCourse.data;
       } catch (error) {
         console.error(error);
         this.$toast.error("Program çıktıları alınırken bir hata oluştu.");

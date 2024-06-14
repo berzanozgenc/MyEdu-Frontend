@@ -7,7 +7,9 @@
       <a @click="refreshPage" style="margin-left: 10px" class="navbar-brand" href="#">
         Kişiselleştirilmiş Akademik Gelişim ve <br /> Değerlendirme Sistemi
       </a>
-
+      <div v-if="course" style="margin: 0 auto; margin-top: 2%;">
+        <h5>{{ course.code }} {{ course.courseName }}</h5>
+      </div>
       <div style="margin-left: auto; margin-right: 2%;" class="ml-auto d-flex align-items-center">
         <span class="d-flex align-items-center">
           <img style="margin-right: 2px;" class="icon" src="../assets/profile.png" />
@@ -45,7 +47,7 @@
       </div>
       <div class="card" style="width: 80%;">
         <div class="card-body" style="overflow-x: auto;">
-          <h5 class="card-title">Dersin Öğrenim Çıktıları</h5>
+          <h5 style="color: #dc3545;" class="card-title">Dersin Öğrenim Çıktıları</h5>
           <div v-if="targetTotal !== 100" class="alert alert-danger" role="alert">
             Hedef sütun toplamları 100 olmalıdır!
           </div>
@@ -132,6 +134,7 @@ export default {
       programs: [],
       showModal: false,
       selectedLearningOutcomeId: null,
+      course: null,
       newProgram: {
         output: '',
         description: '',
@@ -290,6 +293,8 @@ this.$router.push('/guidance');
           description: item.description,
           target: item.desiredTarget
         }));
+        const responseCourse = await axios.get(`http://localhost:8080/course/${courseId}`);
+        this.course = responseCourse.data;
       } catch (error) {
         console.error(error);
         this.$toast.error("Öğrenim çıktıları alınırken bir hata oluştu.");

@@ -7,7 +7,9 @@
       <a @click="refreshPage" style="margin-left: 10px" class="navbar-brand" href="#">
         Kişiselleştirilmiş Akademik Gelişim ve <br /> Değerlendirme Sistemi
       </a>
-    
+      <div v-if="course" style="margin: 0 auto; margin-top: 2%;">
+        <h5>{{ course.code }} {{ course.courseName }}</h5>
+      </div>
       <div style="margin-left: auto; margin-right: 2%;" class="ml-auto d-flex align-items-center">
         <span class="d-flex align-items-center">
           <img style="margin-right: 2px;" class="icon" src="../assets/profile.png" />
@@ -46,7 +48,7 @@
       <div class="card" style="width: 80%;margin-left: 10px;"> <!-- Kartın sol kenara yakın olmasını sağlayacak olan stil değişikliği -->
         <div class="card-body" style="overflow-x: auto;">
           <div class="card-body">
-            <h5 class="card-title">Öğrenci Ekle</h5>
+            <h5 style="color:  #dc3545;" class="card-title">Öğrenci Ekle</h5>
             <form @submit.prevent="addStudent($route.params.courseId)">
               <div class="form-group">
               <label for="studentDropdown">Öğrenci Seç:</label>
@@ -57,7 +59,8 @@
               <button class="btn btn-outline-primary" type="submit">Öğrenci Ekle</button>
             </form>
             <div>
-        <h5 class="card-title">Excelden Öğrenci Ekle</h5>
+              <br>
+        <h5 style="color: #dc3545;" class="card-title">Excelden Öğrenci Ekle</h5>
         <div>
         <a @mouseenter="showInfoBox = true" @mouseleave="showInfoBox = false" style="cursor: pointer; color: #007bff;;">
           <i class="fas fa-info-circle"></i> Excel Formatı
@@ -137,6 +140,7 @@ export default {
       allStudents: [],
       selectedStudentId: null,
       showModal: false,
+      course: null,
       newStudent: {
         output: '',
         description: '',
@@ -353,6 +357,8 @@ async addStudent(courseId) {
     try {
         const response = await axios.get(`http://localhost:8080/student-course/${courseId}/students`);
         this.students = response.data;
+        const responseCourse = await axios.get(`http://localhost:8080/course/${courseId}`);
+        this.course = responseCourse.data;
     } catch (error) {
         console.error(error);
         this.$toast.error("Öğrenciler alınırken bir hata oluştu.");

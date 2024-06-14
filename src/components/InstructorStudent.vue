@@ -7,7 +7,6 @@
         <a @click="refreshPage" style="margin-left: 10px" class="navbar-brand" href="#">
           Kişiselleştirilmiş Akademik Gelişim ve <br />Değerlendirme Sistemi
         </a>
-  
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
           <ul class="navbar-nav mr-auto"></ul>
           <span class="logout">
@@ -117,6 +116,7 @@ import { useRouter } from 'vue-router';
       return {
         student: null,
         outcomes: [],
+        course: null,
         programOutcomes: [],
         programOutcomeResults: [],
         learningOutcomeResults: [],
@@ -259,6 +259,8 @@ async getLearningOutcomeResults(learningOutcomeList) {
         const courseId = this.$route.params.courseId;
         const response = await axios.get(`http://localhost:8080/learningOutcomes/course/${courseId}`);
         this.outcomes = response.data;
+        const responseCourse = await axios.get(`http://localhost:8080/course/${courseId}`);
+        this.course = responseCourse.data;
       } catch (error) {
         console.error("Error fetching learning outcomes:", error);
       }

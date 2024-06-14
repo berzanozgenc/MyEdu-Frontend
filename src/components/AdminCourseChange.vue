@@ -123,6 +123,15 @@
   try {
     const response = await axios.get(`http://localhost:8080/course/get-courses/department/${departmentId}`);
     this.courses = response.data;
+    this.courses.sort((a, b) => {
+        if (a.code < b.code) {
+          return -1;
+        }
+        if (a.code > b.code) {
+          return 1;
+        }
+        return 0;
+      });
     // Her ders için öğretmen bilgisini al
     for (const course of this.courses) {
       const instructor = await this.getInstructor(course.courseId);

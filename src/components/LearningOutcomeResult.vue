@@ -8,7 +8,9 @@
       <a @click="refreshPage" style="margin-left: 10px" class="navbar-brand" href="#">
         Kişiselleştirilmiş Akademik Gelişim ve <br /> Değerlendirme Sistemi
       </a>
-    
+      <div v-if="course" style="margin: 0 auto; margin-top: 2%;">
+        <h5>{{ course.code }} {{ course.courseName }}</h5>
+      </div>
       <div style="margin-left: auto; margin-right: 2%;" class="ml-auto d-flex align-items-center">
         <span class="d-flex align-items-center">
           <img style="margin-right: 2px;" class="icon" src="../assets/profile.png" />
@@ -48,16 +50,16 @@
         </div>
       </div>
       <div class="card" style="width: auto; margin-left: 0%; overflow-x: auto;">
-        <div class="card-body">
-          <h5 class="card-title">ÖĞRENİM ÇIKTILARI</h5>
+        <div style="margin: 0 auto;"class="card-body">
+          <h5 style="color: #dc3545;" class="card-title">ÖĞRENİM ÇIKTILARI</h5>
           <table class="table table-sm">
             <thead>
               <tr>
-                <th scope="col">Öğr. Çıktı</th>
-                <th scope="col">ÖÇ'leri Sağlama Düzeyi</th>
-                <th scope="col">HEDEFLER</th>
-                <th scope="col">ARAÇLAR</th>
-                <th scope="col">SKOR</th>
+                <th scope="col">Tanım</th>
+                <th style="text-align: center;" scope="col">ÖÇ Sağlama Düzeyi</th>
+                <th style="text-align: center;" scope="col">HEDEF</th>
+                <th style="text-align: center;" scope="col">ARAÇ</th>
+                <th style="text-align: center;" scope="col">SKOR</th>
               </tr>
             </thead>
             <tbody>
@@ -75,7 +77,7 @@
       </div>
     </div>
     <div style="align-items: center">
-      <div id="chart-container" class="card" style="width: 90%; height: 80%; margin-left: 2%; overflow-x: auto;">
+      <div id="chart-container" class="card" style="width: 90%; height: 80%; margin: 0 auto; overflow-x: auto;">
         <BarChart :course-id="courseId" /> 
       </div>
     </div>
@@ -96,6 +98,7 @@ export default {
     return {
       outcomes: [],
       courseId: null,
+      course: null
     };
   },
   computed: {
@@ -129,6 +132,8 @@ export default {
         this.outcomes.sort((a, b) => {
             return a.id - b.id;
         });
+        const responseCourse = await axios.get(`http://localhost:8080/course/${courseId}`);
+        this.course = responseCourse.data;
       } catch (error) {
         console.error("Error fetching learning outcomes:", error);
       }
@@ -143,7 +148,8 @@ export default {
       this.$router.push("/student-info");
     },
     goToMatchMatrixPage() {
-      this.$router.push("/instructor-match-matrix");
+      const courseId = this.$route.params.courseId;
+      this.$router.push({ name: "MatchMatrix", params: { courseId: courseId }});
     },
     goToInstructorLearningOutcomePage() {
       const courseId = this.$route.params.courseId;

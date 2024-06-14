@@ -7,7 +7,9 @@
       <a @click="refreshPage" style="margin-left: 10px" class="navbar-brand" href="#">
         Kişiselleştirilmiş Akademik Gelişim ve <br /> Değerlendirme Sistemi
       </a>
-    
+      <div v-if="course" style="margin: 0 auto; margin-top: 2%;">
+        <h5>{{ course.code }} {{ course.courseName }}</h5>
+      </div>
       <div style="margin-left: auto; margin-right: 2%;" class="ml-auto d-flex align-items-center">
         <span class="d-flex align-items-center">
           <img style="margin-right: 2px;" class="icon" src="../assets/profile.png" />
@@ -113,6 +115,7 @@ export default {
   data() {
     return {
       showInfoBox: false,
+      course: null,
       assessments: [],
       cellData: [],
       students: [],
@@ -174,9 +177,12 @@ export default {
   methods: {
     async fetchUseCustomNames() {
       try {
+        const courseId = this.$route.params.courseId;
         const generalAssessmentId = this.$route.params.generalAssessmentId;
         const response = await axios.get(`http://localhost:8080/generalAssesment/${generalAssessmentId}/isQuestionBased`);
         this.useCustomNames = response.data;
+        const responseCourse = await axios.get(`http://localhost:8080/course/${courseId}`);
+        this.course = responseCourse.data;
       } catch (error) {
         console.error("Error fetching useCustomNames:", error);
       }
