@@ -16,7 +16,7 @@
         </div>
       </nav>
   
-      <div class="container">
+      <div style="margin: 0 auto;" class="container">
         <div class="steps-wrapper">
           <div class="steps-container">
             <div v-for="(step, index) in steps" :key="index" class="step-card">
