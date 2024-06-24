@@ -54,7 +54,7 @@
         </a>
         <div v-if="showInfoBox" class="info-box">
           <p>Ders için yükleyeceğiniz Excel'in sütun bazlı formatı:
-            Dönem, Ders Kodu,	Ders Adı,	Şube,	AKTS,	Kredi
+            Sömestir, Ders Kodu,	Ders Adı,	Şube,	AKTS,	Kredi
             şeklinde olmalıdır. İlk satır başlığa ayrılmalıdır. Verilerin önü ve arkasında BOŞLUK bulunmamalıdır.
 
           </p>
@@ -67,6 +67,7 @@
       <tr>
         <th style="width: 12%;"scope="col">Departman</th>
         <th scope="col">Dönem</th>
+        <th scope="col">Sömestir</th>
         <th scope="col">Ders Kodu</th>
         <th scope="col">Ders Adı</th>
         <th scope="col">Şube</th>
@@ -80,6 +81,16 @@
         <td>
           <span>{{ item.department.name }}</span>
         </td>
+        <td>
+            <span v-if="editable === index">
+              <select v-model="item.period" class="editable-input">
+                <option v-for="period in periods" :key="period" :value="period">
+                  {{ period }}
+                </option>
+              </select>
+            </span>
+            <span v-else>{{ item.period }}</span>
+          </td>
         <td>
           <span v-if="editable === index">
         <select v-model="item.semester" class="editable-input">
@@ -166,6 +177,7 @@ import { useRouter } from 'vue-router';
 import axios from 'axios';
 import { mapGetters } from 'vuex';
 import ExcelJS from 'exceljs';
+import { ref, onMounted, computed } from 'vue';
 import { Suspense } from 'vue';
 
 export default {
@@ -173,27 +185,44 @@ export default {
   data() {
     return {
       courses: [],
-      years: [2023, 2024, 2025, 2026, 2027, 2028, 2029, 2030, 2031, 2032, 2033, 2034, 2035, 2036], 
       editable: null,
       userDepartment: null,
       showInfoBox: false,
       showModal: false,
       selectedCourse: null,
+      currentDate: 0,
+      currentYear: 0,
+      periods: [],
     courseToDeleteIndex: null
     };
   },
   computed: {
-    ...mapGetters(["getUser"]) 
+    ...mapGetters(["getUser"]),
+    formattedDate() {
+      return new Date(this.currentDate).toLocaleString();
+    }
   },
   created() {
   },
   mounted() {
     this.getDepartment();
+    const now = new Date();
+    this.currentDate = now.getTime();
+    this.currentYear = now.getFullYear();
+    this.generatePeriods();
   },
   methods: {
     onFileChange(event) {
       const file = event.target.files[0];
       this.readExcelFile(file);
+    },
+    generatePeriods() {
+      const startYear = this.currentYear - 3;
+      const endYear = this.currentYear + 3;
+      this.periods = [];
+      for (let year = startYear; year < endYear; year++) {
+        this.periods.push(`${year} - ${year + 1}`);
+      }
     },
     addCoursesFromExcel() {
   if (!this.userDepartment) {
@@ -207,6 +236,7 @@ export default {
   this.courses.forEach(course => {
     const newCourse = {
       department: this.userDepartment,
+      period: course.period,
       semester: course.semester,
       code: course.code,
       courseName: course.courseName,

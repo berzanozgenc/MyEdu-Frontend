@@ -45,8 +45,7 @@
                   <th scope="col">Bölüm Adı</th>
                   <th scope="col">Ders Adı</th>
                   <th scope="col">Ders Kodu</th>
-                  <th scope="col">AKTS</th>
-                  <th scope="col">Kredi</th>
+                  <th scope="col">Şube</th>
                   <th scope="col">Eğitmen</th>
                   <th scope="col">İşlemler</th>
                 </tr>
@@ -66,13 +65,7 @@
                     <span v-if="editable === index && activeField === 'akts'">
                       <input v-model="item.akts" @blur="editable = -1; activeField = ''" />
                     </span>
-                    <span v-else @click="editCell(index, 'akts')">{{ item.ects }}</span>
-                  </td>
-                  <td>
-                    <span v-if="editable === index && activeField === 'credit'">
-                      <input v-model="item.credit" @blur="editable = -1; activeField = ''" />
-                    </span>
-                    <span v-else @click="editCell(index, 'credit')">{{ item.credit }}</span>
+                    <span v-else @click="editCell(index, 'akts')">{{ item.section }}</span>
                   </td>
                   <td>{{ this.instructors[item.courseId] }}</td>
                   <td>
