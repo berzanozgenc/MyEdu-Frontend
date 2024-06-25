@@ -49,20 +49,6 @@
             </tr>
           </tbody>
         </table>
-        <table class="table table-sm">
-          <thead>
-            <tr>
-              <th style="width: 74%; text-align: left; vertical-align: top;" scope="col">Program Kazanımları</th>
-              <th style="text-align: center;" scope="col">Sağlama Düzeyim</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr v-for="(outcome, index) in programOutcomeResults" :key="index">
-              <td class="description-cell">{{ outcome.programOutcome.description }}</td>
-              <td style="text-align: center;">%{{ outcome.levelOfProvision.toFixed(2) }}</td>
-            </tr>
-          </tbody>
-        </table>
 </div>
 </div>
     </div>
@@ -134,18 +120,10 @@ async getProgramOutcomeResults(programOutcomeList, userId) {
         const programOutcomeIds = programOutcomeList.map(outcome => outcome.id);
 
         // Kullanıcının program outcome'larına göre sonuçları alma
-        const userProgramOutcomeResponse = await axios.post(`http://localhost:8080/student-program-outcome/user/${userId}/program-outcome`, programOutcomeIds);
+
         
         // Gelen verileri kullanabilirsiniz
-        let programOutcomeResults = userProgramOutcomeResponse.data;
-        
-        // Program outcome'ları idsine göre sırala
-        programOutcomeResults.sort((a, b) => {
-            return a.programOutcome.id - b.programOutcome.id;
-        });
-
-        programOutcomeResults = programOutcomeResults.filter(result => !isNaN(result.levelOfProvision));
-        this.programOutcomeResults = programOutcomeResults;
+       
     } catch (error) {
         console.error("Error fetching program outcome results:", error);
     }

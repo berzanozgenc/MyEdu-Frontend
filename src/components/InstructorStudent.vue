@@ -65,7 +65,7 @@
           <table class="table table-sm">
             <thead>
               <tr>
-                <th scope="col">Prg. Çıktı</th>
+                <th style="vertical-align: top" scope="col">Prg. Çıktı</th>
                 <th scope="col">PÇ'leri Sağlama Düzeyi</th>
               </tr>
             </thead>
@@ -173,10 +173,11 @@ import { useRouter } from 'vue-router';
 async getProgramOutcomeResults(programOutcomeList) {
     try {
         const userId = this.$route.params.studentId;
+        const courseId = this.$route.params.courseId;
         const programOutcomeIds = programOutcomeList.map(outcome => outcome.id);
 
         // Kullanıcının program outcome'larına göre sonuçları alma
-        const userProgramOutcomeResponse = await axios.post(`http://localhost:8080/student-program-outcome/user/${userId}/program-outcome`, programOutcomeIds);
+        const userProgramOutcomeResponse = await axios.post(`http://localhost:8080/student-program-outcome/user/${userId}/course/${courseId}/program-outcome`, programOutcomeIds);
         
         // Gelen verileri kullanabilirsiniz
         let programOutcomeResults = userProgramOutcomeResponse.data;

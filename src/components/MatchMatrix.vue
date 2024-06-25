@@ -310,6 +310,7 @@ export default {
         const learningOutcomeId = this.outcomes[outcomeIndex].id;
         const programOutcomeId = program.id;
         const contribution = parseFloat(outcome);
+        const courseId = this.$route.params.courseId;
 
         if (isNaN(contribution) || contribution < 0 || contribution > 100 || outcome.trim() === '') {
           // Girilen değer geçerli bir sayı değil veya boşsa
@@ -320,7 +321,8 @@ export default {
         const response = await axios.post('http://localhost:8080/learning-outcome-program-outcome', {
           learningOutcomeId,
           programOutcomeId,
-          contribution
+          contribution,
+          courseId
         });
 
         if (response.status === 201 || response.status === 200) {
