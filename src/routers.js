@@ -25,6 +25,7 @@ import GuidePage from "./components/GuidePage.vue";
 import AdminGuide from "./components/AdminGuide.vue";
 import AdminCourseChange from './components/AdminCourseChange.vue'
 import axios from "axios";
+import StudentProgramOutcome from "./components/StudentProgramOutcome.vue";
 
 const routes = [{
     name: "Login",
@@ -48,6 +49,12 @@ const routes = [{
     name: "GuidePage",
     component: GuidePage,
     path: "/guidance",
+    meta: { requiresAuth: true }, // Oturum açma gerektiren sayfaları belirtin
+},
+{
+    name: "StudentProgramOutcomePage",
+    component: StudentProgramOutcome,
+    path: "/student-program-outcomes",
     meta: { requiresAuth: true }, // Oturum açma gerektiren sayfaları belirtin
 },
 {
@@ -189,6 +196,7 @@ const adminAllowedRoutes = [
 ];
 
 const studentAllowedRoutes = [
+    '/student-program-outcomes',
     '/student-home',
     '/student-pageMatrix/:courseId',
     '/'

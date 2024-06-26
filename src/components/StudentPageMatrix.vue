@@ -32,7 +32,7 @@
    <!-- Classes Card -->
 <div class="card" style="width: 80%; margin-left: 10px">
 <div class="card-body">
-  <h5 class="card-title">Öğrenci Sağlama Düzeyleri</h5>
+  <h5 style="color: #dc3545;" class="card-title">Öğrenim Çıktıları - Öğrenci Sağlama Düzeyleri</h5>
 
   <!-- First Table: Pç1, Pç2, Pç3 -->
   <table class="table table-sm">

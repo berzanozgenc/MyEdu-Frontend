@@ -34,7 +34,7 @@
         <div class="card" style="width: 80%; overflow-y: auto; overflow-x: hidden;">
           <div class="form-inline">
             <div class="card-body">
-              <button style="margin-left: 16px;" class="btn btn-outline-primary" @click="goToCourseProgramOutcomePage">Program Kazanımlarım</button>
+              <button style="margin-left: 16px;" class="btn btn-outline-primary" @click="goToStudentProgramOutcomePage">Program Kazanımlarım</button>
               <br>
               <br>
               <h5 class="card-title">Derslerim</h5>
@@ -188,6 +188,9 @@
         console.log(registrationId)
         const courseId = registrationId;
         this.$router.push({ name: 'StudentPageMatrix', params: { courseId: courseId }});
+      },
+      goToStudentProgramOutcomePage(){
+        this.$router.push("/student-program-outcomes");
       },
       logoutUser() {
         const store = useStore();
