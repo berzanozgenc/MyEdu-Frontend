@@ -76,12 +76,12 @@
         </div>
       </div>
     </div>
-    <div style="align-items: center">
-      <div id="chart-container" class="card" style="width: 90%; height: 80%; margin: 0 auto; overflow-x: auto;">
+  </div>
+  <div style="align-items: center">
+      <div id="chart-container" class="card" style="width: 90%; margin: 0 auto; overflow-x: auto;">
         <BarChart :course-id="courseId" /> 
       </div>
     </div>
-  </div>
 </template>
 
 <script>

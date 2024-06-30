@@ -44,8 +44,8 @@ export default {
     return {
       steps: [
         { title: "Derslerim", description: "Derslerinizi görüntüleyin ve yönetin.", route: "/instructor-home" },
-        { title: "Derse Araç Ekleme", description: "İlgili ders için araçları ekleyin." },
-        { title: "Araç Bilgilerini Ekleme", description: "İlgili ders için girilen araçların bilgilerini görüntüleyin ve yönetin." },
+        { title: "Derse Araç Ekleme", description: "İlgili ders için araçları (Quiz, Ara Sınav, Ödev vb.) ekleyin." },
+        { title: "Araç Bilgilerini Ekleme", description: "İlgili ders için girilen araçların detaylarını(puan, adet vb.) görüntüleyin ve yönetin." },
         { title: "Program Çıktıları", description: "Program çıktılarınızı inceleyin ve düzenleyin.", route: "/course-program-outcome" },
         { title: "Öğrenim Çıktıları", description: "Öğrenim çıktılarınızı inceleyin ve düzenleyin.", route: "/learning-outcome" },
         { title: "ÖÇ ve PÇ Eşleştirme", description: "Öğrenim ve program çıktılarını eşleştirin.", route: "/match-matrix" },

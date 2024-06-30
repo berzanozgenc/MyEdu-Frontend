@@ -9,7 +9,7 @@
         Kişiselleştirilmiş Akademik Gelişim ve <br /> Değerlendirme Sistemi
       </a>
       <div v-if="course" style="margin: 0 auto; margin-top: 2%;">
-        <h5>{{ course.code }} {{ course.courseName }} - {{ course.semester }}</h5>
+        <h5>{{ course.code }} {{ course.courseName }} | {{ course.period }} {{ course.semester }}</h5>
       </div>
       <div style="margin-left: auto; margin-right: 2%;" class="ml-auto d-flex align-items-center">
         <span class="d-flex align-items-center">
@@ -111,6 +111,9 @@
                 </td>
               </tr>
             </tbody>
+            <div v-if="showContributionError" class="alert alert-danger" role="alert">
+    Araç Katkı toplamları 100 etmelidir!
+  </div>
           </table>
           <div class="card-body">
             <h5 class="card-title">Araç Türü Ekle</h5>
@@ -178,7 +181,8 @@ export default {
       course: {},
       assessmentName: "",
       assessmentContribution: "",
-      selectedSortingOption: ' ' // Varsayılan sıralama seçeneği
+      selectedSortingOption: ' ', // Varsayılan sıralama seçeneği
+      showContributionError: false // Uyarı mesajı için değişken
     };
   },
   created() {
@@ -188,6 +192,18 @@ export default {
     this.fetchGeneralAssessments(courseId);
   },
   methods: {
+    checkTotalContribution() {
+      let sum = 0
+      for(let i = 0; i < this.generalAssessments.length; i++){
+        sum = sum + this.generalAssessments[i].totalContribution;
+      }
+      if(sum != 100){
+        this.showContributionError = true;
+      }
+      else{
+        this.showContributionError = false;
+      }
+  },
     sortAssessments() {
     const option = this.selectedSortingOption;
     if (option === 'nameAsc') {
@@ -212,6 +228,7 @@ export default {
             return a.generalAssesmentId - b.generalAssesmentId;
         });
         this.sortAssessments();
+        this.checkTotalContribution(); // Toplam katkıyı kontrol et
       } catch (error) {
         console.error(error);
       }
@@ -251,6 +268,7 @@ export default {
               console.error("Değişiklikler kaydedilemedi.");
               // Hata durumunda kullanıcıya bildirme veya gerekirse başka bir işlem yapma
             }
+            this.checkTotalContribution(); // Toplam katkıyı kontrol et
           })
           .catch(error => {
             console.error("Değişiklikler kaydedilirken bir hata oluştu:", error);
@@ -285,6 +303,7 @@ export default {
           console.error('GeneralAssessment eklenirken bir hata oluştu:', error);
           this.$toast.error("Araç Adına ve Katkı Oranına Dikkat Ediniz!");
         });
+        this.checkTotalContribution(); // Toplam katkıyı kontrol et
     },
     editProgram(assessment) {
       assessment.editMode = true;
