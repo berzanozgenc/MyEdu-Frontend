@@ -101,7 +101,7 @@
                 <td style="width: 350px;">
                   
                   <span style="margin-left: 2px;"></span>
-                  <button style="margin-left: 2px;" class="btn btn-info btn-sm text-white" @click="goToAssessmentPage(assessment.generalAssesmentId)">Araç Bilgilerini Gir</button>
+                  <button style="margin-left: 2px;" class="btn btn-info btn-sm text-white" @click="goToAssessmentPage(assessment.generalAssesmentId)">Araç Detaylarını Gir</button>
                   <button style="margin-left: 2px; height: 31px;" type="button" class="btn btn-sm btn-secondary text-white" @click="goToAlocPage(assessment.generalAssesmentId)">ÖÇ - Araç Eşleştir</button>
                   <button style="margin-left: 2px; height: 31px;" type="button" class="btn btn-sm btn-primary" @click="goToStudentInfoPage(assessment.generalAssesmentId)">Not Gir</button>
                   <button style="margin-left: 2px;" :class="{'btn-warning': !assessment.editMode, 'btn-success': assessment.editMode}" class="btn btn-sm text-white" @click="assessment.editMode ? saveChanges(assessment) : editProgram(assessment)">

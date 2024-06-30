@@ -76,9 +76,10 @@
                   </tr>
                 </tbody>
               </table>
+              <br>
 
               <div style="margin-bottom: 10px;">
-                <label for="contributionInput" style="margin-right: 10px;">Katkı Değeri:</label>
+                <label for="contributionInput" style="margin-right: 10px;">Eklenecek Aracın Puanı:</label>
                 <input type="number" id="contributionInput" v-model="contributionValue" style="width: 100px;" />
               </div>
 
