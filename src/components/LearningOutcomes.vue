@@ -8,7 +8,7 @@
         Kişiselleştirilmiş Akademik Gelişim ve <br /> Değerlendirme Sistemi
       </a>
       <div v-if="course" style="margin: 0 auto; margin-top: 2%;">
-        <h5>{{ course.code }} {{ course.courseName }}</h5>
+        <h5>{{ course.code }} {{ course.courseName }} | {{ course.period }} {{ course.semester }}</h5>
       </div>
       <div style="margin-left: auto; margin-right: 2%;" class="ml-auto d-flex align-items-center">
         <span class="d-flex align-items-center">
