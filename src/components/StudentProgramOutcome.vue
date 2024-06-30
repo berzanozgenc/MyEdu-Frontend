@@ -56,7 +56,8 @@
                             <tr v-for="(outcome, index) in weightedAverages" :key="index">
                                 <td class="description-cell">{{ outcome.no }}</td>
                                 <td class="description-cell">{{ outcome.programOutcome }}</td>
-                                <td style="text-align: center;" class="description-cell">{{ outcome.weightedAverage.toFixed(2) }}</td>
+                                <td style="text-align: center;" class="description-cell">{{
+                outcome.weightedAverage.toFixed(2) }}</td>
                             </tr>
                         </tbody>
                     </table>
@@ -77,6 +78,7 @@ export default {
     data() {
         return {
             outcomes: [],
+            userCourses: [],
             studentProgramOutcomes: [],
             weightedAverages: [],
             userId: null,
@@ -90,16 +92,63 @@ export default {
         },
     },
     created() {
-        this.fetchUserCourses();
+        this.calculateStudentLOValues()
+        .then(() => this.fetchUserCourses())
         this.fetchProgramOutcomes();
     },
     methods: {
+        async calculateStudentLOValues() {
+            try {
+                const store = useStore(); // Vuex store'u al
+                const student = store.getters.getUser;
+                const userId = student.userId;
+                this.userId = userId;
+                const studentId = student.userId;
+                await axios
+                    .get(`http://localhost:8080/student-course/${studentId}/courses`)
+                    .then((response) => {
+                        this.userCourses = response.data;
+                    })
+                    .catch((error) => {
+                        console.error("Hata:", error);
+                    });
+                for (let i = 0; i < this.userCourses.length; i++) {
+                    const courseId = this.userCourses[i].courseId;
+                    const response = await axios.get(`http://localhost:8080/learningOutcomes/course/${courseId}`);
+                    const learningOutcomeList = response.data;
+                    const requestBody = {
+                        userId: userId,
+                        learningOutcomeList: learningOutcomeList
+                    };
+                    await axios.post(`http://localhost:8080/student-learning-outcome`, requestBody);
+                    this.calculateStudentValuesPO(student, courseId);
+                }
+            } catch (error) {
+                console.error("Error calculate student calculation values:", error);
+            }
+        },
+        async calculateStudentValuesPO(student, id) {
+            const courseId = id;
+            const userId = student.userId;
+            console.log("ögrenci", userId ,"ders", courseId)
+            try {
+                const responseDepartment = await axios.get(`http://localhost:8080/course/get-department/course/${courseId}`);
+                const departmentId = responseDepartment.data.id;
+                const response = await axios.get(`http://localhost:8080/program-outcomes/department/${departmentId}`);
+                const programOutcomeList = response.data;
+                console.log("polist",programOutcomeList)
+                const requestBody = {
+                    userId: userId,
+                    programOutcomeList: programOutcomeList
+                };
+                await axios.post(`http://localhost:8080/student-program-outcome/${courseId}`, requestBody);
+            } catch (error) {
+                console.error("Error calculate student calculation values:", error);
+            }
+        },
         async fetchUserCourses() {
-            const store = useStore(); // Vuex store'u al
-
-            // Kullanıcının ID'sini Vuex store'undan al
-            const userId = store.getters.getUser.userId;
-            this.userId = userId;
+            
+            const userId = this.userId;
             const studentId = userId;
 
             axios
@@ -117,7 +166,6 @@ export default {
                 for (let i = 0; i < this.userCourses.length; i++) {
                     const courseId = this.userCourses[i].courseId;
                     const departmentId = this.userCourses[i].department.id;
-                    console.log(departmentId);
                     const response = await axios.get(
                         `http://localhost:8080/program-outcomes/department/${departmentId}`
                     );
@@ -143,7 +191,6 @@ export default {
                     `http://localhost:8080/program-outcomes/department/${departmentId}`
                 );
                 this.outcomes = response.data;
-                console.log(this.outcomes);
                 this.outcomes.sort((a, b) => a.number - b.number);
                 this.getProgramOutcomeResults();
             } catch (error) {
@@ -159,7 +206,6 @@ export default {
                 );
                 this.studentProgramOutcomes.push(response.data);
             }
-            console.log("xxx", this.studentProgramOutcomes);
             let weightedAverages = [];
 
             for (let j = 0; j < this.studentProgramOutcomes.length; j++) {
@@ -178,7 +224,7 @@ export default {
 
                 let weightedAverage = weightedSum / totalEcts;
                 let description = this.studentProgramOutcomes[j][0].programOutcome.description;
-                let no =  this.studentProgramOutcomes[j][0].programOutcome.number;
+                let no = this.studentProgramOutcomes[j][0].programOutcome.number;
 
                 // program outcome ve weighted average'i saklayan nesneyi weightedAverages array'ine ekliyoruz
                 weightedAverages.push({ programOutcome: description, no: no, weightedAverage: weightedAverage });
