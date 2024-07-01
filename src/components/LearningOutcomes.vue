@@ -101,6 +101,24 @@
         </div>
       </div>
     </div>
+    <div v-if="showModal" class="modal" tabindex="-1" role="dialog" style="display: block;">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Aracı Sil</h5>
+          </div>
+          <div class="modal-body">
+            <p>Bu aracı silmek istediğinizden emin misiniz?</p>
+            <br>
+            Aracı silerseniz bu araca dair bütün notlar ve ÖÇ eşleştirmeleri kaybolacaktır!
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" @click="closeModal">İptal</button>
+            <button type="button" class="btn btn-danger" @click="confirmDelete">Sil</button>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -117,6 +135,8 @@ export default {
     return {
       assessments: [],
       courseEditable: null,
+      selectedAssessmentId: null,
+      showModal: false,
       course: null,
       contributions: [],
       contributionValue: 0.0, // Kullanıcı tarafından girilen katkı değeri
@@ -144,7 +164,6 @@ export default {
     this.fetchLearningOutcomes();
     this.fetchAssessments();
     this.fetchUseCustomNames();
-    console.log(this.assessments.contribution)
   },
   methods: {
     async saveAndDisableEditMode() {
@@ -177,6 +196,9 @@ export default {
     },
     disableEditMode() {
       this.isEditMode = false;
+    },
+    closeModal() {
+      this.showModal = false;
     },
     async fetchUseCustomNames() {
       try {
@@ -254,11 +276,19 @@ export default {
       }
     },
     async deleteAssessment(assessmentId) {
-      console.log("Delete:",assessmentId)
+      this.selectedAssessmentId = assessmentId;
+      this.showModal = true;
+    },
+    closeModal() {
+      this.showModal = false;
+    },
+    async confirmDelete() {
       try {
+        const assessmentId = this.selectedAssessmentId;
         await axios.delete(`http://localhost:8080/assessments/delete-assessment/${assessmentId}`);
         console.log("Assessment silindi:", assessmentId);
         this.fetchAssessments();
+        this.showModal = false;
       } catch (error) {
         console.error("Assessment silinemedi:", error);
       }
