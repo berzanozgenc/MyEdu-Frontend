@@ -67,11 +67,15 @@
           <button style="margin-left: 16px; position: relative; padding-left: 20px;" class="btn btn-outline-primary" @click="goToMatchMatrixPage" >ÖÇ - PÇ Eşleştirme
             <img src="../assets/Numbers/three.png" alt="Logo" style="position: absolute; top: 0; left: 0; max-height: 20px;">
           </button>
-          <button style="margin-left: 16px;position: relative; padding-left: 20px;" class="btn btn-outline-primary" @click="goToStudentListPage" >Öğrenci Listesi
+          <button style="margin-left: 16px; position: relative; padding-left: 20px;" class="btn btn-outline-primary" @click="goToStudentListPage" >Öğrenci Listesi
             <img src="../assets/Numbers/four.png" alt="Logo" style="position: absolute; top: 0; left: 0; max-height: 20px;">
           </button>
-          <button style="margin-left: 16px;" class="btn btn-outline-primary" @click="goToLearningOutcomeResult" >ÖÇ Sonuçları</button>
-          <button style="margin-left: 16px;" class="btn btn-outline-primary" @click="goToProgramOutcomeResult" >PÇ Sonuçları</button>
+          <button style="margin-left: 16px; position: relative; padding-left: 20px;" class="btn btn-outline-primary" @click="goToLearningOutcomeResult" >ÖÇ Sonuçları
+            <img src="../assets/Numbers/seven.png" alt="Logo" style="position: absolute; top: 0; left: 0; max-height: 20px;">
+          </button>
+          <button style="margin-left: 16px; position: relative; padding-left: 20px;" class="btn btn-outline-primary" @click="goToProgramOutcomeResult" >PÇ Sonuçları
+            <img src="../assets/Numbers/eight.png" alt="Logo" style="position: absolute; top: 0; left: 0; max-height: 20px;">
+          </button>
         </div>
         
         <div class="card-body">
@@ -97,7 +101,8 @@
           <i class="fas fa-info-circle"></i>
         </a>
         <div v-if="showInfoBox" class="info-box">
-          <p>Aşağıdaki ilk 3 işlem sırasıyla yapılmalıdır!
+          <p>İlk 3 işlem, her araç türü için sırasıyla yapılmalıdır! <br>
+            (Araç Detaylarını Gir) &rarr; (ÖÇ - Araç Eşleştir ) &rarr; (Not Gir)
           </p>
         </div></th>
               </tr>
