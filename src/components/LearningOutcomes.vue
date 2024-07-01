@@ -76,6 +76,10 @@
                   </tr>
                 </tbody>
               </table>
+              <button v-if="courseEditable" type="button" class="btn btn-outline-primary" @click="saveContributions">
+                Puan Değişikliklerini Kaydet
+              </button>
+              <br>
               <br>
 
               <div v-if="courseEditable" style="margin-bottom: 10px;">
@@ -90,9 +94,6 @@
               <input v-if="courseEditable" style="margin-left: 4px;" type="checkbox" v-model="useCustomNames"
                 @change="toggleQuestionBased">Soru Bazlı Değerlendirme
               <br />
-              <button v-if="courseEditable" type="button" class="btn btn-outline-primary" @click="saveContributions">
-                Kaydet
-              </button>
               </div>
              
             </div>
