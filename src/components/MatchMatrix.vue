@@ -54,10 +54,13 @@
         <div class="card-body">
           <h5 style="color: #dc3545;" class="card-title">PROGRAM YETERLİLİKLERİ (P) / DERSİN ÖĞRENME KAZANIMLARI (Ö) MATRİSİ</h5>
 
-          <!-- Düzenle butonu -->
-          <button v-if="!editMode" @click="toggleEditMode" class="btn btn-primary mt-2 mr-2 float-right">
+          <span v-if="courseEditable">
+            <button v-if="!editMode" @click="toggleEditMode" class="btn btn-primary mt-2 mr-2 float-right">
             <i class="fas fa-pencil-alt"></i>
           </button>
+        </span>
+          <!-- Düzenle butonu -->
+         
           <br>
           <br>
 
@@ -128,6 +131,7 @@ export default {
     return {
       editMode: false,
       isColumnTotalValid: true,
+      courseEditable: null,
       outcomes: [],
       programs: [],
       course: null,
@@ -145,9 +149,20 @@ export default {
     const courseId = this.$route.params.courseId;
     this.fetchLearningOutcomes(courseId);
     this.fetchProgramOutcomes(courseId);
+    this.fetchCourse();
   },
   methods: {
-
+    fetchCourse() {
+      const courseId = this.$route.params.courseId;
+      axios.get(`http://localhost:8080/course/${courseId}`)
+        .then(response => {
+          this.course = response.data;
+          this.courseEditable = this.course.editable
+        })
+        .catch(error => {
+          console.error('Error fetching course:', error);
+        });
+    },
     contributionCalculate() {
       const contributionSums = this.contributions.reduce((accumulator, currentValue) => {
       const { learningId, contribution } = currentValue;

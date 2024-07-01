@@ -57,7 +57,7 @@
                 <th scope="col" style="width: 150px;">Öğrenim Çıktısı</th>
                 <th scope="col" style="width: 400px;">Tanım</th>
                 <th scope="col" style="width: 150px;">Hedef</th>
-                <th scope="col" style="width: 150px;">İşlemler</th>
+                <th v-if="courseEditable" scope="col" style="width: 150px;">İşlemler</th>
               </tr>
             </thead>
             <tbody>
@@ -73,7 +73,7 @@
                   </div>
                   <div v-else>{{ item.target }}</div>
                 </td>
-                <td>
+                <td v-if="courseEditable">
                   <button class="btn btn-danger btn-sm" @click="deleteProgram(item.id, item)">Sil</button>
                   <button style="margin-left: 2px;" v-if="item.editable" class="btn btn-success btn-sm text-white" @click="updateProgram(item)">Kaydet</button>
                   <button style="margin-left: 2px;" v-else class="btn btn-warning btn-sm text-white" @click="editProgram(item)">Düzenle</button>
@@ -81,7 +81,7 @@
               </tr>
             </tbody>
           </table>
-          <div class="card-body">
+          <div v-if="courseEditable" class="card-body">
             <h5 class="card-title">ÖÇ Ekle</h5>
             <div class="form-group">
               <label for="description">Tanım:</label>
@@ -133,6 +133,7 @@ export default {
     return {
       programs: [],
       showModal: false,
+      courseEditable: null,
       selectedLearningOutcomeId: null,
       course: null,
       newProgram: {
@@ -156,6 +157,7 @@ export default {
     const courseId = this.$route.params.courseId;
     console.log("Course ID:", courseId);
     this.fetchLearningOutcomes(courseId);
+    this.fetchCourse();
   },
   methods: {
     goToLoginPage() {
@@ -187,6 +189,17 @@ this.$router.push('/guidance');
     },
     editProgram(program) {
       program.editable = true;
+    },
+    fetchCourse() {
+      const courseId = this.$route.params.courseId;
+      axios.get(`http://localhost:8080/course/${courseId}`)
+        .then(response => {
+          this.course = response.data;
+          this.courseEditable = this.course.editable
+        })
+        .catch(error => {
+          console.error('Error fetching course:', error);
+        });
     },
     async updateProgram(program) {
       try {

@@ -47,7 +47,7 @@
       </div>
       <div class="card" style="width: 80%;margin-left: 10px;"> <!-- Kartın sol kenara yakın olmasını sağlayacak olan stil değişikliği -->
         <div class="card-body" style="overflow-x: auto;">
-          <div class="card-body">
+          <div v-if="courseEditable" class="card-body">
             <h5 style="color:  #dc3545;" class="card-title">Öğrenci Ekle</h5>
             <form @submit.prevent="addStudent($route.params.courseId)">
               <div class="form-group">
@@ -94,7 +94,7 @@
                 <td>{{ item.firstName }} {{ item.lastName }}</td>
                 <td>
                   <button class="btn btn-primary btn-sm" @click="goToInstructorStudent(item.userId)">Bilgileri Görüntüle</button>
-                  <button style="margin-left: 2px;" class="btn btn-danger btn-sm" @click="deleteStudent(item.userId)" >Sil</button>
+                  <button v-if="courseEditable" style="margin-left: 2px;" class="btn btn-danger btn-sm" @click="deleteStudent(item.userId)" >Sil</button>
                 </td>
               </tr>
             </tbody>
@@ -137,6 +137,7 @@ export default {
       students: [],
       showInfoBox: false,
       excelStudents: [],
+      courseEditable: null,
       allStudents: [],
       selectedStudentId: null,
       showModal: false,
@@ -161,6 +162,7 @@ export default {
     console.log("Course ID:", courseId);
     this.fetchAllStudents();
     this.fetchStudents(courseId);
+    this.fetchCourse();
 },
   methods: {
     goToLoginPage() {
@@ -177,6 +179,17 @@ export default {
         }
       });
   },
+  fetchCourse() {
+      const courseId = this.$route.params.courseId;
+      axios.get(`http://localhost:8080/course/${courseId}`)
+        .then(response => {
+          this.course = response.data;
+          this.courseEditable = this.course.editable
+        })
+        .catch(error => {
+          console.error('Error fetching course:', error);
+        });
+    },
   goToGuidePage(){
 this.$router.push('/guidance');
         },

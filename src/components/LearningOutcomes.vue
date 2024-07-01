@@ -60,7 +60,7 @@
                     <th v-for="(assessment, index) in assessments" :key="assessment.id" scope="col">
                       <div class="d-flex align-items-center justify-content-between">
                         <span>{{ !useCustomNames ? assessment.name : 'Soru' }} {{ index + 1 }}</span>
-                        <button @click="deleteAssessment(assessment.assessmentId)" class="btn btn-sm btn-danger ml-2">
+                        <button v-if="courseEditable" @click="deleteAssessment(assessment.assessmentId)" class="btn btn-sm btn-danger ml-2">
                           <i class="fa fa-trash" style="font-size: 12px;"></i> <!-- Silme ikonu -->
                         </button>
                       </div>
@@ -78,20 +78,23 @@
               </table>
               <br>
 
-              <div style="margin-bottom: 10px;">
+              <div v-if="courseEditable" style="margin-bottom: 10px;">
                 <label for="contributionInput" style="margin-right: 10px;">Eklenecek Aracın Puanı:</label>
                 <input type="number" id="contributionInput" v-model="contributionValue" style="width: 100px;" />
               </div>
 
-              <button type="button" class="btn btn-success mb-2" @click="addNewAssessment">
+              <div v-if="courseEditable">
+                <button v-if="courseEditable" type="button" class="btn btn-success mb-2" @click="addNewAssessment">
                 Yeni Araç Ekle
               </button>
-              <input style="margin-left: 4px;" type="checkbox" v-model="useCustomNames"
+              <input v-if="courseEditable" style="margin-left: 4px;" type="checkbox" v-model="useCustomNames"
                 @change="toggleQuestionBased">Soru Bazlı Değerlendirme
               <br />
-              <button type="button" class="btn btn-outline-primary" @click="saveContributions">
+              <button v-if="courseEditable" type="button" class="btn btn-outline-primary" @click="saveContributions">
                 Kaydet
               </button>
+              </div>
+             
             </div>
           </div>
           <br />
@@ -113,6 +116,7 @@ export default {
   data() {
     return {
       assessments: [],
+      courseEditable: null,
       course: null,
       contributions: [],
       contributionValue: 0.0, // Kullanıcı tarafından girilen katkı değeri
@@ -133,6 +137,7 @@ export default {
       "General Assessment ID:",
       this.$route.params.generalAssessmentId
     );
+    this.fetchCourse()
     // Burada parametreleri kullanarak gerekli işlemleri gerçekleştirebilirsiniz.
   },
   mounted() {
@@ -155,6 +160,17 @@ export default {
       } catch (error) {
         console.error("Error toggling question based:", error);
       }
+    },
+    fetchCourse() {
+      const courseId = this.$route.params.courseId;
+      axios.get(`http://localhost:8080/course/${courseId}`)
+        .then(response => {
+          this.course = response.data;
+          this.courseEditable = this.course.editable
+        })
+        .catch(error => {
+          console.error('Error fetching course:', error);
+        });
     },
     enableEditMode() {
       this.isEditMode = true;

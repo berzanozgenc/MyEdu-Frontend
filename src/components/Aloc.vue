@@ -56,9 +56,11 @@
           <h5 class="card-title">Öğrenim Çıktısı - Araç Eşleştirme</h5>
           <div style="max-width: 100%; overflow-x: auto">
             <div>
-              <button v-if="!isEditMode" @click="enableEditMode" class="btn btn-primary mb-2">
+              <span v-if="courseEditable"> 
+                <button v-if="!isEditMode" @click="enableEditMode" class="btn btn-primary mb-2">
                 <i class="fas fa-pencil-alt"></i>
               </button>
+              </span>
               <button v-if="isEditMode" @click="saveAllChanges" class="btn btn-success mb-2">
                 Kaydet
               </button>
@@ -128,6 +130,7 @@ export default {
     return {
       learningOutcomes: [],
       isColumnTotalValid: true,
+      courseEditable: null,
       cellData: [],
       assessments: [],
       contributions: [],
@@ -149,8 +152,20 @@ export default {
       .catch((error) => {
         console.error("Fetch işlemi başarısız:", error);
       });
+      this.fetchCourse();
   },
   methods: {
+    fetchCourse() {
+      const courseId = this.$route.params.courseId;
+      axios.get(`http://localhost:8080/course/${courseId}`)
+        .then(response => {
+          this.course = response.data;
+          this.courseEditable = this.course.editable
+        })
+        .catch(error => {
+          console.error('Error fetching course:', error);
+        });
+    },
     fillTable(outcomeIndex, assessmentIndex) {
       var learningId = this.learningOutcomes[outcomeIndex].id;
       var assessmentId = this.assessments[assessmentIndex].assessmentId;

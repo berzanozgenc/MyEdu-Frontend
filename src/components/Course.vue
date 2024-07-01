@@ -58,10 +58,18 @@
       <div class="card course-details" style="width: 78%; overflow-y: auto; overflow-x: auto;">
         <br>
         <div class="buttons-container">
-          <button style="margin-left: 16px;" class="btn btn-outline-primary" @click="goToCourseProgramOutcomePage">Program Çıktıları</button>
-          <button style="margin-left: 16px;" class="btn btn-outline-primary" @click="goToInstructorLearningOutcomePage">Öğrenim Çıktıları</button>
-          <button style="margin-left: 16px;" class="btn btn-outline-primary" @click="goToMatchMatrixPage" >ÖÇ - PÇ Eşleştirme</button>
-          <button style="margin-left: 16px;" class="btn btn-outline-primary" @click="goToStudentListPage" >Öğrenci Listesi</button>
+          <button style="margin-left: 16px; position: relative; padding-left: 20px;" class="btn btn-outline-primary" @click="goToCourseProgramOutcomePage">Program Çıktıları
+            <img src="../assets/Numbers/one.png" alt="Logo" style="position: absolute; top: 0; left: 0; max-height: 20px;">
+          </button>
+          <button style="margin-left: 16px; position: relative; padding-left: 20px;" class="btn btn-outline-primary" @click="goToInstructorLearningOutcomePage">Öğrenim Çıktıları
+            <img src="../assets/Numbers/two.png" alt="Logo" style="position: absolute; top: 0; left: 0; max-height: 20px;">
+          </button>
+          <button style="margin-left: 16px; position: relative; padding-left: 20px;" class="btn btn-outline-primary" @click="goToMatchMatrixPage" >ÖÇ - PÇ Eşleştirme
+            <img src="../assets/Numbers/three.png" alt="Logo" style="position: absolute; top: 0; left: 0; max-height: 20px;">
+          </button>
+          <button style="margin-left: 16px;position: relative; padding-left: 20px;" class="btn btn-outline-primary" @click="goToStudentListPage" >Öğrenci Listesi
+            <img src="../assets/Numbers/four.png" alt="Logo" style="position: absolute; top: 0; left: 0; max-height: 20px;">
+          </button>
           <button style="margin-left: 16px;" class="btn btn-outline-primary" @click="goToLearningOutcomeResult" >ÖÇ Sonuçları</button>
           <button style="margin-left: 16px;" class="btn btn-outline-primary" @click="goToProgramOutcomeResult" >PÇ Sonuçları</button>
         </div>
@@ -85,7 +93,13 @@
               <tr>
                 <th style="width: 30%;" scope="col">Araç Türü</th>
                 <th style="width: 25%;" scope="col">Katkı</th>
-                <th style="width: 45%;" scope="col">İşlemler</th>
+                <th style="width: 45%;" scope="col"><img src="../assets/Numbers/six.png" alt="Logo" style=" top: 0; left: 0; max-height: 25px;"> İşlemler         <a @mouseenter="showInfoBox = true" @mouseleave="showInfoBox = false" style="cursor: pointer; color: #007bff;;">
+          <i class="fas fa-info-circle"></i>
+        </a>
+        <div v-if="showInfoBox" class="info-box">
+          <p>Aşağıdaki ilk 3 işlem sırasıyla yapılmalıdır!
+          </p>
+        </div></th>
               </tr>
             </thead>
             <tbody>
@@ -104,10 +118,10 @@
                   <button style="margin-left: 2px;" class="btn btn-info btn-sm text-white" @click="goToAssessmentPage(assessment.generalAssesmentId)">Araç Detaylarını Gir</button>
                   <button style="margin-left: 2px; height: 31px;" type="button" class="btn btn-sm btn-secondary text-white" @click="goToAlocPage(assessment.generalAssesmentId)">ÖÇ - Araç Eşleştir</button>
                   <button style="margin-left: 2px; height: 31px;" type="button" class="btn btn-sm btn-primary" @click="goToStudentInfoPage(assessment.generalAssesmentId)">Not Gir</button>
-                  <button style="margin-left: 2px;" :class="{'btn-warning': !assessment.editMode, 'btn-success': assessment.editMode}" class="btn btn-sm text-white" @click="assessment.editMode ? saveChanges(assessment) : editProgram(assessment)">
-                  {{ assessment.editMode ? 'Kaydet' : 'Düzenle' }}
-                  </button>
-                  <button style="margin-left: 2px;" class="btn btn-danger btn-sm" @click="deleteProgram(assessment.generalAssesmentId, index)">Sil</button>
+                  <button v-if="courseEditable" style="margin-left: 2px;" :class="{'btn-warning': !assessment.editMode, 'btn-success': assessment.editMode}" class="btn btn-sm text-white" @click="assessment.editMode ? saveChanges(assessment) : editProgram(assessment)">
+            {{ assessment.editMode ? 'Kaydet' : 'Düzenle' }}
+          </button>
+          <button v-if="courseEditable" style="margin-left: 2px;" class="btn btn-danger btn-sm" @click="deleteProgram(assessment.generalAssesmentId, index)">Sil</button>
                 </td>
               </tr>
             </tbody>
@@ -115,9 +129,9 @@
     Araç Katkı toplamları 100 etmelidir!
   </div>
           </table>
-          <div class="card-body">
-            <h5 class="card-title">Araç Türü Ekle</h5>
-            
+          <div v-if="courseEditable" class="card-body">
+              <img src="../assets/Numbers/five.png" alt="Logo" style=" max-height: 25px; padding-left: 5%;">
+              <h5 class="card-title">Araç Türü Ekle</h5>
             <div class="form-group">
               <label for="assessmentName">Araç Türü:</label>
               <input type="text" class="form-control" id="assessmentName" v-model="assessmentName" style="width: 200px;">
@@ -177,8 +191,10 @@ export default {
       courseId: null,
       selectedGeneralAssessmentId: null,
       showModal: false,
+      showInfoBox: false,
       generalAssessments: [],
       course: {},
+      courseEditable: null,
       assessmentName: "",
       assessmentContribution: "",
       selectedSortingOption: ' ', // Varsayılan sıralama seçeneği
@@ -237,6 +253,7 @@ export default {
       axios.get(`http://localhost:8080/course/${courseId}`)
         .then(response => {
           this.course = response.data;
+          this.courseEditable = this.course.editable
         })
         .catch(error => {
           console.error('Error fetching course:', error);
@@ -483,6 +500,14 @@ logoutUser() {
 .card.course-details{
   overflow-x: auto; /* Yatay kaydırma ekler */
   white-space: nowrap; /* Satırları kırpmaz, yatayda devam eder */
+}
+
+.custom-container {
+  display: flex;
+  align-items: center;
+  border: 2px solid blue; /* Mavi çerçeve */
+  padding: 10px; /* İç boşluk */
+  border-radius: 5px; /* Köşeleri yuvarlama */
 }
 
 </style>

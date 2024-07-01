@@ -40,7 +40,7 @@
               <label for="classDropdown">Ders Seç:</label>
               <select class="form-control" id="classDropdown" v-model="selectedClass">
                 <option v-for="(course, index) in courses" :key="index" :value="course.courseId">
-                  {{ course.code }} - {{ course.courseName }} - {{ course.semester }}
+                  {{ course.code }} {{ course.courseName }} {{ course.period }} {{ course.semester }}
                 </option>
               </select>
             </div>
@@ -50,7 +50,7 @@
             <h5 class="card-title">Derslerim</h5>
             <ul style="max-width: 73rem" class="list-group">
               <li class="list-group-item text-left" v-for="(registration, index) in userCourses" :key="index">
-                <a @click="goToCoursePage(registration.course)" class="course-link">{{ registration.course.code }} - {{ registration.course.courseName }} - {{ registration.course.semester }}</a>
+                <a @click="goToCoursePage(registration.course)" class="course-link">{{ registration.course.code }} {{ registration.course.courseName }} | {{ registration.course.period }} {{ registration.course.semester }}</a>
                 <button class="btn btn-danger btn-sm ml-2" @click="openConfirmationModal(registration.registrationId)">
                   Sil
                 </button>
@@ -152,6 +152,7 @@ this.$router.push('/guidance');
             courseName: course.courseName,
             code: course.code,
             semester: course.semester,
+            period: course.period
           }));
         })
         .catch((error) => {

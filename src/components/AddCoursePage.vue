@@ -73,6 +73,7 @@
         <th scope="col">Şube</th>
         <th scope="col">AKTS</th>
         <th scope="col">Kredi</th>
+        <th scope="col">Düzenlenilebilinir</th>
         <th scope="col">İşlemler</th>
       </tr>
     </thead>
@@ -130,6 +131,15 @@
             <input v-model="item.credit" class="editable-input" />
           </span>
           <span v-else>{{ item.credit }}</span>
+        </td>
+        <td>
+          <span v-if="editable === index">
+          <select v-model="item.editable" class="editable-input">
+            <option :value="true">Evet</option>
+            <option :value="false">Hayır</option>
+          </select>
+        </span>
+          <span v-else> {{ item.editable ? 'Evet' : 'Hayır' }} </span>
         </td>
         <td>
           <button :class="editable === index ? 'btn btn-success btn-sm' : 'btn btn-warning btn-sm'" @click="editable === index ? saveCourse(index) : toggleEdit(index)">
