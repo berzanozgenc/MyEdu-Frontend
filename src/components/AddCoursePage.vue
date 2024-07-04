@@ -62,7 +62,7 @@
       </div>
 
           <input id="fileInput" type="file" @change="onFileChange" accept=".xlsx, .xls">
-          <table class="table table-striped table-bordered">
+          <table style="margin-top: 2px;" class="table table-striped table-bordered">
     <thead>
       <tr>
         <th style="width: 12%;"scope="col">Departman</th>
@@ -146,6 +146,7 @@
             {{ editable === index ? 'Kaydet' : 'Düzenle' }}
           </button>
           <button class="btn btn-danger btn-sm" style="margin-left: 2px;" @click="openModal(item)">Sil</button>
+          <button class="btn btn-primary btn-sm" style="margin-top: 2px;" @click="goToAdminCourseResultsPage(item.courseId)" >Sonuçlar</button>
         </td>
       </tr>
     </tbody>
@@ -246,6 +247,7 @@ export default {
   this.courses.forEach(course => {
     const newCourse = {
       department: this.userDepartment,
+      isEditable: true,
       period: course.period,
       semester: course.semester,
       code: course.code,
@@ -269,6 +271,9 @@ export default {
   });
 
   // Tüm kursları yeniden getir
+},
+goToAdminCourseResultsPage(courseId){
+  this.$router.push({ name: "AdminCourseResults", params: { courseId: courseId }});
 },
   readExcelFile(file) {
   const workbook = new ExcelJS.Workbook();

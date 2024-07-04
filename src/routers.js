@@ -26,12 +26,19 @@ import AdminGuide from "./components/AdminGuide.vue";
 import AdminCourseChange from './components/AdminCourseChange.vue'
 import axios from "axios";
 import StudentProgramOutcome from "./components/StudentProgramOutcome.vue";
+import AdminCourseResults from './components/AdminCourseResults.vue'
 
 const routes = [{
     name: "Login",
     component: Login,
     path: "/"
 
+},
+{
+    name: "AdminCourseResults",
+    component: AdminCourseResults,
+    path: "/admin-course-results/:courseId",
+    meta: { requiresAuth: true }, // Oturum açma gerektiren sayfaları belirtin
 },
 {
     name: "InstructorHome",
@@ -192,6 +199,7 @@ const adminAllowedRoutes = [
     '/program-output-admin',
     '/admin-guide',
     '/admin-course',
+    '/admin-course-results/:courseId',
     '/'
 ];
 
@@ -284,9 +292,5 @@ router.beforeEach(async (to, from, next) => {
         next(); // Oturum açılmamış kullanıcılar için genel geçiş izni
     }
 });
-
-
-
-
 
 export default router;
