@@ -48,7 +48,7 @@
           </div>
           <div class="card-body">
             <h5 class="card-title">Derslerim</h5>
-            <ul style="max-width: 73rem" class="list-group">
+            <ul class="list-group">
               <li class="list-group-item text-left" v-for="(registration, index) in userCourses" :key="index">
                 <a @click="goToCoursePage(registration.course)" class="course-link">{{ registration.course.code }} {{ registration.course.courseName }} | {{ registration.course.period }} {{ registration.course.semester }}</a>
                 <button class="btn btn-danger btn-sm ml-2" @click="openConfirmationModal(registration.registrationId)">

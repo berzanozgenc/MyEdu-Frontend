@@ -90,10 +90,13 @@ export default {
       this.outcomes = response.data;
 
       // Labels ve filter logic
-      this.chartData.labels = this.outcomes.map(outcome => "PÇ " + outcome.programOutcome.number);
+     
       console.log('Chart Labels:', this.chartData.labels);
+      console.log("deneme xxx", this.outcomes)
 
       this.outcomes = this.outcomes.filter(outcome => !isNaN(outcome.levelOfProvision) && outcome.levelOfProvision !== 0);
+      this.chartData.labels = this.outcomes.map(outcome => "PÇ " + outcome.programOutcome.number);
+
 
       this.chartData.datasets[0].data = this.outcomes.map(outcome => outcome.levelOfProvision);
       this.chartData.datasets[1].data = this.outcomes.map(outcome => outcome.score);

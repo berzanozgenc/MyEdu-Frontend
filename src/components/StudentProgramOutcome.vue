@@ -53,13 +53,14 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr v-for="(outcome, index) in weightedAverages" :key="index">
-                                <td class="description-cell">{{ outcome.no }}</td>
-                                <td class="description-cell">{{ outcome.programOutcome }}</td>
-                                <td style="text-align: center;" class="description-cell">{{
-                outcome.weightedAverage.toFixed(2) }}</td>
-                            </tr>
-                        </tbody>
+    <tr v-for="(outcome, index) in weightedAverages" :key="index">
+        <td class="description-cell">{{ outcome.no }}</td>
+        <td class="description-cell">{{ outcome.programOutcome }}</td>
+        <td style="text-align: center;" class="description-cell">
+            {{ isNaN(outcome.weightedAverage) ? 'Henüz hesaplanmadı' : outcome.weightedAverage.toFixed(2) }}
+        </td>
+    </tr>
+</tbody>
                     </table>
                 </div>
             </div>
@@ -198,40 +199,44 @@ export default {
             }
         },
         async getProgramOutcomeResults() {
-            const studentId = this.userId;
-            for (let i = 0; i < this.outcomes.length; i++) {
-                const programOutcomeId = this.outcomes[i].id;
-                const response = await axios.get(
-                    `http://localhost:8080/student-program-outcome/getByStudentAndProgram/student/${studentId}/program/${programOutcomeId}`
-                );
-                this.studentProgramOutcomes.push(response.data);
+    const studentId = this.userId;
+    for (let i = 0; i < this.outcomes.length; i++) {
+        const programOutcomeId = this.outcomes[i].id;
+        const response = await axios.get(
+            `http://localhost:8080/student-program-outcome/getByStudentAndProgram/student/${studentId}/program/${programOutcomeId}`
+        );
+        this.studentProgramOutcomes.push(response.data);
+    }
+    let weightedAverages = [];
+
+    for (let j = 0; j < this.studentProgramOutcomes.length; j++) {
+        let totalEcts = 0;
+        let weightedSum = 0;
+
+        for (let k = 0; k < this.studentProgramOutcomes[j].length; k++) {
+            let course = this.studentProgramOutcomes[j][k].course;
+            let levelOfProvision = this.studentProgramOutcomes[j][k].levelOfProvision;
+            let ects = course.ects;
+
+            // levelOfProvision 0 veya NaN ise hesaplama dışında tutuyoruz
+            if (levelOfProvision && !isNaN(levelOfProvision)) {
+                weightedSum += levelOfProvision * ects;
+                totalEcts += ects;
             }
-            let weightedAverages = [];
+        }
 
-            for (let j = 0; j < this.studentProgramOutcomes.length; j++) {
-                let totalEcts = 0;
-                let weightedSum = 0;
+        // totalEcts 0 ise weightedAverage NaN olur
+        let weightedAverage = totalEcts === 0 ? NaN : weightedSum / totalEcts;
+        let description = this.studentProgramOutcomes[j][0].programOutcome.description;
+        let no = this.studentProgramOutcomes[j][0].programOutcome.number;
 
-                for (let k = 0; k < this.studentProgramOutcomes[j].length; k++) {
-                    let course = this.studentProgramOutcomes[j][k].course;
-                    let levelOfProvision =
-                        this.studentProgramOutcomes[j][k].levelOfProvision;
-                    let ects = course.ects;
+        // program outcome ve weighted average'i saklayan nesneyi weightedAverages array'ine ekliyoruz
+        weightedAverages.push({ programOutcome: description, no: no, weightedAverage: weightedAverage });
+    }
 
-                    weightedSum += levelOfProvision * ects;
-                    totalEcts += ects;
-                }
+    this.weightedAverages = weightedAverages;
+},
 
-                let weightedAverage = weightedSum / totalEcts;
-                let description = this.studentProgramOutcomes[j][0].programOutcome.description;
-                let no = this.studentProgramOutcomes[j][0].programOutcome.number;
-
-                // program outcome ve weighted average'i saklayan nesneyi weightedAverages array'ine ekliyoruz
-                weightedAverages.push({ programOutcome: description, no: no, weightedAverage: weightedAverage });
-            }
-
-            this.weightedAverages = weightedAverages;
-        },
         goToLoginPage() {
             this.$router.push("/"); // Login page
         },
