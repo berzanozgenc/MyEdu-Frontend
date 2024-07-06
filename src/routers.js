@@ -27,6 +27,7 @@ import AdminCourseChange from './components/AdminCourseChange.vue'
 import axios from "axios";
 import StudentProgramOutcome from "./components/StudentProgramOutcome.vue";
 import AdminCourseResults from './components/AdminCourseResults.vue'
+import PoAnalysis from "./components/PoAnalysis.vue";
 
 const routes = [{
     name: "Login",
@@ -184,6 +185,12 @@ const routes = [{
     path: "/Instructor-Student/:courseId/:studentId",
     meta: { requiresAuth: true }, // Oturum açma gerektiren sayfaları belirtin
 },
+{
+    name: "PoAnalysis",
+    component: PoAnalysis,
+    path: "/analysis",
+    meta: { requiresAuth: true }, // Oturum açma gerektiren sayfaları belirtin
+},
 
 ];
 
@@ -224,7 +231,8 @@ const instructorAllowedRoutes = [
     '/instructor-match-matrix/:courseId',
     '/course-program-outcome/:courseId',
     '/instructor-learning-outcome/:courseId',
-    '/guidance'
+    '/guidance',
+    '/analysis'
 ];
 
 router.beforeEach(async (to, from, next) => {

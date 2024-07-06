@@ -95,6 +95,7 @@ export default {
       console.log("deneme xxx", this.outcomes)
 
       this.outcomes = this.outcomes.filter(outcome => !isNaN(outcome.levelOfProvision) && outcome.levelOfProvision !== 0);
+      this.outcomes.sort((a, b) => a.programOutcome.number - b.programOutcome.number);
       this.chartData.labels = this.outcomes.map(outcome => "PÇ " + outcome.programOutcome.number);
 
 

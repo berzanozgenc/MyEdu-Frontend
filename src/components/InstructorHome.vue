@@ -7,13 +7,14 @@
       <a @click="refreshPage" style="margin-left: 10px" class="navbar-brand" href="#">
         Kişiselleştirilmiş Akademik Gelişim ve <br /> Değerlendirme Sistemi
       </a>
-    
+
       <div style="margin-left: auto; margin-right: 2%;" class="ml-auto d-flex align-items-center">
         <span class="d-flex align-items-center">
           <img style="margin-right: 2px;" class="icon" src="../assets/profile.png" />
           <h6 class="mb-0 ml-2">{{ username }}</h6>
         </span>
-        <button style="margin-left: 8px;" @click="logoutUser" class="btn btn-outline-danger my-2 my-sm-0" type="submit">Çıkış Yap</button>
+        <button style="margin-left: 8px;" @click="logoutUser" class="btn btn-outline-danger my-2 my-sm-0"
+          type="submit">Çıkış Yap</button>
       </div>
     </nav>
     <div class="flex-container">
@@ -22,8 +23,11 @@
         <div class="card-body">
           <h5 class="card-title">Menü</h5>
           <ul class="list-group">
-            <li class="list-group-item" @click="goToCoursePage">
+            <li class="list-group-item">
               <i class="fas fa-book"></i> Derslerim
+            </li>
+            <li class="list-group-item" @click="goToAnalysisPage">
+              <i class="fas fa-diagram-project"></i> Analiz
             </li>
             <li class="list-group-item" @click="goToGuidePage">
               <i class="fas fa-users"></i> Kılavuz
@@ -31,7 +35,7 @@
           </ul>
         </div>
       </div>
-  
+
       <div class="card" style="width: 80%; overflow-y: auto; overflow-x: hidden;">
         <div class="form-inline">
           <div class="form-group mr-2">
@@ -50,7 +54,9 @@
             <h5 class="card-title">Derslerim</h5>
             <ul class="list-group">
               <li class="list-group-item text-left" v-for="(registration, index) in userCourses" :key="index">
-                <a @click="goToCoursePage(registration.course)" class="course-link">{{ registration.course.code }} {{ registration.course.courseName }} | {{ registration.course.period }} {{ registration.course.semester }}</a>
+                <a @click="goToCoursePage(registration.course)" class="course-link">{{ registration.course.code }} {{
+        registration.course.courseName }} | {{ registration.course.period }} {{ registration.course.semester
+                  }}</a>
                 <button class="btn btn-danger btn-sm ml-2" @click="openConfirmationModal(registration.registrationId)">
                   Sil
                 </button>
@@ -114,23 +120,26 @@ export default {
     this.fetchUserCourses();
   },
   methods: {
-    goToGuidePage(){
-this.$router.push('/guidance');
-        },
+    goToGuidePage() {
+      this.$router.push('/guidance');
+    },
     goToCoursePage(registration) {
       const courseId = registration.courseId;
       this.$router.push({ name: 'Course', params: { courseId: courseId } });
       this.selectedCourse = registration; // Seçilen dersin bilgilerini selectedCourse değişkenine atar
     },
-    getDepartment(){
+    getDepartment() {
       const user = this.getUser
       this.userDepartment = user.department;
       this.fetchCourses(this.userDepartment);
     },
+    goToAnalysisPage() {
+      this.$router.push("/analysis");
+    },
     fetchUserCourses() {
       // Vuex'tan kullanıcı ID'sini alın
       const userId = this.getUser ? this.getUser.userId : null;
-  
+
       // Kullanıcının derslerini getiren istek
       axios
         .get(`http://localhost:8080/user-course-registrations/user/${userId}/courses`)
@@ -164,21 +173,21 @@ this.$router.push('/guidance');
       const courseId = this.selectedClass;
       // Vuex'tan kullanıcı ID'sini alın
       const userId = this.getUser ? this.getUser.userId : null;
-  
+
       // Backend'e istek yapmak için kullanılacak veri
       const requestData = {
         userId: userId,
         courseId: courseId,
       };
-  
+
       // Backend'e istek yapma
       axios
         .post("http://localhost:8080/user-course-registrations", requestData)
         .then((response) => {
           // Başarılı cevap durumunda yapılacak işlemler
-          
+
           this.$toast.success("Ders başarıyla eklendi");
-          
+
           this.fetchUserCourses();
         })
         .catch((error) => {
@@ -244,21 +253,26 @@ this.$router.push('/guidance');
 }
 
 .modal {
-  background: rgba(0, 0, 0, 0.5); /* Background rengi ve saydamlık */
-  position: fixed; /* Sayfanın üzerinde sabit kalacak */
+  background: rgba(0, 0, 0, 0.5);
+  /* Background rengi ve saydamlık */
+  position: fixed;
+  /* Sayfanın üzerinde sabit kalacak */
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  display: flex; /* İçerik merkezi konumlandırma için */
+  display: flex;
+  /* İçerik merkezi konumlandırma için */
   align-items: center;
   justify-content: center;
 }
+
 .list-group-item {
   display: flex;
   align-items: center;
   justify-content: space-between;
 }
+
 .modal-dialog {
   background: white;
   padding: 20px;
@@ -270,17 +284,17 @@ this.$router.push('/guidance');
 }
 
 .course-link {
-  text-decoration: none; /* Varsayılan link alt çizgisini kaldır */
-  color: blue; /* Varsayılan metin rengini uygula */
+  text-decoration: none;
+  /* Varsayılan link alt çizgisini kaldır */
+  color: blue;
+  /* Varsayılan metin rengini uygula */
 }
 
 .course-link:hover {
-  text-decoration: underline; /* Hover durumunda alt çizgi ekle */
-  color: navy; /* Hover durumunda renk değiştir */
+  text-decoration: underline;
+  /* Hover durumunda alt çizgi ekle */
+  color: navy;
+  /* Hover durumunda renk değiştir */
 }
 </style>
-<style scoped>
-
-
-
-</style>
+<style scoped></style>
