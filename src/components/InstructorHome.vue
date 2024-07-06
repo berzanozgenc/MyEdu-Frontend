@@ -137,19 +137,27 @@ export default {
       this.$router.push("/analysis");
     },
     fetchUserCourses() {
-      // Vuex'tan kullanıcı ID'sini alın
-      const userId = this.getUser ? this.getUser.userId : null;
+  // Vuex'tan kullanıcı ID'sini alın
+  const userId = this.getUser ? this.getUser.userId : null;
 
-      // Kullanıcının derslerini getiren istek
-      axios
-        .get(`http://localhost:8080/user-course-registrations/user/${userId}/courses`)
-        .then((response) => {
-          this.userCourses = response.data; // Kullanıcıya ait dersleri listesini güncelle
-        })
-        .catch((error) => {
-          console.error("Hata:", error);
-        });
-    },
+  // Kullanıcının derslerini getiren istek
+  axios
+    .get(`http://localhost:8080/user-course-registrations/user/${userId}/courses`)
+    .then((response) => {
+      // Dersleri courseNames'e göre alfabetik olarak sırala
+      this.userCourses = response.data.sort((a, b) => {
+        // Ders adlarını karşılaştırırken büyük-küçük harf duyarlı olmayacak şekilde sıralama yap
+        const nameA = a.course.courseName.toLowerCase();
+        const nameB = b.course.courseName.toLowerCase();
+        if (nameA < nameB) return -1;
+        if (nameA > nameB) return 1;
+        return 0;
+      });
+    })
+    .catch((error) => {
+      console.error("Hata:", error);
+    });
+},
     fetchCourses(userDepartment) {
       const departmentId = this.userDepartment.id;
       axios
@@ -267,11 +275,6 @@ export default {
   justify-content: center;
 }
 
-.list-group-item {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
 
 .modal-dialog {
   background: white;
@@ -288,6 +291,8 @@ export default {
   /* Varsayılan link alt çizgisini kaldır */
   color: blue;
   /* Varsayılan metin rengini uygula */
+  flex-grow: 1;
+  /* Linklerin esnemesini sağlar */
 }
 
 .course-link:hover {
@@ -296,5 +301,6 @@ export default {
   color: navy;
   /* Hover durumunda renk değiştir */
 }
+
+
 </style>
-<style scoped></style>
