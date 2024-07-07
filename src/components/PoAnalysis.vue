@@ -59,34 +59,41 @@
                 </div>
             </div>
         </div>
-        <div v-if="Object.keys(groupedOutcomes).length" class="card"
-            style="width: 90%; overflow-y: auto; overflow-x: auto">
-            <table class="table table-sm">
-                <thead>
-                    <tr>
-                        <th style="vertical-align: top" scope="col">PÇ. No</th>
-                        <th style="vertical-align: top" scope="col">Tanım</th>
-                        <th v-for="course in groupedOutcomes[Object.keys(groupedOutcomes)[0]]
-                .courses" :key="course.course.id" style="text-align: center" scope="col">
-                            {{ course.course.courseName }} {{ course.course.period }}
-                            {{ course.course.semester }}
-                        </th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr v-for="(group, key) in groupedOutcomes" :key="key">
-                        <td class="description-cell">{{ group.programOutcome.number }}</td>
-                        <td class="description-cell">
-                            {{ group.programOutcome.description }}
-                        </td>
-                        <td v-for="course in groupSortedCourses(group)" :key="course.course.id"
-                            style="text-align: center">
-                            %{{ course.levelOfProvision.toFixed(2) }}
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
+        <div v-if="Object.keys(groupedOutcomes).length" class="card table-responsive"
+            style="width: 90%; max-height: 500px; overflow-y: auto;">
+            <div class="table-container">
+                <table class="table table-sm">
+                    <thead>
+                        <tr>
+                            <th style="vertical-align: top" scope="col">PÇ. No</th>
+                            <th style="vertical-align: top" scope="col">Tanım</th>
+                            <th v-for="course in allCourses" :key="course.courseId" style="text-align: center"
+                                scope="col">
+                                {{ course.courseName }} {{ course.period }} {{ course.semester }}
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr v-for="(group, key) in groupedOutcomes" :key="key">
+                            <td class="description-cell">{{ group.programOutcome.number }}</td>
+                            <td class="description-cell">
+                                {{ group.programOutcome.description }}
+                            </td>
+                            <td v-for="course in allCourses" :key="course.courseId" style="text-align: center">
+                                <template v-if="courseValue(group.courses, course.courseId) !== null">
+                                    %{{ courseValue(group.courses, course.courseId).toFixed(2) }}
+                                </template>
+                                <template v-else>
+                                    -
+                                </template>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
+
+
     </div>
 </template>
 
@@ -104,17 +111,42 @@ export default {
             return user ? `${user.firstName} ${user.lastName}` : "";
         },
         sortedCourses() {
-      const allCourses = Object.values(this.groupedOutcomes).reduce((courses, group) => {
-        return courses.concat(group.courses);
-      }, []);
+            const allCourses = Object.values(this.groupedOutcomes).reduce((courses, group) => {
+                return courses.concat(group.courses);
+            }, []);
 
-      // course.period'a göre alfabetik sırala
-      return allCourses.sort((a, b) => {
-        const periodA = a.course.period.toUpperCase();
-        const periodB = b.course.period.toUpperCase();
-        return periodA.localeCompare(periodB);
-      });
-    }
+            // course.period'a göre alfabetik sırala
+            return allCourses.sort((a, b) => {
+                const periodA = a.course.period.toUpperCase();
+                const periodB = b.course.period.toUpperCase();
+                return periodA.localeCompare(periodB);
+            });
+        },
+        groupWithMaxCourses() {
+            let maxCoursesGroup = null;
+            let maxCourseCount = 0;
+
+            for (const group of Object.values(this.groupedOutcomes)) {
+                const courseCount = group.courses.length;
+                if (courseCount > maxCourseCount) {
+                    maxCourseCount = courseCount;
+                    maxCoursesGroup = group;
+                }
+            }
+            return maxCoursesGroup;
+        },
+
+        allCourses() {
+            const courses = new Map();
+
+            for (const group of Object.values(this.groupedOutcomes)) {
+                for (const course of group.courses) {
+                    courses.set(course.course.courseId, course.course);
+                }
+            }
+
+            return Array.from(courses.values());
+        }
     },
     data() {
         return {
@@ -130,13 +162,17 @@ export default {
     },
 
     methods: {
+        courseValue(courses, courseId) {
+            const course = courses.find(c => c.course.courseId === courseId);
+            return course ? course.levelOfProvision : null;
+        },
         groupSortedCourses(group) {
-      return group.courses.sort((a, b) => {
-        const periodA = a.course.period.toUpperCase();
-        const periodB = b.course.period.toUpperCase();
-        return periodA.localeCompare(periodB);
-      });
-    },
+            return group.courses.sort((a, b) => {
+                const periodA = a.course.period.toUpperCase();
+                const periodB = b.course.period.toUpperCase();
+                return periodA.localeCompare(periodB);
+            });
+        },
         async analyzeCourse() {
             const code = this.selectedClass;
             if (this.selectedClass == null) {
@@ -295,5 +331,27 @@ export default {
     /* Hover durumunda alt çizgi ekle */
     color: navy;
     /* Hover durumunda renk değiştir */
+}
+
+.description-cell {
+    max-height: 4.5em;
+    /* approx 3 lines of text */
+    overflow-y: auto;
+}
+
+.table-container {
+    width: 100%;
+    overflow-x: auto;
+    white-space: nowrap;
+}
+
+.table-container table {
+    width: 100%;
+    table-layout: auto;
+}
+
+th,
+td {
+    white-space: normal;
 }
 </style>
