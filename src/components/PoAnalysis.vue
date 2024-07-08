@@ -55,6 +55,13 @@
                             Dersi Analiz Et
                         </button>
                     </div>
+                    <div class="form-group mr-2">
+                        <div style="margin-left: 5px">
+                            <br>
+                            <label for="periodDropdown">Yıl Seç:</label>
+                            <Multiselect v-model="selectedPeriods" :options="periods" :multiple="true" placeholder="Yıl Seçin" />
+                        </div>
+                    </div>
                     <div class="card-body"></div>
                 </div>
             </div>
@@ -67,7 +74,7 @@
                         <tr>
                             <th style="vertical-align: top" scope="col">PÇ. No</th>
                             <th style="vertical-align: top" scope="col">Tanım</th>
-                            <th v-for="course in allCourses" :key="course.courseId" style="text-align: center"
+                            <th v-for="course in filteredCourses" :key="course.courseId" style="text-align: center"
                                 scope="col">
                                 {{ course.courseName }} {{ course.period }} {{ course.semester }}
                             </th>
@@ -79,7 +86,7 @@
                             <td class="description-cell">
                                 {{ group.programOutcome.description }}
                             </td>
-                            <td v-for="course in allCourses" :key="course.courseId" style="text-align: center">
+                            <td v-for="course in filteredCourses" :key="course.courseId" style="text-align: center">
                                 <template v-if="courseValue(group.courses, course.courseId) !== null">
                                     %{{ courseValue(group.courses, course.courseId).toFixed(2) }}
                                 </template>
@@ -92,50 +99,31 @@
                 </table>
             </div>
         </div>
-
-
     </div>
 </template>
 
 <script>
+import Multiselect from 'vue-multiselect';
 import { useStore } from "vuex";
 import { useRouter } from "vue-router";
 import axios from "axios";
 import { mapGetters } from "vuex";
+
 export default {
     name: "PoAnalysis",
+    components: { Multiselect },
     computed: {
         ...mapGetters(["getUser"]),
         username() {
             const user = this.getUser;
             return user ? `${user.firstName} ${user.lastName}` : "";
         },
-        sortedCourses() {
-            const allCourses = Object.values(this.groupedOutcomes).reduce((courses, group) => {
-                return courses.concat(group.courses);
-            }, []);
-
-            // course.period'a göre alfabetik sırala
-            return allCourses.sort((a, b) => {
-                const periodA = a.course.period.toUpperCase();
-                const periodB = b.course.period.toUpperCase();
-                return periodA.localeCompare(periodB);
-            });
-        },
-        groupWithMaxCourses() {
-            let maxCoursesGroup = null;
-            let maxCourseCount = 0;
-
-            for (const group of Object.values(this.groupedOutcomes)) {
-                const courseCount = group.courses.length;
-                if (courseCount > maxCourseCount) {
-                    maxCourseCount = courseCount;
-                    maxCoursesGroup = group;
-                }
+        filteredCourses() {
+            if (!this.selectedPeriods.length) {
+                return this.allCourses;
             }
-            return maxCoursesGroup;
+            return this.allCourses.filter(course => this.selectedPeriods.includes(course.period));
         },
-
         allCourses() {
             const courses = new Map();
 
@@ -154,6 +142,8 @@ export default {
             userCourses: [],
             groupedOutcomes: {}, // Gruplanmış sonuçlar
             selectedClass: null,
+            periods: [], // Bu artık dinamik olarak doldurulacak
+            selectedPeriods: [], // Seçilen dönemler
         };
     },
 
@@ -165,13 +155,6 @@ export default {
         courseValue(courses, courseId) {
             const course = courses.find(c => c.course.courseId === courseId);
             return course ? course.levelOfProvision : null;
-        },
-        groupSortedCourses(group) {
-            return group.courses.sort((a, b) => {
-                const periodA = a.course.period.toUpperCase();
-                const periodB = b.course.period.toUpperCase();
-                return periodA.localeCompare(periodB);
-            });
         },
         async analyzeCourse() {
             const code = this.selectedClass;
@@ -185,15 +168,12 @@ export default {
                     `http://localhost:8080/course/code/${code}`
                 );
                 const nonFilteredCourses = response.data;
-                console.log("nonfiltered", nonFilteredCourses);
-                console.log("user Courses", this.userCourses);
                 const filteredCourses = nonFilteredCourses.filter((course) =>
                     this.userCourses.some(
                         (userCourse) => userCourse.course.courseId === course.courseId
                     )
                 );
 
-                console.log(filteredCourses);
                 const allOutcomes = [];
                 for (let i = 0; i < filteredCourses.length; i++) {
                     const courseId = filteredCourses[i].courseId;
@@ -205,38 +185,42 @@ export default {
                         (outcome) => !isNaN(outcome.levelOfProvision)
                     );
                     // Sonrasında sırala
-                    console.log(outcomes);
                     allOutcomes.push(...outcomes);
 
                     // Program Outcome'lara göre gruplama
                     const groupedOutcomes = allOutcomes.reduce((groups, outcome) => {
-                        const key = outcome.programOutcome.id;
+                        const key = outcome.programOutcome.number;
+
                         if (!groups[key]) {
                             groups[key] = {
                                 programOutcome: outcome.programOutcome,
-                                courses: [],
+                                courses: []
                             };
                         }
-                        groups[key].courses.push({
-                            course: outcome.course,
-                            levelOfProvision: outcome.levelOfProvision,
-                        });
+
+                        groups[key].courses.push(outcome);
                         return groups;
                     }, {});
 
                     this.groupedOutcomes = groupedOutcomes;
-                    console.log("Grup", this.groupedOutcomes);
                 }
-                console.log("all outcomes", allOutcomes);
             } catch (error) {
-                console.error(error);
+                this.$toast.error(
+                    "Hata: " + error.response.data.message
+                );
             }
         },
         goToCoursePage() {
-            this.$router.push("/instructor-home");
+            this.$router.push("/course-page");
+        },
+        goToAnalysisPage() {
+            this.$router.push("/analysis-page");
         },
         goToGuidePage() {
-            this.$router.push("/guidance");
+            this.$router.push("/guide-page");
+        },
+        refreshPage() {
+            location.reload();
         },
         fetchCourses() {
             // Vuex'tan kullanıcı ID'sini alın
@@ -244,13 +228,22 @@ export default {
 
             // Kullanıcının derslerini getiren istek
             axios
-                .get(
-                    `http://localhost:8080/user-course-registrations/user/${userId}/courses`
-                )
+                .get(`http://localhost:8080/user-course-registrations/user/${userId}/courses`)
                 .then((response) => {
                     this.userCourses = response.data;
-                    let courseCodes = response.data.map((item) => item.course.code);
-                    this.courses = [...new Set(courseCodes)];
+
+                    // Course kodlarını ve periyotları topluyoruz
+                    let courseCodes = new Set();
+                    let periodsSet = new Set();
+
+                    response.data.forEach(item => {
+                        courseCodes.add(item.course.code);
+                        periodsSet.add(item.course.period);
+                    });
+
+                    // Set'i array'e çeviriyoruz
+                    this.courses = Array.from(courseCodes);
+                    this.periods = Array.from(periodsSet);
                 })
                 .catch((error) => {
                     console.error("Hata:", error);
@@ -267,7 +260,9 @@ export default {
 };
 </script>
 
-<style scoped>
+<style src="vue-multiselect/dist/vue-multiselect.css" scoped>
+
+
 .container {
     display: flex;
 }
