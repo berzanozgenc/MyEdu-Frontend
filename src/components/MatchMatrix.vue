@@ -45,6 +45,9 @@
             <li class="list-group-item" @click="goToGuidePage">
               <i class="fas fa-users"></i> Kılavuz
             </li>
+            <li class="list-group-item" @click="goToAboutUs">
+              <i class="fas fa-info-circle"></i> Hakkımızda
+            </li>
           </ul>
         </div>
       </div>
@@ -152,6 +155,9 @@ export default {
     this.fetchCourse();
   },
   methods: {
+    goToAboutUs(){
+      this.$router.push('/about-us');
+    },
     fetchCourse() {
       const courseId = this.$route.params.courseId;
       axios.get(`http://localhost:8080/course/${courseId}`)

@@ -42,6 +42,9 @@
             <li class="list-group-item" @click="goToGuidePage">
               <i class="fas fa-users"></i> Kılavuz
             </li>
+            <li class="list-group-item" @click="goToAboutUs">
+              <i class="fas fa-info-circle"></i> Hakkımızda
+            </li>
           </ul>
         </div>
       </div>
@@ -168,6 +171,9 @@ export default {
     goToLoginPage() {
       this.$router.push("/");
     }, 
+    goToAboutUs(){
+      this.$router.push('/about-us');
+    },
     goToInstructorStudent(studentId) {
       const courseId = this.$route.params.courseId;
       console.log(studentId)

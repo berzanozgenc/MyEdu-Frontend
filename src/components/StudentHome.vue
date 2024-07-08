@@ -25,6 +25,9 @@
             <li class="list-group-item">
               <i class="fas fa-book"></i> Derslerim
             </li>
+            <li class="list-group-item" @click="goToAboutUs">
+              <i class="fas fa-info-circle"></i> Hakkımızda
+            </li>
       
           </ul>
         </div>
@@ -159,6 +162,9 @@
             this.$toast.error("Ders eklenemedi!");
           });
       },
+      goToAboutUs(){
+      this.$router.push('/about-us');
+    },
       openConfirmationModal(registrationId) {
         // Silme işlemi için modal pencereyi aç
         this.registrationIdToDelete = registrationId;

@@ -34,6 +34,9 @@
                         <li class="list-group-item" @click="goToCoursePage">
                             <i class="fas fa-book"></i> Derslerim
                         </li>
+                        <li class="list-group-item" @click="goToAboutUs">
+              <i class="fas fa-info-circle"></i> Hakkımızda
+            </li>
                     </ul>
                 </div>
             </div>
@@ -207,6 +210,8 @@ export default {
         );
         this.studentProgramOutcomes.push(response.data);
     }
+
+    console.log("aaaddds",this.studentProgramOutcomes);
     let weightedAverages = [];
 
     for (let j = 0; j < this.studentProgramOutcomes.length; j++) {
@@ -260,6 +265,9 @@ export default {
                 params: { courseId: courseId },
             });
         },
+        goToAboutUs(){
+      this.$router.push('/about-us');
+    },
         goToCourseProgramOutcomePage() {
             const courseId = this.$route.params.courseId;
             this.$router.push({

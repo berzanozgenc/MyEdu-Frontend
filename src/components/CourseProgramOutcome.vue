@@ -43,6 +43,9 @@
             <li class="list-group-item" @click="goToGuidePage">
               <i class="fas fa-users"></i> Kılavuz
             </li>
+            <li class="list-group-item" @click="goToAboutUs">
+              <i class="fas fa-info-circle"></i> Hakkımızda
+            </li>
           </ul>
         </div>
       </div>
@@ -130,6 +133,9 @@ export default {
     this.fetchProgramOutcomes(courseId);
   },
   methods: {
+    goToAboutUs(){
+      this.$router.push('/about-us');
+    },
     goToLoginPage() {
       this.$router.push("/");
     },

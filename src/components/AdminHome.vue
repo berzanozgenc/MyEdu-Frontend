@@ -1,22 +1,12 @@
 <template>
-    <div>
+  <div>
     <nav class="navbar navbar-expand-lg navbar-light+" style="background-color: #98bdff;">
-      <a
-        @click="refreshPage"
-        style="margin-left: 10px"
-        class="navbar-brand"
-        href="#"
-        > <img src="../assets/Baskent_University_Logo.png" alt="Logo" style="max-height: 50px;"></a
-      >
-      <a
-        @click="refreshPage"
-        style="margin-left: 10px"
-        class="navbar-brand"
-        href="#"
-        >Kişiselleştirilmiş Akademik Gelişim ve <br />
-        Değerlendirme Sistemi</a
-      >
-  
+      <a @click="refreshPage" style="margin-left: 10px" class="navbar-brand" href="#"> <img
+          src="../assets/Baskent_University_Logo.png" alt="Logo" style="max-height: 50px;"></a>
+      <a @click="refreshPage" style="margin-left: 10px" class="navbar-brand" href="#">Kişiselleştirilmiş Akademik
+        Gelişim ve <br />
+        Değerlendirme Sistemi</a>
+
       <div class="collapse navbar-collapse" id="navbarSupportedContent">
         <ul class="navbar-nav mr-auto">
         </ul>
@@ -46,67 +36,64 @@
           </ul>
         </div>
       </div>
-    
-  
-    <div
-      class="card"
-      style="width: 75rem; height: 40rem; overflow-y: auto; overflow-x: hidden"
-    >
-      <div class="container">
-        <img class="icon" src="../assets/Profile_Icon.png" />
-        <h2 style="margin-top: 12px; margin-left: 5px">ADMIN</h2>
-      </div>
-      <div class="card-body">
-        
-      </div>
 
-      
+
+      <div class="card" style="width: 75rem; height: 40rem; overflow-y: auto; overflow-x: hidden">
+        <div class="container">
+          <img class="icon" src="../assets/Profile_Icon.png" />
+          <h2 style="margin-top: 12px; margin-left: 5px">ADMIN</h2>
+        </div>
+        <div class="card-body">
+
+        </div>
+
+
+      </div>
     </div>
   </div>
-</div>
-  </template>
-  
-  <script>
-  import { useStore } from 'vuex';
-  import { useRouter } from 'vue-router';
-  import "bootstrap/dist/css/bootstrap.min.css";
-  import "bootstrap/dist/js/bootstrap.bundle.min.js";
-  import "jquery";
-  import { resolveTransitionHooks } from "vue";
-  
-  export default {
-    name: "AdminHome",
-    methods: {
-    goToLoginPage(){
+</template>
+
+<script>
+import { useStore } from 'vuex';
+import { useRouter } from 'vue-router';
+import "bootstrap/dist/css/bootstrap.min.css";
+import "bootstrap/dist/js/bootstrap.bundle.min.js";
+import "jquery";
+import { resolveTransitionHooks } from "vue";
+
+export default {
+  name: "AdminHome",
+  methods: {
+    goToLoginPage() {
       this.$router.push("/");
     },
-    goToAdminGuidePage(){
+    goToAdminGuidePage() {
       this.$router.push("/admin-guide");
     },
-    goToProgramOutputPage(){
+    goToProgramOutputPage() {
       this.$router.push("/program-output-admin");
-    },   
-    goToAddCoursePage(){
+    },
+    goToAddCoursePage() {
       this.$router.push("/add-course");
     },
-    goToLoadStudentPage(){
+    goToLoadStudentPage() {
       this.$router.push("/admin-load-student");
     },
     refreshPage() {
       window.location.reload();
     },
     logoutUser() {
-            const store = useStore();
-            const router = useRouter();
-            localStorage.removeItem('store');
-            this.$store.dispatch('logoutUser');
-            this.$router.push("/");
-        },
+      const store = useStore();
+      const router = useRouter();
+      localStorage.removeItem('store');
+      this.$store.dispatch('logoutUser');
+      this.$router.push("/");
     },
-  };
-  </script>
-  
-  <style>
+  },
+};
+</script>
+
+<style>
 .container {
   display: flex;
 }
@@ -133,6 +120,7 @@
   font-size: 17px;
   font-weight: bold;
 }
+
 .table th,
 .table td {
   border: 1px solid #dee2e6;

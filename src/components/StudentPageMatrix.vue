@@ -24,6 +24,9 @@
             <li class="list-group-item" @click="goToStudentHome">
               <i class="fas fa-book"></i> Derslerim
             </li>
+            <li class="list-group-item" @click="goToAboutUs">
+              <i class="fas fa-info-circle"></i> Hakkımızda
+            </li>
       
           </ul>
         </div>
@@ -184,6 +187,9 @@ async getLearningOutcomeResults(learningOutcomeList, userId) {
   refreshPage() {
     this.$router.push("/instructor-home");
   },
+  goToAboutUs(){
+      this.$router.push('/about-us');
+    },
   logoutUser() {
     const store = useStore();
     const router = useRouter();

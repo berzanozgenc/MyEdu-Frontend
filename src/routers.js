@@ -28,6 +28,8 @@ import axios from "axios";
 import StudentProgramOutcome from "./components/StudentProgramOutcome.vue";
 import AdminCourseResults from './components/AdminCourseResults.vue'
 import PoAnalysis from "./components/PoAnalysis.vue";
+import AdminPoResults from "./components/AdminPoResults.vue";
+import AboutUs from "./components/AboutUs.vue";
 
 const routes = [{
     name: "Login",
@@ -45,6 +47,12 @@ const routes = [{
     name: "InstructorHome",
     component: InstructorHome,
     path: "/instructor-home",
+    meta: { requiresAuth: true }, // Oturum açma gerektiren sayfaları belirtin
+},
+{
+    name: "AdminPoResults",
+    component: AdminPoResults,
+    path: "/admin-po-results",
     meta: { requiresAuth: true }, // Oturum açma gerektiren sayfaları belirtin
 },
 {
@@ -191,6 +199,12 @@ const routes = [{
     path: "/analysis",
     meta: { requiresAuth: true }, // Oturum açma gerektiren sayfaları belirtin
 },
+{
+    name: "AboutUs",
+    component: AboutUs,
+    path: "/about-us",
+    meta: { requiresAuth: true }, // Oturum açma gerektiren sayfaları belirtin
+},
 
 ];
 
@@ -207,6 +221,8 @@ const adminAllowedRoutes = [
     '/admin-guide',
     '/admin-course',
     '/admin-course-results/:courseId',
+    '/admin-po-results',
+    '/about-us',
     '/'
 ];
 
@@ -214,6 +230,7 @@ const studentAllowedRoutes = [
     '/student-program-outcomes',
     '/student-home',
     '/student-pageMatrix/:courseId',
+    '/about-us',
     '/'
 ];
 
@@ -232,6 +249,7 @@ const instructorAllowedRoutes = [
     '/course-program-outcome/:courseId',
     '/instructor-learning-outcome/:courseId',
     '/guidance',
+    '/about-us',
     '/analysis'
 ];
 

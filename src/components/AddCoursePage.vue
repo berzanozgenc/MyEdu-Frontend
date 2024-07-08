@@ -29,14 +29,14 @@
             <li class="list-group-item" @click="goToProgramOutputPage">
               <i class="fas fa-book"></i> Program Çıktıları Sayfası
             </li>
-            <li class="list-group-item" @click="goToLoadStudentPage">
-              <i class="fas fa-chalkboard-teacher"></i> Öğrenci Yükleme Sayfası
-            </li>
             <li class="list-group-item" @click="goToAdminCoursePage">
                 <i class="fa-solid fa-person-chalkboard"></i> Öğretmen Atamaları
               </li>
             <li class="list-group-item" @click="goToAdminGuidePage">
               <i class="fas fa-chalkboard-teacher"></i> Kılavuz
+            </li>
+            <li class="list-group-item" @click="goToResultPage">
+              <i class="fas fa-diagram-project"></i> Sonuçlar
             </li>
           </ul>
         </div>
@@ -223,6 +223,9 @@ export default {
     this.generatePeriods();
   },
   methods: {
+    goToResultPage(){
+      this.$router.push("/admin-po-results");
+    },
     onFileChange(event) {
       const file = event.target.files[0];
       this.readExcelFile(file);
