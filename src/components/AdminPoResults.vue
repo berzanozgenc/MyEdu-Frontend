@@ -49,10 +49,7 @@
                             <label for="classDropdown">Dönem Seç:</label>
                             <multiselect v-model="selectedPeriods" :options="periods" multiple />
                         </div>
-                        <button @click="showResults()" style="margin-left: 2px; margin-top: 6px"
-                            class="btn btn-primary">
-                            Sonuçları Göster
-                        </button>
+                       
                     </div>
                     <div class="card-body"></div>
                 </div>
@@ -139,6 +136,14 @@ export default {
 
     created() {
         this.fetchPeriods();
+    },
+
+    watch: {
+        selectedPeriods: {
+            handler: 'showResults',
+            immediate: true,
+            deep: true
+        }
     },
 
     methods: {
@@ -320,5 +325,3 @@ export default {
 </script>
 
 <style src="vue-multiselect/dist/vue-multiselect.css"></style>
-
-
