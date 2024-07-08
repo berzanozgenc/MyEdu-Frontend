@@ -99,6 +99,37 @@
                 </table>
             </div>
         </div>
+        <div v-if="Object.keys(groupedLearningOutcomes).length" class="card table-responsive"
+            style="width: 90%; max-height: 500px; overflow-y: auto;">
+            <div class="table-container">
+                <table class="table table-sm">
+                    <thead>
+                        <tr>
+                            <th style="vertical-align: top" scope="col">Tanım</th>
+                            <th v-for="course in filteredCourses" :key="course.courseId" style="text-align: center"
+                                scope="col">
+                                {{ course.courseName }} {{ course.period }} {{ course.semester }}
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr v-for="(group, key) in groupedLearningOutcomes" :key="key">
+                            <td class="description-cell">
+                                {{ group.learningOutcome.description }}
+                            </td>
+                            <td v-for="course in filteredCourses" :key="course.courseId" style="text-align: center">
+                                <template v-if="courseValue(group.courses, course.courseId) !== null">
+                                    %{{ courseValue(group.courses, course.courseId).toFixed(2) }}
+                                </template>
+                                <template v-else>
+                                    -
+                                </template>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
     </div>
 </template>
 
@@ -140,10 +171,11 @@ export default {
         return {
             courses: [],
             userCourses: [],
-            groupedOutcomes: {}, // Gruplanmış sonuçlar
+            groupedOutcomes: {},
+            groupedLearningOutcomes: {},
             selectedClass: null,
-            periods: [], // Bu artık dinamik olarak doldurulacak
-            selectedPeriods: [], // Seçilen dönemler
+            periods: [],
+            selectedPeriods: [],
         };
     },
 
@@ -157,58 +189,131 @@ export default {
             return course ? course.levelOfProvision : null;
         },
         async analyzeCourse() {
-            const code = this.selectedClass;
-            if (this.selectedClass == null) {
-                this.$toast.error("Lütfen analiz etmek istediğiniz dersi seçin!");
-                return;
+    const code = this.selectedClass;
+    if (this.selectedClass == null) {
+        this.$toast.error("Lütfen analiz etmek istediğiniz dersi seçin!");
+        return;
+    }
+
+    try {
+        const response = await axios.get(`http://localhost:8080/course/code/${code}`);
+        const nonFilteredCourses = response.data;
+        const filteredCourses = nonFilteredCourses.filter((course) =>
+            this.userCourses.some((userCourse) => userCourse.course.courseId === course.courseId)
+        );
+
+        const allOutcomes = [];
+        for (let i = 0; i < filteredCourses.length; i++) {
+            const courseId = filteredCourses[i].courseId;
+            const response = await axios.get(
+                `http://localhost:8080/courseProgramOutcomeResults/${courseId}`
+            );
+            const outcomes = response.data.filter(
+                (outcome) => !isNaN(outcome.levelOfProvision)
+            );
+            allOutcomes.push(...outcomes);
+        }
+
+        const groupedOutcomes = allOutcomes.reduce((groups, outcome) => {
+            const key = outcome.programOutcome.number;
+            if (!groups[key]) {
+                groups[key] = {
+                    programOutcome: outcome.programOutcome,
+                    courses: []
+                };
             }
+            groups[key].courses.push(outcome);
+            return groups;
+        }, {});
 
-            try {
-                const response = await axios.get(
-                    `http://localhost:8080/course/code/${code}`
-                );
-                const nonFilteredCourses = response.data;
-                const filteredCourses = nonFilteredCourses.filter((course) =>
-                    this.userCourses.some(
-                        (userCourse) => userCourse.course.courseId === course.courseId
-                    )
-                );
+        this.groupedOutcomes = groupedOutcomes;
 
-                const allOutcomes = [];
-                for (let i = 0; i < filteredCourses.length; i++) {
-                    const courseId = filteredCourses[i].courseId;
-                    const response = await axios.get(
-                        `http://localhost:8080/courseProgramOutcomeResults/${courseId}`
-                    );
-                    // Geçerli olanları filtrele
-                    const outcomes = response.data.filter(
-                        (outcome) => !isNaN(outcome.levelOfProvision)
-                    );
-                    // Sonrasında sırala
-                    allOutcomes.push(...outcomes);
+        // Öğrenim çıktıları için benzer işlemler
+        const allLearningOutcomes = [];
+        for (let i = 0; i < filteredCourses.length; i++) {
+            const courseId = filteredCourses[i].courseId;
+            const response = await axios.get(
+                `http://localhost:8080/learningOutcomes/course/${courseId}`
+            );
+            const learningOutcomes = response.data.filter(
+                (outcome) => !isNaN(outcome.assessmentSum)
+            );
 
-                    // Program Outcome'lara göre gruplama
-                    const groupedOutcomes = allOutcomes.reduce((groups, outcome) => {
-                        const key = outcome.programOutcome.number;
+            // Her öğrenim çıktısına ilgili kurs bilgisini ekleyin
+            learningOutcomes.forEach(outcome => {
+                outcome.course = filteredCourses[i];
+            });
 
-                        if (!groups[key]) {
-                            groups[key] = {
-                                programOutcome: outcome.programOutcome,
-                                courses: []
-                            };
-                        }
+            allLearningOutcomes.push(...learningOutcomes);
+        }
 
-                        groups[key].courses.push(outcome);
-                        return groups;
-                    }, {});
+        const groupedLearningOutcomes = this.groupSimilarOutcomes(allLearningOutcomes);
 
-                    this.groupedOutcomes = groupedOutcomes;
+        this.groupedLearningOutcomes = groupedLearningOutcomes;
+
+    } catch (error) {
+        this.$toast.error("Hata: " + error.response.data.message);
+    }
+},
+
+        groupSimilarOutcomes(outcomes) {
+            const similarityThreshold = 0.85;
+            const groups = [];
+
+            outcomes.forEach(outcome => {
+                let found = false;
+                for (const group of groups) {
+                    const similarity = this.stringSimilarity(group.learningOutcome.description, outcome.description);
+                    if (similarity >= similarityThreshold) {
+                        group.courses.push(outcome);
+                        found = true;
+                        break;
+                    }
                 }
-            } catch (error) {
-                this.$toast.error(
-                    "Hata: " + error.response.data.message
-                );
+                if (!found) {
+                    groups.push({
+                        learningOutcome: outcome,
+                        courses: [outcome]
+                    });
+                }
+            });
+
+            return groups.reduce((result, group, index) => {
+                result[index] = group;
+                return result;
+            }, {});
+        },
+        stringSimilarity(str1, str2) {
+            const [shorter, longer] = [str1, str2].sort((a, b) => a.length - b.length);
+            const longerLength = longer.length;
+            if (longerLength === 0) {
+                return 1.0;
             }
+            return (longerLength - this.editDistance(shorter, longer)) / parseFloat(longerLength);
+        },
+        editDistance(str1, str2) {
+            const costs = [];
+            for (let i = 0; i <= str1.length; i++) {
+                let lastValue = i;
+                for (let j = 0; j <= str2.length; j++) {
+                    if (i === 0) {
+                        costs[j] = j;
+                    } else {
+                        if (j > 0) {
+                            let newValue = costs[j - 1];
+                            if (str1.charAt(i - 1) !== str2.charAt(j - 1)) {
+                                newValue = Math.min(Math.min(newValue, lastValue), costs[j]) + 1;
+                            }
+                            costs[j - 1] = lastValue;
+                            lastValue = newValue;
+                        }
+                    }
+                }
+                if (i > 0) {
+                    costs[str2.length] = lastValue;
+                }
+            }
+            return costs[str2.length];
         },
         goToCoursePage() {
             this.$router.push("/course-page");
@@ -223,25 +328,17 @@ export default {
             location.reload();
         },
         fetchCourses() {
-            // Vuex'tan kullanıcı ID'sini alın
             const userId = this.getUser ? this.getUser.userId : null;
-
-            // Kullanıcının derslerini getiren istek
             axios
                 .get(`http://localhost:8080/user-course-registrations/user/${userId}/courses`)
                 .then((response) => {
                     this.userCourses = response.data;
-
-                    // Course kodlarını ve periyotları topluyoruz
                     let courseCodes = new Set();
                     let periodsSet = new Set();
-
                     response.data.forEach(item => {
                         courseCodes.add(item.course.code);
                         periodsSet.add(item.course.period);
                     });
-
-                    // Set'i array'e çeviriyoruz
                     this.courses = Array.from(courseCodes);
                     this.periods = Array.from(periodsSet);
                 })
@@ -259,6 +356,7 @@ export default {
     },
 };
 </script>
+
 
 <style src="vue-multiselect/dist/vue-multiselect.css" scoped>
 
