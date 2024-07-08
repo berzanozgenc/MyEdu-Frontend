@@ -2,8 +2,7 @@
     <div>
         <nav class="navbar navbar-expand-lg navbar-light" style="background-color: #98bdff">
             <a @click="refreshPage" style="margin-left: 10px" class="navbar-brand" href="#">
-                <a @click="refreshPage" style="margin-left: 10px" class="navbar-brand" href="#">
-                    <img src="../assets/Baskent_University_Logo.png" alt="Logo" style="max-height: 50px" />myEdu</a>
+                <img src="../assets/Baskent_University_Logo.png" alt="Logo" style="max-height: 50px" />myEdu
             </a>
             <a @click="refreshPage" style="margin-left: 10px" class="navbar-brand" href="#">
                 Kişiselleştirilmiş Akademik Gelişim ve <br />
@@ -48,11 +47,7 @@
                     <div class="form-group mr-2">
                         <div style="margin-left: 5px">
                             <label for="classDropdown">Dönem Seç:</label>
-                            <select class="form-control" id="classDropdown" v-model="selectedPeriod">
-                                <option v-for="(period, index) in periods" :key="index">
-                                    {{ period }}
-                                </option>
-                            </select>
+                            <multiselect v-model="selectedPeriods" :options="periods" multiple />
                         </div>
                         <button @click="showResults()" style="margin-left: 2px; margin-top: 6px"
                             class="btn btn-primary">
@@ -79,8 +74,8 @@
                             <tr>
                                 <th style="vertical-align: top" scope="col">No</th>
                                 <th style="vertical-align: top" scope="col">Tanım</th>
-                                <th style="text-align: center" scope="col">
-                                    PÇ Sağlama Düzeyi
+                                <th v-for="(period, index) in selectedPeriods" :key="index" style="text-align: center" scope="col">
+                                    {{ period }} PÇ Sağlama Düzeyi
                                 </th>
                             </tr>
                         </thead>
@@ -92,11 +87,11 @@
                                 <td class="description-cell">
                                     {{ outcome.programOutcome.description }}
                                 </td>
-                                <td style="text-align: center" class="description-cell">
+                                <td v-for="(period, pIndex) in selectedPeriods" :key="pIndex" style="text-align: center" class="description-cell">
                                     %{{
-                isNaN(outcome.avgLevelOfProvision)
+                isNaN(outcome[period])
                     ? "Henüz hesaplanmadı"
-                    : outcome.avgLevelOfProvision.toFixed(2)
+                    : outcome[period].toFixed(2)
                                     }}
                                 </td>
                             </tr>
@@ -113,9 +108,15 @@ import { useStore } from "vuex";
 import { useRouter } from "vue-router";
 import axios from "axios";
 import { mapGetters } from "vuex";
+import Multiselect from 'vue-multiselect';
+//import 'vue-multiselect/dist/vue-multiselect.min.css'
+
 
 export default {
     name: "AdminPoResults",
+    components: {
+        Multiselect
+    },
     computed: {
         ...mapGetters(["getUser"]),
         username() {
@@ -132,7 +133,7 @@ export default {
             courseProgramOutcomes: [],
             outcomes: [],
             weightedAverages: [],
-            selectedPeriod: null,
+            selectedPeriods: [],
         };
     },
 
@@ -189,8 +190,8 @@ export default {
         },
         async showResults() {
             this.courseProgramOutcomes = [];
-            if (this.selectedPeriod == null) {
-                this.$toast.error("Lütfen bir dönem seçin!");
+            if (this.selectedPeriods.length === 0) {
+                this.$toast.error("Lütfen en az bir dönem seçin!");
                 return;
             }
             const user = this.getUser;
@@ -198,28 +199,40 @@ export default {
 
             try {
                 const response = await axios.get(
+                    `http://localhost:8080/program-outcomes/department/${departmentId}`
+                );
+                this.outcomes = response.data;
+                this.outcomes.sort((a, b) => a.number - b.number);
+
+                let results = [];
+                let requests = [];
+
+                for (let period of this.selectedPeriods) {
+                    const periodResults = await this.fetchResultsForPeriod(departmentId, period);
+                    results.push({ period, results: periodResults });
+                }
+
+                this.calculateWeightedAverages(results);
+
+            } catch (error) {
+                // Hata durumunda kullanıcıya bir mesaj gösterin
+                this.$toast.error("Dersler getirilemedi. Lütfen tekrar deneyin.");
+                console.error("API Error:", error);
+            }
+        },
+        async fetchResultsForPeriod(departmentId, period) {
+            try {
+                const response = await axios.get(
                     "http://localhost:8080/course/getByPeriodAndDepartmentId",
                     {
                         params: {
-                            period: this.selectedPeriod,
+                            period: period,
                             departmentId: departmentId,
                         },
                     }
                 );
 
                 const courses = response.data;
-                console.log("x", courses);
-
-                try {
-                    const response = await axios.get(
-                        `http://localhost:8080/program-outcomes/department/${departmentId}`
-                    );
-                    this.outcomes = response.data;
-                    this.outcomes.sort((a, b) => a.number - b.number);
-                } catch (error) {
-                    console.error("Error fetching program outcomes:", error);
-                }
-
                 let results = [];
                 let requests = [];
 
@@ -245,74 +258,58 @@ export default {
                     }
                 }
 
-                Promise.all(requests)
-                    .then(() => {
-                        if (results.length > 0) {
-                            this.groupResultsByProgramOutcome(results);
-                        }
-                    })
-                    .catch((error) => {
-                        console.error("Error fetching all results:", error);
-                    });
+                await Promise.all(requests);
+                return results;
+
             } catch (error) {
-                // Hata durumunda kullanıcıya bir mesaj gösterin
-                this.$toast.error("Dersler getirilemedi. Lütfen tekrar deneyin.");
-                console.error("API Error:", error);
+                console.error("Error fetching courses:", error);
+                return [];
             }
         },
-
-        groupResultsByProgramOutcome(results) {
+        calculateWeightedAverages(results) {
             let groupedResults = {};
 
-            results.forEach((result) => {
-                const programOutcome = result.programOutcome;
-                if (!groupedResults[programOutcome.id]) {
-                    groupedResults[programOutcome.id] = {
-                        programOutcome: programOutcome,
-                        results: [],
-                    };
-                }
-                groupedResults[programOutcome.id].results.push(result);
-            });
-
-            console.log(groupedResults);
-            // İstediğiniz formatta verileri işleyin
-            let formattedResults = Object.values(groupedResults).map((group) => {
-                return {
-                    programOutcome: group.programOutcome,
-                    results: group.results.map((result) => ({
-                        course: result.course,
-                        target: result.target,
-                        assessmentValue: result.assessmentValue,
-                        levelOfProvision: result.levelOfProvision,
-                    })),
-                };
-            });
-
-            console.log("format", formattedResults);
-            // Artık formattedResults istediğiniz formatta
-
-            let weightedAverages = formattedResults.map((group) => {
-                let totalWeightedLevel = 0;
-                let totalEcts = 0;
-
-                group.results.forEach((result) => {
-                    const levelOfProvision = result.levelOfProvision;
-                    const ects = result.course.ects;
-
-                    if (!isNaN(levelOfProvision) && levelOfProvision !== 0) {
-                        totalWeightedLevel += levelOfProvision * ects;
-                        totalEcts += ects;
+            results.forEach(({ period, results }) => {
+                results.forEach((result) => {
+                    const programOutcome = result.programOutcome;
+                    if (!groupedResults[programOutcome.id]) {
+                        groupedResults[programOutcome.id] = {
+                            programOutcome: programOutcome,
+                            periodResults: {}
+                        };
                     }
+                    if (!groupedResults[programOutcome.id].periodResults[period]) {
+                        groupedResults[programOutcome.id].periodResults[period] = [];
+                    }
+                    groupedResults[programOutcome.id].periodResults[period].push(result);
                 });
+            });
 
-                const avgLevelOfProvision =
-                    totalEcts > 0 ? totalWeightedLevel / totalEcts : 0;
+            let weightedAverages = Object.values(groupedResults).map((group) => {
+                let avgResults = { programOutcome: group.programOutcome };
 
-                return {
-                    programOutcome: group.programOutcome,
-                    avgLevelOfProvision: avgLevelOfProvision,
-                };
+                for (let period of this.selectedPeriods) {
+                    let totalWeightedLevel = 0;
+                    let totalEcts = 0;
+
+                    if (group.periodResults[period]) {
+                        group.periodResults[period].forEach((result) => {
+                            const levelOfProvision = result.levelOfProvision;
+                            const ects = result.course.ects;
+
+                            if (!isNaN(levelOfProvision) && levelOfProvision !== 0) {
+                                totalWeightedLevel += levelOfProvision * ects;
+                                totalEcts += ects;
+                            }
+                        });
+                    }
+
+                    const avgLevelOfProvision =
+                        totalEcts > 0 ? totalWeightedLevel / totalEcts : 0;
+                    avgResults[period] = avgLevelOfProvision;
+                }
+
+                return avgResults;
             });
 
             console.log(weightedAverages);
@@ -321,3 +318,7 @@ export default {
     },
 };
 </script>
+
+<style src="vue-multiselect/dist/vue-multiselect.css"></style>
+
+
