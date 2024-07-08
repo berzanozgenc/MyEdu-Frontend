@@ -55,8 +55,12 @@
           </div>
           <div class="card-body">
             <h5 class="card-title">Derslerim</h5>
+            <label for="periodDropdown">Dönem Seç:</label>
+            <br>
+            <Multiselect v-model="selectedPeriods" :options="periods" :multiple="true" placeholder="Yıl Seçin" />
             <ul class="list-group">
-              <li class="list-group-item text-left" v-for="(registration, index) in userCourses" :key="index">
+              <br>
+              <li class="list-group-item text-left" v-for="(registration, index) in filteredCourses" :key="index">
                 <a @click="goToCoursePage(registration.course)" class="course-link">{{ registration.course.code }} {{
         registration.course.courseName }} | {{ registration.course.period }} {{ registration.course.semester
                   }}</a>
@@ -98,15 +102,25 @@ import { useStore } from 'vuex';
 import { useRouter } from 'vue-router';
 import axios from "axios";
 import { mapGetters } from "vuex";
+import Multiselect from "vue-multiselect";
 
 export default {
   name: "InstructorHome",
+  components: {
+    Multiselect
+  },
   computed: {
     ...mapGetters(["getUser"]),
     username() {
       const user = this.getUser;
       return user ? `${user.firstName} ${user.lastName}` : "";
     },
+    filteredCourses() {
+    if (!this.selectedPeriods.length) {
+      return this.userCourses;
+    }
+    return this.userCourses.filter(course => this.selectedPeriods.includes(course.course.period));
+  },
   },
   data() {
     return {
@@ -115,7 +129,9 @@ export default {
       courses: [],
       selectedClass: null,
       showModal: false,
-      registrationIdToDelete: null
+      registrationIdToDelete: null,
+      periods: [],
+      selectedPeriods: [], // Seçilen dönemler
     };
   },
   mounted() {
@@ -159,6 +175,7 @@ export default {
         if (nameA > nameB) return 1;
         return 0;
       });
+      this.extractUniquePeriods();
     })
     .catch((error) => {
       console.error("Hata:", error);
@@ -240,12 +257,18 @@ export default {
       localStorage.removeItem('store');
       this.$store.dispatch('logoutUser');
       this.$router.push("/");
+    },
+    extractUniquePeriods() {
+      const periodsSet = new Set(this.userCourses.map(course => course.course.period));
+      this.periods = Array.from(periodsSet);
     }
   }
 };
 </script>
 
 <style scoped>
+@import url('https://cdn.jsdelivr.net/npm/vue-multiselect@2.1.6/dist/vue-multiselect.min.css');
+
 .container {
   display: flex;
 }
