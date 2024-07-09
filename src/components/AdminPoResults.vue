@@ -49,7 +49,7 @@
                             <label for="classDropdown">Dönem Seç:</label>
                             <multiselect v-model="selectedPeriods" :options="periods" multiple />
                         </div>
-                       
+
                     </div>
                     <div class="card-body"></div>
                 </div>
@@ -71,7 +71,8 @@
                             <tr>
                                 <th style="vertical-align: top" scope="col">No</th>
                                 <th style="vertical-align: top" scope="col">Tanım</th>
-                                <th v-for="(period, index) in selectedPeriods" :key="index" style="text-align: center" scope="col">
+                                <th v-for="(period, index) in selectedPeriods" :key="index" style="text-align: center"
+                                    scope="col">
                                     {{ period }} PÇ Sağlama Düzeyi
                                 </th>
                             </tr>
@@ -84,16 +85,20 @@
                                 <td class="description-cell">
                                     {{ outcome.programOutcome.description }}
                                 </td>
-                                <td v-for="(period, pIndex) in selectedPeriods" :key="pIndex" style="text-align: center" class="description-cell">
+                                <td v-for="(period, pIndex) in selectedPeriods" :key="pIndex" style="text-align: center"
+                                    class="description-cell">
                                     %{{
                 isNaN(outcome[period])
                     ? "Henüz hesaplanmadı"
                     : outcome[period].toFixed(2)
-                                    }}
+            }}
                                 </td>
                             </tr>
                         </tbody>
                     </table>
+                    <div>
+                        <Bar :data="chartData" :options="chartOptions" />
+                    </div>
                 </div>
             </div>
         </div>
@@ -106,13 +111,19 @@ import { useRouter } from "vue-router";
 import axios from "axios";
 import { mapGetters } from "vuex";
 import Multiselect from 'vue-multiselect';
-//import 'vue-multiselect/dist/vue-multiselect.min.css'
+import { Bar } from 'vue-chartjs';
+import { Chart as ChartJS, Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale } from 'chart.js';
+
+// Register necessary components for Chart.js
+ChartJS.register(Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale);
+
 
 
 export default {
     name: "AdminPoResults",
     components: {
-        Multiselect
+        Multiselect,
+        Bar
     },
     computed: {
         ...mapGetters(["getUser"]),
@@ -131,6 +142,28 @@ export default {
             outcomes: [],
             weightedAverages: [],
             selectedPeriods: [],
+            chartData: {
+                labels: [],
+                datasets: []
+            },
+            chartOptions: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'top',
+                    },
+                    title: {
+                        display: true,
+                        text: 'Program Çıktıları Sağlama Düzeyi'
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        max: 100
+                    }
+                }
+            }
         };
     },
 
@@ -319,7 +352,31 @@ export default {
 
             console.log(weightedAverages);
             this.weightedAverages = weightedAverages;
+            this.updateChart();
         },
+        updateChart() {
+            const labels = this.weightedAverages.map(item => item.programOutcome.number);
+            const datasets = this.selectedPeriods.map(period => {
+                return {
+                    label: period,
+                    backgroundColor: this.getRandomColor(),
+                    data: this.weightedAverages.map(item => item[period] || 0)
+                };
+            });
+
+            this.chartData = {
+                labels: labels,
+                datasets: datasets
+            };
+        },
+        getRandomColor() {
+            const letters = '0123456789ABCDEF';
+            let color = '#';
+            for (let i = 0; i < 6; i++) {
+                color += letters[Math.floor(Math.random() * 16)];
+            }
+            return color;
+        }
     },
 };
 </script>
