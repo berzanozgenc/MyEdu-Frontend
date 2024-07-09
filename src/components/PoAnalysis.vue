@@ -59,17 +59,18 @@
                         <div style="margin-left: 5px">
                             <br>
                             <label for="periodDropdown">Yıl Seç:</label>
-                            <Multiselect v-model="selectedPeriods" :options="periods" :multiple="true" placeholder="Yıl Seçin" />
+                            <Multiselect v-model="selectedPeriods" :options="periods" :multiple="true"
+                                placeholder="Yıl Seçin" />
                         </div>
                     </div>
                     <div class="card-body"></div>
                 </div>
             </div>
         </div>
-        <div v-if="Object.keys(groupedOutcomes).length" class="card table-responsive"
+        <!-- div v-if="Object.keys(groupedOutcomes).length" class="card table-responsive"
             style="width: 90%; max-height: 500px; overflow-y: auto;">
             <div class="table-container">
-                <table class="table table-sm">
+                < table class="table table-sm">
                     <thead>
                         <tr>
                             <th style="vertical-align: top" scope="col">PÇ. No</th>
@@ -90,15 +91,15 @@
                                 <template v-if="courseValue(group.courses, course.courseId) !== null">
                                     %{{ courseValue(group.courses, course.courseId).toFixed(2) }}
                                 </template>
-                                <template v-else>
+                <               template v-else>
                                     -
                                 </template>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
+                        </td>
+                                </tr>
+                            </tbody>
+                                </table >
             </div>
-        </div>
+        </div !-->
         <div v-if="Object.keys(groupedLearningOutcomes).length" class="card table-responsive"
             style="width: 90%; max-height: 500px; overflow-y: auto;">
             <div class="table-container">
@@ -113,7 +114,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr v-for="(group, key) in groupedLearningOutcomes" :key="key">
+                        <tr v-for="(group, key) in groupedLearningOutcomesArray" :key="key">
                             <td class="description-cell">
                                 {{ group.learningOutcome.description }}
                             </td>
@@ -130,6 +131,10 @@
                 </table>
             </div>
         </div>
+        <div v-if="Object.keys(groupedLearningOutcomes).length" class="card"
+        style="width: 90%; overflow-x: auto;">
+            <BarChartThree :chart-data="chartData" />
+        </div>
     </div>
 </template>
 
@@ -137,17 +142,38 @@
 import Multiselect from 'vue-multiselect';
 import { useStore } from "vuex";
 import { useRouter } from "vue-router";
+import BarChartThree from '../components/BarChartThree.vue'
 import axios from "axios";
 import { mapGetters } from "vuex";
 
 export default {
     name: "PoAnalysis",
-    components: { Multiselect },
+    components: {
+        Multiselect,
+        BarChartThree
+    },
     computed: {
         ...mapGetters(["getUser"]),
         username() {
             const user = this.getUser;
             return user ? `${user.firstName} ${user.lastName}` : "";
+        },
+        chartData() {
+            const labels = this.groupedLearningOutcomesArray.map(group => group.learningOutcome.description);
+            const datasets = this.filteredCourses.map(course => {
+                return {
+                    label: course.period + " " + course.semester + " ÖÇ sağlama düzeyi",
+                    data: this.groupedLearningOutcomesArray.map(group => {
+                        const value = this.courseValue(group.courses, course.courseId);
+                        return value !== null ? value.toFixed(2) : 0;
+                    }),
+                };
+            });
+
+            return {
+                labels,
+                datasets,
+            };
         },
         filteredCourses() {
             if (!this.selectedPeriods.length) {
@@ -165,6 +191,9 @@ export default {
             }
 
             return Array.from(courses.values());
+        },
+        groupedLearningOutcomesArray() {
+            return Object.values(this.groupedLearningOutcomes);
         }
     },
     data() {
@@ -189,72 +218,73 @@ export default {
             return course ? course.levelOfProvision : null;
         },
         async analyzeCourse() {
-    const code = this.selectedClass;
-    if (this.selectedClass == null) {
-        this.$toast.error("Lütfen analiz etmek istediğiniz dersi seçin!");
-        return;
-    }
-
-    try {
-        const response = await axios.get(`http://localhost:8080/course/code/${code}`);
-        const nonFilteredCourses = response.data;
-        const filteredCourses = nonFilteredCourses.filter((course) =>
-            this.userCourses.some((userCourse) => userCourse.course.courseId === course.courseId)
-        );
-
-        const allOutcomes = [];
-        for (let i = 0; i < filteredCourses.length; i++) {
-            const courseId = filteredCourses[i].courseId;
-            const response = await axios.get(
-                `http://localhost:8080/courseProgramOutcomeResults/${courseId}`
-            );
-            const outcomes = response.data.filter(
-                (outcome) => !isNaN(outcome.levelOfProvision)
-            );
-            allOutcomes.push(...outcomes);
-        }
-
-        const groupedOutcomes = allOutcomes.reduce((groups, outcome) => {
-            const key = outcome.programOutcome.number;
-            if (!groups[key]) {
-                groups[key] = {
-                    programOutcome: outcome.programOutcome,
-                    courses: []
-                };
+            const code = this.selectedClass;
+            if (this.selectedClass == null) {
+                this.$toast.error("Lütfen analiz etmek istediğiniz dersi seçin!");
+                return;
             }
-            groups[key].courses.push(outcome);
-            return groups;
-        }, {});
 
-        this.groupedOutcomes = groupedOutcomes;
+            try {
+                const response = await axios.get(`http://localhost:8080/course/code/${code}`);
+                const nonFilteredCourses = response.data;
+                const filteredCourses = nonFilteredCourses.filter((course) =>
+                    this.userCourses.some((userCourse) => userCourse.course.courseId === course.courseId)
+                );
 
-        // Öğrenim çıktıları için benzer işlemler
-        const allLearningOutcomes = [];
-        for (let i = 0; i < filteredCourses.length; i++) {
-            const courseId = filteredCourses[i].courseId;
-            const response = await axios.get(
-                `http://localhost:8080/learningOutcomes/course/${courseId}`
-            );
-            const learningOutcomes = response.data.filter(
-                (outcome) => !isNaN(outcome.assessmentSum)
-            );
+                const allOutcomes = [];
+                for (let i = 0; i < filteredCourses.length; i++) {
+                    const courseId = filteredCourses[i].courseId;
+                    const response = await axios.get(
+                        `http://localhost:8080/courseProgramOutcomeResults/${courseId}`
+                    );
+                    const outcomes = response.data.filter(
+                        (outcome) => !isNaN(outcome.levelOfProvision)
+                    );
+                    allOutcomes.push(...outcomes);
+                }
 
-            // Her öğrenim çıktısına ilgili kurs bilgisini ekleyin
-            learningOutcomes.forEach(outcome => {
-                outcome.course = filteredCourses[i];
-            });
+                const groupedOutcomes = allOutcomes.reduce((groups, outcome) => {
+                    const key = outcome.programOutcome.number;
+                    if (!groups[key]) {
+                        groups[key] = {
+                            programOutcome: outcome.programOutcome,
+                            courses: []
+                        };
+                    }
+                    groups[key].courses.push(outcome);
+                    return groups;
+                }, {});
 
-            allLearningOutcomes.push(...learningOutcomes);
-        }
+                this.groupedOutcomes = groupedOutcomes;
 
-        const groupedLearningOutcomes = this.groupSimilarOutcomes(allLearningOutcomes);
+                // Öğrenim çıktıları için benzer işlemler
+                const allLearningOutcomes = [];
+                for (let i = 0; i < filteredCourses.length; i++) {
+                    const courseId = filteredCourses[i].courseId;
+                    const response = await axios.get(
+                        `http://localhost:8080/learningOutcomes/course/${courseId}`
+                    );
+                    const learningOutcomes = response.data.filter(
+                        (outcome) => !isNaN(outcome.assessmentSum)
+                    );
 
-        this.groupedLearningOutcomes = groupedLearningOutcomes;
+                    // Her öğrenim çıktısına ilgili kurs bilgisini ekleyin
+                    learningOutcomes.forEach(outcome => {
+                        outcome.course = filteredCourses[i];
+                    });
 
-    } catch (error) {
-        this.$toast.error("Hata: " + error.response.data.message);
-    }
-},
+                    allLearningOutcomes.push(...learningOutcomes);
+                }
+
+                const groupedLearningOutcomes = this.groupSimilarOutcomes(allLearningOutcomes);
+
+                this.groupedLearningOutcomes = groupedLearningOutcomes;
+                console.log(groupedLearningOutcomes);
+
+            } catch (error) {
+                this.$toast.error("Hata: " + error.response.data.message);
+            }
+        },
 
         groupSimilarOutcomes(outcomes) {
             const similarityThreshold = 0.85;
@@ -359,8 +389,6 @@ export default {
 
 
 <style src="vue-multiselect/dist/vue-multiselect.css" scoped>
-
-
 .container {
     display: flex;
 }
