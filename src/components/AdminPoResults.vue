@@ -42,13 +42,14 @@
                     </ul>
                 </div>
             </div>
-            <div class="card" style="width: 80%; overflow-y: auto; overflow-x: hidden">
+            <div class="card" style="width: 80%; min-height: 300px; overflow-y: auto; overflow-x: hidden">
                 <div class="form-inline">
                     <div class="form-group mr-2">
                         <div style="margin-left: 5px">
-                            <label for="classDropdown">Dönem Seç:</label>
-                            <multiselect v-model="selectedPeriods" :options="periods" multiple />
-                        </div>
+    <label for="classDropdown">Dönem Seç:</label>
+    <multiselect v-model="selectedPeriods" :options="periods" multiple track-by="period" label="displayPeriod" />
+</div>
+
 
                     </div>
                     <div class="card-body"></div>
@@ -73,7 +74,7 @@
                                 <th style="vertical-align: top" scope="col">Tanım</th>
                                 <th v-for="(period, index) in selectedPeriods" :key="index" style="text-align: center"
                                     scope="col">
-                                    {{ period }} PÇ Sağlama Düzeyi
+                                    {{ period.period }} {{ period.semester }} PÇ Sağlama Düzeyi
                                 </th>
                             </tr>
                         </thead>
@@ -206,32 +207,44 @@ export default {
             this.$router.push("/");
         },
         fetchPeriods() {
-            const user = this.getUser;
-            const departmentId = user.department.id;
-            axios
-                .get(
-                    `http://localhost:8080/course/get-courses/department/${departmentId}`
-                )
-                .then((response) => {
-                    const courses = response.data;
-                    const periods = courses.flatMap((course) => course.period); // Her bir course'un periods alanını alıp yeni bir diziye ekler
-                    const uniquePeriods = [...new Set(periods)]; // Duplicate değerleri silerek uniquePeriods dizisine atar
-                    const sortedPeriods = uniquePeriods.sort(); // Unique periods dizisini alfabetik olarak sıralar
-                    this.periods = sortedPeriods;
-                })
-                .catch((error) => {
-                    console.error("Error fetching courses:", error);
-                });
-        },
+    const user = this.getUser;
+    const departmentId = user.department.id;
+    axios
+        .get(
+            `http://localhost:8080/course/get-courses/department/${departmentId}`
+        )
+        .then((response) => {
+            const courses = response.data;
+            // Her bir course'un periods ve semester alanını alıp yeni bir diziye ekler
+            const periods = courses.map((course) => ({
+                period: course.period,
+                semester: course.semester,
+                displayPeriod: `${course.period} - ${course.semester}` // Bu alan multiselect'te gösterilecek metni belirler
+            }));
+            // Duplicate objeleri silerek uniquePeriods dizisine atar
+            const uniquePeriodsMap = new Map(periods.map(period => [JSON.stringify(period), period]));
+            const uniquePeriods = Array.from(uniquePeriodsMap.values());
+            // Unique periods dizisini alfabetik olarak sıralar (period ve semester alanlarına göre sıralama yapılabilir)
+            uniquePeriods.sort((a, b) => {
+                if (a.period < b.period) return -1;
+                if (a.period > b.period) return 1;
+                if (a.semester < b.semester) return -1;
+                if (a.semester > b.semester) return 1;
+                return 0;
+            });
+            this.periods = uniquePeriods;
+            console.log("p", this.periods)
+        })
+        .catch((error) => {
+            console.error("Error fetching courses:", error);
+        });
+},
+
         goToAdminCoursePage() {
             this.$router.push("/admin-course");
         },
         async showResults() {
             this.courseProgramOutcomes = [];
-            if (this.selectedPeriods.length === 0) {
-                this.$toast.error("Lütfen en az bir dönem seçin!");
-                return;
-            }
             const user = this.getUser;
             const departmentId = user.department.id;
 
@@ -246,11 +259,13 @@ export default {
                 let requests = [];
 
                 for (let period of this.selectedPeriods) {
+                    console.log("selected",this.selectedPeriods);
                     const periodResults = await this.fetchResultsForPeriod(departmentId, period);
                     results.push({ period, results: periodResults });
                 }
 
                 this.calculateWeightedAverages(results);
+                console.log("r",results)
 
             } catch (error) {
                 // Hata durumunda kullanıcıya bir mesaj gösterin
@@ -259,13 +274,19 @@ export default {
             }
         },
         async fetchResultsForPeriod(departmentId, period) {
+            console.log("düzelt",period)
+            const year = period.period
+            const semester = period.semester
+            console.log("semester",semester);
+            console.log("year",year)
             try {
                 const response = await axios.get(
-                    "http://localhost:8080/course/getByPeriodAndDepartmentId",
+                    "http://localhost:8080/course/getByPeriodAndDepartmentIdAndSemester",
                     {
                         params: {
-                            period: period,
+                            period: year,
                             departmentId: departmentId,
+                            semester: semester,
                         },
                     }
                 );
@@ -358,7 +379,7 @@ export default {
             const labels = this.weightedAverages.map(item => item.programOutcome.number);
             const datasets = this.selectedPeriods.map(period => {
                 return {
-                    label: period,
+                    label: period.displayPeriod,
                     backgroundColor: this.getRandomColor(),
                     data: this.weightedAverages.map(item => item[period] || 0)
                 };
