@@ -2,7 +2,8 @@
   <div>
     <nav class="navbar navbar-expand-lg navbar-light" style="background-color: #98bdff;">
       <a @click="refreshPage" style="margin-left: 10px" class="navbar-brand" href="#">
-        <a @click="refreshPage" style="margin-left: 10px" class="navbar-brand" href="#"> <img src="../assets/Baskent_University_Logo.png" alt="Logo" style="max-height: 50px;">myEdu</a>
+        <a @click="refreshPage" style="margin-left: 10px" class="navbar-brand" href="#"> <img
+            src="../assets/Baskent_University_Logo.png" alt="Logo" style="max-height: 50px;">myEdu</a>
       </a>
       <a @click="refreshPage" style="margin-left: 10px" class="navbar-brand" href="#">
         Kişiselleştirilmiş Akademik Gelişim ve <br /> Değerlendirme Sistemi
@@ -32,31 +33,32 @@
               <i class="fas fa-chalkboard-teacher"></i> Öğrenci Yükleme Sayfası
             </li>
             <li class="list-group-item" @click="goToAdminCoursePage">
-                <i class="fa-solid fa-person-chalkboard"></i> Öğretmen Atamaları
-              </li>
+              <i class="fa-solid fa-person-chalkboard"></i> Öğretmen Atamaları
+            </li>
             <li class="list-group-item" @click="goToAdminGuidePage">
               <i class="fas fa-chalkboard-teacher"></i> Kılavuz
             </li>
           </ul>
         </div>
       </div>
-    
+
 
       <div class="card" style="width: 80%; min-height: 300px; overflow-y: auto; overflow-x: hidden">
         <div class="card-body">
           <h5 class="card-title">Öğrenci Yükleme Sayfası</h5>
           <div>
-        <a @mouseenter="showInfoBox = true" @mouseleave="showInfoBox = false" style="cursor: pointer; color: #007bff;;">
-          <i class="fas fa-info-circle"></i> Excel Formatı
-        </a>
-        <div v-if="showInfoBox" class="info-box">
-          <p>Ders için yükleyeceğiniz Excel'in sütun bazlı formatı:
-            Ad, Soyad, Numara, E-Posta
-            şeklinde olmalıdır. İlk satır başlığa ayrılmalıdır. Verilerin önü ve arkasında BOŞLUK bulunmamalıdır.
+            <a @mouseenter="showInfoBox = true" @mouseleave="showInfoBox = false"
+              style="cursor: pointer; color: #007bff;;">
+              <i class="fas fa-info-circle"></i> Excel Formatı
+            </a>
+            <div v-if="showInfoBox" class="info-box">
+              <p>Ders için yükleyeceğiniz Excel'in sütun bazlı formatı:
+                Ad, Soyad, Numara, E-Posta
+                şeklinde olmalıdır. İlk satır başlığa ayrılmalıdır. Verilerin önü ve arkasında BOŞLUK bulunmamalıdır.
 
-          </p>
-        </div>
-      </div>
+              </p>
+            </div>
+          </div>
           <input id="fileInput" type="file" @change="onFileChange" accept=".xlsx, .xls">
           <table class="table mt-4">
             <thead>
@@ -76,12 +78,37 @@
               </tr>
             </tbody>
           </table>
-          <button class="btn btn-primary" style="position: absolute; bottom: 10px; left: 10px;" @click="sendDataToServer">
+          <button class="btn btn-primary" style="position: absolute; bottom: 10px; left: 10px;"
+            @click="sendDataToServer">
             Verileri Sisteme Aktar
           </button>
         </div>
       </div>
     </div>
+  </div>
+  <div class="card" style="width: 80%; min-height: 300px; overflow-y: auto; overflow-x: hidden">
+
+    <table class="table">
+      <thead>
+        <tr>
+          <th scope="col" style="width: 10%;"></th>
+          <th scope="col" style="width: 20%;">Öğrenci Numarası</th>
+          <th scope="col" style="width: 40%;">Öğrenci Adı-Soyadı</th>
+          <th scope="col" style="width: 10%;">İşlemler</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr v-for="(item, index) in systemStudents" :key="index">
+          <td>Öğrenci {{ index + 1 }}</td>
+          <td>{{ item.studentNumber }}</td>
+          <td>{{ item.firstName }} {{ item.lastName }}</td>
+          <td>
+            <button style="margin-left: 2px;" class="btn btn-danger btn-sm"
+              @click="deleteStudent(item.userId)">Sil</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
   </div>
 </template>
 
@@ -94,6 +121,7 @@ export default {
   name: "AdminLoadStudentPage",
   data() {
     return {
+      systemStudents: [],
       students: [],
       userDepartment: null,
       showInfoBox: false
@@ -104,17 +132,42 @@ export default {
   },
   mounted() {
     this.getDepartment();
+    this.fetchSystemStudents();
   },
   methods: {
-    goToAdminGuidePage(){
+    async deleteStudent(){
+
+    },
+    async fetchSystemStudents(studentId) {
+      try {
+        const id = this.userDepartment.id;
+        const response = await axios.get(`http://localhost:8080/students/department/${id}`);
+        console.log(response.data);
+        this.systemStudents = response.data.sort((a, b) => {
+      const nameA = a.firstName.toLowerCase();
+      const nameB = b.firstName.toLowerCase();
+      if (nameA < nameB) {
+        return -1;
+      }
+      if (nameA > nameB) {
+        return 1;
+      }
+      return 0;
+    });
+      } catch (error) {
+        console.error(error);
+        this.$toast.error("Öğrenciler alınırken bir hata oluştu.");
+      }
+    },
+    goToAdminGuidePage() {
       this.$router.push("/admin-guide");
     },
     goToLoginPage() {
       this.$router.push("/");
     },
-    goToAdminCoursePage(){
-        this.$router.push("/admin-course");
-      },
+    goToAdminCoursePage() {
+      this.$router.push("/admin-course");
+    },
     goToProgramOutputPage() {
       this.$router.push("/program-output-admin");
     },

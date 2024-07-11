@@ -142,7 +142,7 @@ export default {
     // Geçerli olanları filtrele
     this.outcomes = response.data.filter(outcome => !isNaN(outcome.levelOfProvision));
     // Sonrasında sırala
-    console.log(this.outcomes)
+    console.log("burası",this.outcomes)
     this.outcomes.sort((a, b) => a.programOutcome.number - b.programOutcome.number);
     const responseCourse = await axios.get(`http://localhost:8080/course/${courseId}`);
     this.course = responseCourse.data;

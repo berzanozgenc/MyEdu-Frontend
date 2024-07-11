@@ -71,7 +71,7 @@
                 Vazgeç
               </button>
             </div>
-            <div style="max-height: 300px; overflow-y: auto">
+            <div style="max-height: 900px; overflow-y: auto">
               <table class="table table-stretched mt-3">
                 <thead>
                   <tr>
