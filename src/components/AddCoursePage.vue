@@ -53,7 +53,7 @@
           <i class="fas fa-info-circle"></i> Excel Formatı
         </a>
         <div v-if="showInfoBox" class="info-box">
-          <p>Ders için yükleyeceğiniz Excel'in sütun bazlı formatı:
+          <p>Ders için yükleyeceğiniz Excel'in sütun bazlı formatı: Yıl,
             Sömestir, Ders Kodu,	Ders Adı,	Şube,	AKTS,	Kredi
             şeklinde olmalıdır. İlk satır başlığa ayrılmalıdır. Verilerin önü ve arkasında BOŞLUK bulunmamalıdır.
 
@@ -66,7 +66,7 @@
     <thead>
       <tr>
         <th style="width: 12%;"scope="col">Departman</th>
-        <th scope="col">Dönem</th>
+        <th scope="col">Yıl</th>
         <th scope="col">Sömestir</th>
         <th scope="col">Ders Kodu</th>
         <th scope="col">Ders Adı</th>
@@ -291,12 +291,13 @@ goToAdminCourseResultsPage(courseId){
         if (rowNumber !== 1) { // Skip header row
           rows.push({
             department: this.userDepartment,
-            semester: row.getCell(1).value,
-            code: row.getCell(2).value,
-            courseName: row.getCell(3).value,
-            section: row.getCell(4).value,
-            ects: row.getCell(5).value,
-            credit: row.getCell(6).value
+            period: row.getCell(1).value,
+            semester: row.getCell(2).value,
+            code: row.getCell(3).value,
+            courseName: row.getCell(4).value,
+            section: row.getCell(5).value,
+            ects: row.getCell(6).value,
+            credit: row.getCell(7).value
           });
         }
       });
