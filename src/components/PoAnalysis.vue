@@ -45,8 +45,8 @@
                         <div style="margin-left: 5px">
                             <label for="classDropdown">Ders Seç:</label>
                             <select class="form-control" id="classDropdown" v-model="selectedClass">
-                                <option v-for="(course, index) in courses" :key="index">
-                                    {{ course }}
+                                <option v-for="(course, index) in courses" :key="index" :value="course">
+                                    {{ course.code }} - {{ course.name }} 
                                 </option>
                             </select>
                         </div>
@@ -109,7 +109,7 @@
                             <th style="vertical-align: top" scope="col">Tanım</th>
                             <th v-for="course in filteredCourses" :key="course.courseId" style="text-align: center"
                                 scope="col">
-                                {{ course.courseName }} {{ course.period }} {{ course.semester }}
+                                 {{ course.period }} {{ course.semester }}
                             </th>
                         </tr>
                     </thead>
@@ -218,11 +218,14 @@ export default {
             return course ? course.levelOfProvision : null;
         },
         async analyzeCourse() {
-            const code = this.selectedClass;
             if (this.selectedClass == null) {
                 this.$toast.error("Lütfen analiz etmek istediğiniz dersi seçin!");
                 return;
             }
+
+            const code = this.selectedClass.code;
+            console.log("class",this.selectedClass)
+            console.log("code",this.selectedClass.code)
 
             try {
                 const response = await axios.get(`http://localhost:8080/course/code/${code}`);
@@ -358,24 +361,25 @@ export default {
             location.reload();
         },
         fetchCourses() {
-            const userId = this.getUser ? this.getUser.userId : null;
-            axios
-                .get(`http://localhost:8080/user-course-registrations/user/${userId}/courses`)
-                .then((response) => {
-                    this.userCourses = response.data;
-                    let courseCodes = new Set();
-                    let periodsSet = new Set();
-                    response.data.forEach(item => {
-                        courseCodes.add(item.course.code);
-                        periodsSet.add(item.course.period);
-                    });
-                    this.courses = Array.from(courseCodes);
-                    this.periods = Array.from(periodsSet);
-                })
-                .catch((error) => {
-                    console.error("Hata:", error);
-                });
-        },
+    const userId = this.getUser ? this.getUser.userId : null;
+    axios
+        .get(`http://localhost:8080/user-course-registrations/user/${userId}/courses`)
+        .then((response) => {
+            this.userCourses = response.data;
+            let coursesSet = new Set();
+            let periodsSet = new Set();
+            response.data.forEach(item => {
+                coursesSet.add(JSON.stringify({ code: item.course.code, name: item.course.courseName }));
+                periodsSet.add(item.course.period);
+            });
+            this.courses = Array.from(coursesSet).map(course => JSON.parse(course));
+            this.periods = Array.from(periodsSet);
+        })
+        .catch((error) => {
+            console.error("Hata:", error);
+        });
+},
+
         logoutUser() {
             const store = useStore();
             const router = useRouter();
