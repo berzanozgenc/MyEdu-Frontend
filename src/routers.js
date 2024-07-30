@@ -30,12 +30,18 @@ import AdminCourseResults from './components/AdminCourseResults.vue'
 import PoAnalysis from "./components/PoAnalysis.vue";
 import AdminPoResults from "./components/AdminPoResults.vue";
 import AboutUs from "./components/AboutUs.vue";
+import SuperuserHome from './components/SuperuserHome.vue'
 
 const routes = [{
     name: "Login",
     component: Login,
     path: "/"
-
+},
+{
+    name: "SuperuserHome",
+    component: SuperuserHome,
+    path: "/superuser-home",
+    meta: { requiresAuth: true }, // Oturum açma gerektiren sayfaları belirtin
 },
 {
     name: "AdminCourseResults",
@@ -253,6 +259,10 @@ const instructorAllowedRoutes = [
     '/analysis'
 ];
 
+const superUserAllowedRoutes = [
+    '/superuser-home',
+];
+
 router.beforeEach(async (to, from, next) => {
     const isAuthenticated = store.getters['getUser'] !== null; // Kullanıcının oturum açıp açmadığını kontrol edin
     const user = store.getters['getUser']; // Kullanıcı bilgilerini alın
@@ -298,6 +308,19 @@ router.beforeEach(async (to, from, next) => {
                 next(); // İzin verilen rotaya yönlendir
             } else {
                 next('/student-home'); // Öğrenci varsayılan olarak /student-home sayfasına yönlendirilir
+            }
+        }
+        else if (user.statusCode === 4) {
+            // Student için kontrol
+            const isRouteAllowed = superUserAllowedRoutes.some(route => {
+                const pathRegex = new RegExp('^' + route.replace(/:\w+/g, '\\d+') + '$');
+                return pathRegex.test(to.path);
+            });
+
+            if (isRouteAllowed) {
+                next(); // İzin verilen rotaya yönlendir
+            } else {
+                next('/superuser-home'); 
             }
         } else if (user.statusCode === 3) {
             // Admin için kontrol

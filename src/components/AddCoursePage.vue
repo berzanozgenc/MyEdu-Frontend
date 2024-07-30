@@ -32,6 +32,9 @@
             <li class="list-group-item" @click="goToAdminCoursePage">
                 <i class="fa-solid fa-person-chalkboard"></i> Öğretmen Atamaları
               </li>
+              <li class="list-group-item" @click="goToLoadStudentPage">
+                <i class="fa-solid fa-person-chalkboard"></i> Öğrenciler
+              </li>
             <li class="list-group-item" @click="goToAdminGuidePage">
               <i class="fas fa-chalkboard-teacher"></i> Kılavuz
             </li>

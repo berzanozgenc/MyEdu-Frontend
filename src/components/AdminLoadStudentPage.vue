@@ -24,20 +24,23 @@
           <h5 class="card-title">Menü</h5>
           <ul class="list-group">
             <li class="list-group-item" @click="goToAddCoursePage">
-              <i class="fas fa-graduation-cap"></i> Ders Sayfası
-            </li>
-            <li class="list-group-item" @click="goToProgramOutputPage">
-              <i class="fas fa-book"></i> Program Çıktıları Sayfası
-            </li>
-            <li class="list-group-item" @click="goToLoadStudentPage">
-              <i class="fas fa-chalkboard-teacher"></i> Öğrenci Yükleme Sayfası
-            </li>
-            <li class="list-group-item" @click="goToAdminCoursePage">
-              <i class="fa-solid fa-person-chalkboard"></i> Öğretmen Atamaları
-            </li>
-            <li class="list-group-item" @click="goToAdminGuidePage">
-              <i class="fas fa-chalkboard-teacher"></i> Kılavuz
-            </li>
+                            <i class="fas fa-graduation-cap"></i> Ders Sayfası
+                        </li>
+                        <li class="list-group-item" @click="goToProgramOutputPage">
+                            <i class="fas fa-book"></i> Program Çıktıları Sayfası
+                        </li>
+                        <li class="list-group-item" @click="goToAdminCoursePage">
+                            <i class="fa-solid fa-person-chalkboard"></i> Öğretmen Atamaları
+                        </li>
+                        <li class="list-group-item" @click="goToLoadStudentPage">
+                <i class="fa-solid fa-person-chalkboard"></i> Öğrenciler
+              </li>
+                        <li class="list-group-item" @click="goToAdminGuidePage">
+                            <i class="fas fa-chalkboard-teacher"></i> Kılavuz
+                        </li>
+                        <li class="list-group-item" @click="goToResultPage">
+                            <i class="fas fa-diagram-project"></i> Sonuçlar
+                        </li>
           </ul>
         </div>
       </div>
@@ -217,6 +220,9 @@ export default {
         });
       };
       reader.readAsArrayBuffer(file);
+    },
+    goToResultPage(){
+      this.$router.push("/admin-po-results");
     },
     sendDataToServer() {
       if (!this.userDepartment) {
