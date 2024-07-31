@@ -31,6 +31,7 @@ import PoAnalysis from "./components/PoAnalysis.vue";
 import AdminPoResults from "./components/AdminPoResults.vue";
 import AboutUs from "./components/AboutUs.vue";
 import SuperuserHome from './components/SuperuserHome.vue'
+import SuperuserAddUser from "./components/SuperuserAddUser.vue";
 
 const routes = [{
     name: "Login",
@@ -41,6 +42,12 @@ const routes = [{
     name: "SuperuserHome",
     component: SuperuserHome,
     path: "/superuser-home",
+    meta: { requiresAuth: true }, // Oturum açma gerektiren sayfaları belirtin
+},
+{
+    name: "SuperuserAddUser",
+    component: SuperuserAddUser,
+    path: "/superuser-addUser",
     meta: { requiresAuth: true }, // Oturum açma gerektiren sayfaları belirtin
 },
 {
@@ -261,6 +268,7 @@ const instructorAllowedRoutes = [
 
 const superUserAllowedRoutes = [
     '/superuser-home',
+    '/superuser-addUser'
 ];
 
 router.beforeEach(async (to, from, next) => {

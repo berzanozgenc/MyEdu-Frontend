@@ -25,10 +25,10 @@
             <div class="card-body">
                 <h5 class="card-title">Menü</h5>
                 <ul class="list-group">
-                    <li class="list-group-item" @click="goToGuidePage">
+                    <li class="list-group-item">
                         <i class="fas fa-users"></i> Departmanlar
                     </li>
-                    <li class="list-group-item" @click="goToAboutUs">
+                    <li class="list-group-item" @click="goToAddUser">
                         <i class="fas fa-info-circle"></i> Birim Kullanıcıları
                     </li>
                 </ul>
@@ -158,6 +158,9 @@ export default {
         console.error(error);
         this.$toast.error("Departman güncellenirken bir hata oluştu.");
       }
+    },
+    goToAddUser(){
+        this.$router.push('/superuser-addUser');
     }
   },
     }
