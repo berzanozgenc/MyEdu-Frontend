@@ -44,6 +44,7 @@
                             <th scope="col" style="width: 150px;">Ad</th>
                             <th scope="col" style="width: 150px;">Soyad</th>
                             <th scope="col" style="width: 150px;">Departman</th>
+                            <th scope="col" style="width: 150px;">işlemler</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -67,6 +68,9 @@
                                 <input v-if="item.editable" type="text" class="form-control editable"
                                     v-model="item.department.name" style="width: 250px;">
                                 <div class="loDescription" v-else>{{ item.department.name }}</div>
+                            </td>
+                            <td>
+                                <button class="btn btn-danger btn-sm" @click="deleteUser(item)">Sil</button>
                             </td>
                         </tr>
                     </tbody>
@@ -217,6 +221,17 @@ export default {
     },
     goToHome(){
         this.$router.push('/superuser-home');
+    },
+    deleteUser(user){
+        axios.delete('http://localhost:8080/admins', { data: user })
+        .then(response => {
+          console.log(response.data);
+          alert('Kullanıcı başarıyla silindi.');
+        })
+        .catch(error => {
+          console.error(error);
+          alert('Kullanıcı silinirken bir hata oluştu.');
+        });
     }
   },
     }
