@@ -71,35 +71,36 @@
                         Program Çıktıları - Bölüm Sağlama Düzeyleri
                     </h5>
                     <table class="table table-sm">
-                        <thead>
-                            <tr>
-                                <th style="vertical-align: top" scope="col">No</th>
-                                <th style="vertical-align: top" scope="col">Tanım</th>
-                                <th v-for="(period, index) in selectedPeriods" :key="index" style="text-align: center"
-                                    scope="col">
-                                    {{ period.period }} {{ period.semester }} PÇ Sağlama Düzeyi
-                                </th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr v-for="(outcome, index) in weightedAverages" :key="index">
-                                <td class="description-cell">
-                                    {{ outcome.programOutcome.number }}
-                                </td>
-                                <td class="description-cell">
-                                    {{ outcome.programOutcome.description }}
-                                </td>
-                                <td v-for="(period, pIndex) in selectedPeriods" :key="pIndex" style="text-align: center"
-                                    class="description-cell">
-                                    %{{
-                isNaN(outcome[period])
-                    ? "Henüz hesaplanmadı"
-                    : outcome[period].toFixed(2)
-            }}
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
+    <thead>
+        <tr>
+            <th style="vertical-align: top" scope="col">No</th>
+            <th style="vertical-align: top" scope="col">Tanım</th>
+            <th v-for="(period, index) in selectedPeriods" :key="index" style="text-align: center"
+                scope="col">
+                {{ period.period }} {{ period.semester }} PÇ Sağlama Düzeyi
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr v-for="(outcome, index) in weightedAverages" :key="index">
+            <td class="description-cell">
+                {{ outcome.programOutcome.number }}
+            </td>
+            <td class="description-cell">
+                {{ outcome.programOutcome.description }}
+            </td>
+            <td v-for="(period, pIndex) in selectedPeriods" :key="pIndex" style="text-align: center"
+                class="description-cell">
+                %{{
+                    isNaN(outcome[period.displayPeriod])
+                        ? "Henüz hesaplanmadı"
+                        : outcome[period.displayPeriod].toFixed(2)
+                }}
+            </td>
+        </tr>
+    </tbody>
+</table>
+
                     <div>
                         <Bar :data="chartData" :options="chartOptions" />
                     </div>
@@ -277,122 +278,123 @@ export default {
             }
         },
         async fetchResultsForPeriod(departmentId, period) {
-            console.log("düzelt",period)
-            const year = period.period
-            const semester = period.semester
-            console.log("semester",semester);
-            console.log("year",year)
-            try {
-                const response = await axios.get(
-                    "http://localhost:8080/course/getByPeriodAndDepartmentIdAndSemester",
-                    {
-                        params: {
-                            period: year,
-                            departmentId: departmentId,
-                            semester: semester,
-                        },
-                    }
-                );
-
-                const courses = response.data;
-                let results = [];
-                let requests = [];
-
-                for (let i = 0; i < courses.length; i++) {
-                    const courseId = courses[i].courseId;
-                    for (let j = 0; j < this.outcomes.length; j++) {
-                        const programId = this.outcomes[j].id;
-                        requests.push(
-                            axios
-                                .get(
-                                    `http://localhost:8080/courseProgramOutcomeResults/course/${courseId}/program-outcome/${programId}`
-                                )
-                                .then((response) => {
-                                    results.push(...response.data);
-                                })
-                                .catch((error) => {
-                                    console.error(
-                                        `Error fetching results for Course ID: ${courseId}, Program Outcome ID: ${programId}`,
-                                        error
-                                    );
-                                })
-                        );
-                    }
-                }
-
-                await Promise.all(requests);
-                return results;
-
-            } catch (error) {
-                console.error("Error fetching courses:", error);
-                return [];
+    console.log("düzelt", period)
+    const year = period.period
+    const semester = period.semester
+    console.log("semester", semester);
+    console.log("year", year)
+    try {
+        const response = await axios.get(
+            "http://localhost:8080/course/getByPeriodAndDepartmentIdAndSemester",
+            {
+                params: {
+                    period: year,
+                    departmentId: departmentId,
+                    semester: semester,
+                },
             }
-        },
+        );
+
+        const courses = response.data;
+        let results = [];
+        let requests = [];
+
+        for (let i = 0; i < courses.length; i++) {
+            const courseId = courses[i].courseId;
+            for (let j = 0; j < this.outcomes.length; j++) {
+                const programId = this.outcomes[j].id;
+                requests.push(
+                    axios
+                        .get(
+                            `http://localhost:8080/courseProgramOutcomeResults/course/${courseId}/program-outcome/${programId}`
+                        )
+                        .then((response) => {
+                            results.push(...response.data);
+                        })
+                        .catch((error) => {
+                            console.error(
+                                `Error fetching results for Course ID: ${courseId}, Program Outcome ID: ${programId}`,
+                                error
+                            );
+                        })
+                );
+            }
+        }
+
+        await Promise.all(requests);
+        return results;
+
+    } catch (error) {
+        console.error("Error fetching courses:", error);
+        return [];
+    }
+},
+
         calculateWeightedAverages(results) {
-            let groupedResults = {};
+    let groupedResults = {};
 
-            results.forEach(({ period, results }) => {
-                results.forEach((result) => {
-                    const programOutcome = result.programOutcome;
-                    if (!groupedResults[programOutcome.id]) {
-                        groupedResults[programOutcome.id] = {
-                            programOutcome: programOutcome,
-                            periodResults: {}
-                        };
-                    }
-                    if (!groupedResults[programOutcome.id].periodResults[period]) {
-                        groupedResults[programOutcome.id].periodResults[period] = [];
-                    }
-                    groupedResults[programOutcome.id].periodResults[period].push(result);
-                });
-            });
-
-            let weightedAverages = Object.values(groupedResults).map((group) => {
-                let avgResults = { programOutcome: group.programOutcome };
-
-                for (let period of this.selectedPeriods) {
-                    let totalWeightedLevel = 0;
-                    let totalEcts = 0;
-
-                    if (group.periodResults[period]) {
-                        group.periodResults[period].forEach((result) => {
-                            const levelOfProvision = result.levelOfProvision;
-                            const ects = result.course.ects;
-
-                            if (!isNaN(levelOfProvision) && levelOfProvision !== 0) {
-                                totalWeightedLevel += levelOfProvision * ects;
-                                totalEcts += ects;
-                            }
-                        });
-                    }
-
-                    const avgLevelOfProvision =
-                        totalEcts > 0 ? totalWeightedLevel / totalEcts : 0;
-                    avgResults[period] = avgLevelOfProvision;
-                }
-
-                return avgResults;
-            });
-
-            console.log(weightedAverages);
-            this.weightedAverages = weightedAverages;
-            this.updateChart();
-        },
-        updateChart() {
-            const labels = this.weightedAverages.map(item => item.programOutcome.number);
-            const datasets = this.selectedPeriods.map(period => {
-                return {
-                    label: period.displayPeriod,
-                    backgroundColor: this.getRandomColor(),
-                    data: this.weightedAverages.map(item => item[period] || 0)
+    results.forEach(({ period, results }) => {
+        results.forEach((result) => {
+            const programOutcome = result.programOutcome;
+            if (!groupedResults[programOutcome.id]) {
+                groupedResults[programOutcome.id] = {
+                    programOutcome: programOutcome,
+                    periodResults: {}
                 };
-            });
+            }
+            if (!groupedResults[programOutcome.id].periodResults[period.displayPeriod]) {
+                groupedResults[programOutcome.id].periodResults[period.displayPeriod] = [];
+            }
+            groupedResults[programOutcome.id].periodResults[period.displayPeriod].push(result);
+        });
+    });
 
-            this.chartData = {
-                labels: labels,
-                datasets: datasets
-            };
-        },
+    let weightedAverages = Object.values(groupedResults).map((group) => {
+        let avgResults = { programOutcome: group.programOutcome };
+
+        for (let period of this.selectedPeriods) {
+            let totalWeightedLevel = 0;
+            let totalEcts = 0;
+
+            if (group.periodResults[period.displayPeriod]) {
+                group.periodResults[period.displayPeriod].forEach((result) => {
+                    const levelOfProvision = result.levelOfProvision;
+                    const ects = result.course.ects;
+
+                    if (!isNaN(levelOfProvision) && levelOfProvision !== 0) {
+                        totalWeightedLevel += levelOfProvision * ects;
+                        totalEcts += ects;
+                    }
+                });
+            }
+
+            const avgLevelOfProvision =
+                totalEcts > 0 ? totalWeightedLevel / totalEcts : 0;
+            avgResults[period.displayPeriod] = avgLevelOfProvision;
+        }
+
+        return avgResults;
+    });
+
+    console.log(weightedAverages);
+    this.weightedAverages = weightedAverages;
+    this.updateChart();
+},
+updateChart() {
+    const labels = this.weightedAverages.map(item => item.programOutcome.number);
+    const datasets = this.selectedPeriods.map(period => {
+        return {
+            label: period.displayPeriod,
+            backgroundColor: this.getRandomColor(),
+            data: this.weightedAverages.map(item => item[period.displayPeriod] || 0)
+        };
+    });
+
+    this.chartData = {
+        labels: labels,
+        datasets: datasets
+    };
+},
         getRandomColor() {
             const letters = '0123456789ABCDEF';
             let color = '#';
